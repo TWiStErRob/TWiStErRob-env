@@ -1,0 +1,18 @@
+create repository git-repo
+end repository
+
+match /Libraries/twister-plugin-gradle/
+	repository git-repo
+	prefix plugin/
+	branch master
+end match
+
+match /Libraries/twister-plugin-gradle-graph/
+	repository git-repo
+	prefix graph/
+	branch master
+end match
+
+match /(Documents|Examples|Hacks|Interviews|Libraries|Projects|School|Utilities|Web|Quick Public Transport)/
+	action ignore
+end match
