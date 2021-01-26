@@ -1,4 +1,4 @@
-h1. github-away
+# github-away
 How to set up Git and GitHub on a foreign machine.
 
 Go to https://github.com/settings/tokens and generate a new token.
