@@ -1,0 +1,38 @@
+create repository net.twisterrob.sun
+end repository
+
+match /Projects/Sun/
+	repository net.twisterrob.sun
+	branch master
+	prefix /
+end match
+
+
+create repository net.twisterrob.colorfilters
+end repository
+
+match /Projects/Android Color Filters/
+	repository net.twisterrob.colorfilters
+	branch master
+	prefix /
+end match
+
+
+create repository net.twisterrob.gradle
+end repository
+
+match /Libraries/twister-plugin-gradle/
+	repository net.twisterrob.gradle
+	branch master
+	prefix plugin/
+end match
+
+match /Libraries/twister-plugin-gradle-graph/
+	repository net.twisterrob.gradle
+	branch master
+	prefix graph/
+end match
+
+match /(Documents|Examples|Hacks|Interviews|Libraries|Projects|School|Utilities|Web|Quick Public Transport)/
+	action ignore
+end match
