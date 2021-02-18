@@ -33,6 +33,37 @@ match /Libraries/twister-plugin-gradle-graph/
 	prefix graph/
 end match
 
+
+create repository net.twisterrob.travel
+end repository
+
+match /Projects/Better London Travel/
+	repository net.twisterrob.travel
+	branch master
+	prefix /
+end match
+
+
+create repository net.twisterrob.cashier
+end repository
+
+match /Projects/Cashier/
+	repository net.twisterrob.cashier
+	branch master
+	prefix /
+end match
+
+
+create repository net.twisterrob.cinema
+end repository
+
+match /Projects/Cinema/
+	repository net.twisterrob.cinema
+	branch master
+	prefix /
+end match
+
+
 match /(Documents|Examples|Hacks|Interviews|Libraries|Projects|School|Utilities|Web|Quick Public Transport)/
 	action ignore
 end match

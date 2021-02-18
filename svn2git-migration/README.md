@@ -99,9 +99,9 @@ TWiStEr = Róbert Papp (TWiStErRob) <papp.robert.s@gmail.com>
 ## Execute
 Run in docker in `workdir`:
 ```bash
-/usr/local/svn2git/svn-all-fast-export --identity-map /tmp/conf/migrate.authors --rules /tmp/conf/repo.rules --svn-branches --debug-rules --svn-ignore --empty-dirs /tmp/svn
+/usr/local/svn2git/svn-all-fast-export --identity-map /tmp/conf/migrate.authors --rules /tmp/conf/repo.rules --debug-rules --stats --svn-ignore --empty-dirs --add-metadata-notes /tmp/svn
 ```
-`--add-metadata` would add this line to each `svn path=/Path/In/SVN-repo/; revision=1234` to each commit message.
+Changing `-add-metadata-notes` to `--add-metadata` would add this line `svn path=/Path/In/SVN-repo/; revision=1234` to each commit message instead of attaching it as a note on the commit.
 
 ## Verify
 Run on host in `.`:
