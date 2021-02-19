@@ -99,9 +99,31 @@ TWiStEr = Róbert Papp (TWiStErRob) <papp.robert.s@gmail.com>
 ## Execute
 Run in docker in `workdir`:
 ```bash
-/usr/local/svn2git/svn-all-fast-export --identity-map /tmp/conf/migrate.authors --rules /tmp/conf/repo.rules --debug-rules --stats --svn-ignore --empty-dirs --add-metadata-notes /tmp/svn
+/usr/local/svn2git/svn-all-fast-export --identity-map /tmp/conf/migrate.authors --rules /tmp/conf/repo.rules --debug-rules --stats --svn-ignore --empty-dirs --add-metadata --add-metadata-notes --propcheck /tmp/svn >svn2git.log 2>&1
 ```
-Changing `-add-metadata-notes` to `--add-metadata` would add this line `svn path=/Path/In/SVN-repo/; revision=1234` to each commit message instead of attaching it as a note on the commit.
+
+`--debug-rules` outputs each matched file for each rule instead of just summary:
+```
+Exporting revision 1118 ...... 2 modifications from SVN /Projects/Sun/ to net.twisterrob.sun/master done
+```
+with debug:
+```
+Exporting revision 1118
+
+rev 1118 /Projects/Sun/gen/R.java matched rule: "/tmp/conf/repo.rules:4 /Projects/Sun/"    exporting.
+.add/change file ( /Projects/Sun/gen/R.java -> "master" "gen/R.java" )
+
+rev 1118 /Projects/Sun/res/values/arrays.xml matched rule: "/tmp/conf/repo.rules:4 /Projects/Sun/"    exporting.
+.add/change file ( /Projects/Sun/res/values/arrays.xml -> "master" "res/values/arrays.xml" )
+
+6 modifications from SVN /Projects/Sun/ to net.twisterrob.sun/master done
+```
+
+`-add-metadata-notes` and `--add-metadata` adds this line pattern as commit notes or appended commit message:
+```
+svn path=/Path/In/SVN-repo/; revision=1234
+```
+
 
 ## Verify
 Run on host in `.`:
