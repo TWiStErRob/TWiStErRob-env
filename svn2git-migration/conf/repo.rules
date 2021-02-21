@@ -37,7 +37,7 @@ end match
 create repository net.twisterrob.travel
 end repository
 
-match /Projects/Better London Travel/
+match /Projects/Better London Travel/|/Projects/Better London Transport/
 	repository net.twisterrob.travel
 	branch master
 	prefix /
@@ -57,7 +57,7 @@ end match
 create repository net.twisterrob.cinema
 end repository
 
-match /Projects/Cinema/
+match /Projects/Cinema/|/Web/Cineworld Planner/
 	repository net.twisterrob.cinema
 	branch master
 	prefix /
