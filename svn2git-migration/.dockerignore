@@ -1,0 +1,7 @@
+# Whitelist the files that are visible to Docker.
+
+# Exclude everything.
+*
+
+# Include each accessible file/folder/pattern by not(!) ignoring them.
+#!path/to/foo.bar
