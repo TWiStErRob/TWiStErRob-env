@@ -1,64 +1,64 @@
-create repository net.twisterrob.sun
+create repository net.twisterrob.sun.git
 end repository
 
 match /Projects/Sun/
-	repository net.twisterrob.sun
+	repository net.twisterrob.sun.git
 	branch master
 	prefix /
 end match
 
 
-create repository net.twisterrob.colorfilters
+create repository net.twisterrob.colorfilters.git
 end repository
 
 match /Projects/Android Color Filters/
-	repository net.twisterrob.colorfilters
+	repository net.twisterrob.colorfilters.git
 	branch master
 	prefix /
 end match
 
 
-create repository net.twisterrob.gradle
+create repository net.twisterrob.gradle.git
 end repository
 
 match /Libraries/twister-plugin-gradle/
-	repository net.twisterrob.gradle
+	repository net.twisterrob.gradle.git
 	branch master
 	prefix plugin/
 end match
 
 match /Libraries/twister-plugin-gradle-graph/
-	repository net.twisterrob.gradle
+	repository net.twisterrob.gradle.git
 	branch master
 	prefix graph/
 end match
 
 
-create repository net.twisterrob.travel
+create repository net.twisterrob.travel.git
 end repository
 
 match /Projects/Better London Travel/|/Projects/Better London Transport/
-	repository net.twisterrob.travel
+	repository net.twisterrob.travel.git
 	branch master
 	prefix /
 end match
 
 
-create repository net.twisterrob.cashier
+create repository net.twisterrob.cashier.git
 end repository
 
 match /Projects/Cashier/
-	repository net.twisterrob.cashier
+	repository net.twisterrob.cashier.git
 	branch master
 	prefix /
 end match
 
 
-create repository net.twisterrob.cinema
+create repository net.twisterrob.cinema.git
 end repository
 
 match /Projects/Cinema/|/Web/Cineworld Planner/
-	repository net.twisterrob.cinema
+	repository net.twisterrob.cinema.git
 	branch master
 	prefix /
 end match
