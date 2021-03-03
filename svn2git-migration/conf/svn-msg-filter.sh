@@ -1,3 +1,6 @@
+#!/bin/bash
+# It does not work with normal `sh`, so when using as `--msg-filter`, specify `--msg-filter 'bash svn-msg-filter.sh'`.
+
 # Expected input on stdin:
 #```
 #Inventory
@@ -5,7 +8,7 @@
 #[REF] Use ApplicationProvider instead of InstrumentationRegistry
 #[FIX] New ProGuard notes from AndroidX
 #
-#svn path=/Projects/Cashier/; revision=2610 
+#svn path=/Projects/Cashier/; revision=2610
 #```
 # The script will combine the first and last lines into
 #```

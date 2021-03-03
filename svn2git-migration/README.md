@@ -109,7 +109,7 @@ Run in docker in `workdir`:
 	--empty-dirs \
 	--add-metadata \
 	--add-metadata-notes \
-	--msg-filter /tmp/conf/svn-msg-filter.sh \
+	--msg-filter 'bash /tmp/conf/svn-msg-filter.sh' \
 	/tmp/svn \
 	>svn2git.log 2>&1
 ```
