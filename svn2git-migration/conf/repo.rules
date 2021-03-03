@@ -2,6 +2,7 @@ create repository net.twisterrob.sun.git
 end repository
 
 match /Projects/Sun/
+	min revision 1105
 	repository net.twisterrob.sun.git
 	branch master
 	prefix /
@@ -12,6 +13,7 @@ create repository net.twisterrob.colorfilters.git
 end repository
 
 match /Projects/Android Color Filters/
+	min revision 1269
 	repository net.twisterrob.colorfilters.git
 	branch master
 	prefix /
@@ -22,12 +24,17 @@ create repository net.twisterrob.gradle.git
 end repository
 
 match /Libraries/twister-plugin-gradle/
+	min revision 1289
 	repository net.twisterrob.gradle.git
 	branch master
 	prefix plugin/
 end match
 
 match /Libraries/twister-plugin-gradle-graph/
+# It was moved to a separate folder in:
+#	min revision 1782
+# but the original content started at:
+	min revision 1289
 	repository net.twisterrob.gradle.git
 	branch master
 	prefix graph/
@@ -37,7 +44,12 @@ end match
 create repository net.twisterrob.travel.git
 end repository
 
-match /Projects/Better London Travel/|/Projects/Better London Transport/
+match /Projects/Better London Travel/
+    # > WARN: Branch "master" in repository "net.twisterrob.travel.git" doesn't exist at revision 548 -- did you resume from the wrong revision?
+    # No, the first meaningful commit was 548, which added actual contents.
+    # Before that it was only created as /Projects/Better London Transport/ in 546,
+    # but immediately renamed to /Projects/Better London Travel/ in 547.
+	min revision 548
 	repository net.twisterrob.travel.git
 	branch master
 	prefix /
@@ -48,6 +60,7 @@ create repository net.twisterrob.cashier.git
 end repository
 
 match /Projects/Cashier/
+	min revision 2251
 	repository net.twisterrob.cashier.git
 	branch master
 	prefix /
@@ -57,10 +70,27 @@ end match
 create repository net.twisterrob.cinema.git
 end repository
 
-match /Projects/Cinema/|/Web/Cineworld Planner/
+match /Projects/Cinema/
+	min revision 561
 	repository net.twisterrob.cinema.git
 	branch master
 	prefix /
+end match
+
+match /Web/Cineworld Planner/
+	min revision 558
+	# Copied to /Projects/Cinema/AppEngine/ in 618.
+	max revision 619
+	repository net.twisterrob.cinema.git
+	branch master
+	prefix /web/
+end match
+
+match /Web/QuickJSONFormatterLib/
+	min revision 576
+	repository net.twisterrob.cinema.git
+	branch master
+	prefix /libs/QuickJSONFormatterLib/
 end match
 
 
