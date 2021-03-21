@@ -101,7 +101,7 @@ Run in docker in `workdir`:
 ```bash
 /usr/local/svn2git/svn-all-fast-export \
 	--identity-map /tmp/conf/migrate.authors \
-	--rules /tmp/conf/repo.rules \
+	--rules /tmp/conf/monorepo-split.rules \
 	--debug-rules \
 	--stats \
 	--svn-ignore \

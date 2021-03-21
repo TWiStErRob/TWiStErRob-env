@@ -1,0 +1,10 @@
+# This rules file creates one repository and exports everything into it.
+
+create repository svn.git
+end repository
+
+match /
+	repository svn.git
+	branch master
+	prefix /
+end match

@@ -1,3 +1,6 @@
+# This rules file splits up projects into multiple GIT repositories.
+
+
 create repository net.twisterrob.sun.git
 end repository
 
