@@ -19,19 +19,19 @@ set SVN_REPO=P:\repos\svn
 docker run --rm -it -v %CD%\conf:/tmp/conf -v %CD%\workdir:/workdir -v %SVN_REPO%:/tmp/svn svn2git-work bash
 ```
 
-## Clone SVN repo
-There are several ways of cloning the repository, some of them are faster/slower.
+## Checkout SVN repo
+There are several ways of checking out the repository, some of them are faster/slower.
 
 Timings for 3200 revs, 220M data:
- * clone from SVN_REPO: 10 minutes
- * clone from host via svnserve: 10 minutes
- * clone on host from SVN_REPO_SLASH: 1 minute
+ * Checkout from SVN_REPO: 10 minutes
+ * Checkout from host via svnserve: 10 minutes
+ * Checkout on host from SVN_REPO_SLASH: 1 minute
 
 Note:
  * using `svn checkout --depth empty ...` decreases even the slowest of checkouts to 3 minutes.
  * using `svn checkout --depth empty --ignore-externals ...` makes all of them immediate.
 
-### clone from SVN_REPO
+### Checkout from SVN_REPO
 Simplest, use the mapped SVN repository via `file` protocol.
 
 Run in docker in `workdir`:
@@ -39,7 +39,7 @@ Run in docker in `workdir`:
 svn checkout file:///tmp/svn .
 ```
 
-### clone from host
+### Checkout from host
 To get localhost of the host machine (if the repo is being `svnserve`'d):
  * run `ipconfig`
  * find "Ethernet adapter vEthernet (Default Switch)"
@@ -70,7 +70,7 @@ $ svn auth --remove *
 Deleted 1 matching credentials from '/root/.subversion'
 ```
 
-### clone on host
+### Checkout on host
 Run on host in `workdir`:
 ```bash
 set SVN_REPO=P:\repos\svn
