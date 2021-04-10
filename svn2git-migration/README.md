@@ -154,18 +154,18 @@ TWiStEr = Róbert Papp (TWiStErRob) <papp.robert.s@gmail.com>
 Run in docker in `workdir`:
 ```bash
 /usr/local/svn2git/svn-all-fast-export \
-	--identity-map /tmp/conf/migrate.authors \
-	--rules /tmp/conf/monorepo-split.rules \
-	--debug-rules \
-	--stats \
-	--svn-ignore \
-	--propcheck \
-	--empty-dirs \
-	--add-metadata \
-	--add-metadata-notes \
-	--msg-filter 'sed -z -r -f /tmp/conf/svn-msg-filter.sed' \
-	/tmp/svn \
-	>svn2git.log 2>&1
+--identity-map /tmp/conf/migrate.authors \
+--rules /tmp/conf/monorepo-split.rules \
+--debug-rules \
+--stats \
+--svn-ignore \
+--propcheck \
+--empty-dirs \
+--add-metadata \
+--add-metadata-notes \
+--msg-filter 'sed -z -r -f /tmp/conf/svn-msg-filter.sed' \
+/tmp/svn \
+>svn2git.log 2>&1
 ```
 
 `--debug-rules` outputs each matched file for each rule instead of just summary:
