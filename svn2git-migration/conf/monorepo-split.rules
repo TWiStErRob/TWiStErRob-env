@@ -44,6 +44,19 @@ match /Libraries/twister-plugin-gradle-graph/
 end match
 
 
+# TODO figure out how to deal with libs.
+create repository net.twisterrob.inventory.git
+end repository
+
+match /Projects/Inventory/
+	min revision 1127
+	repository net.twisterrob.inventory.git
+	branch master
+	prefix /
+end match
+
+
+# TODO figure out how to deal with libs.
 create repository net.twisterrob.travel.git
 end repository
 

@@ -1,0 +1,74 @@
+# This rules file splits up projects into multiple GIT repositories.
+
+create repository net.twisterrob.inventory.git
+end repository
+
+match /Projects/Inventory/
+	min revision 1127
+	repository net.twisterrob.inventory.git
+	branch master
+	prefix /
+end match
+
+match /Libraries/twister-lib-android/
+	min revision 1127
+	repository net.twisterrob.inventory.git
+	branch master
+	prefix /libs/twister-lib-android/
+end match
+
+match /Libraries/twister-lib-java/
+	min revision 1127
+	repository net.twisterrob.inventory.git
+	branch master
+	prefix /libs/twister-lib-java/
+end match
+
+
+create repository net.twisterrob.travel.git
+end repository
+
+match /Projects/Better London Travel/
+    # > WARN: Branch "master" in repository "net.twisterrob.travel.git" doesn't exist at revision 548 -- did you resume from the wrong revision?
+    # No, the first meaningful commit was 548, which added actual contents.
+    # Before that it was only created as /Projects/Better London Transport/ in 546,
+    # but immediately renamed to /Projects/Better London Travel/ in 547.
+	min revision 548
+	repository net.twisterrob.travel.git
+	branch master
+	prefix /
+end match
+
+match /Libraries/twister-lib-android/
+	min revision 789
+	repository net.twisterrob.travel.git
+	branch master
+	prefix /libs/twister-lib-android/
+end match
+
+match /Libraries/twister-lib-java/
+	min revision 789
+	repository net.twisterrob.travel.git
+	branch master
+	prefix /libs/twister-lib-java/
+end match
+
+match /Libraries/android_google-play-services_lib/
+	min revision 789
+	max revision 1948
+	repository net.twisterrob.travel.git
+	branch master
+	prefix /libs/android_google-play-services_lib/
+end match
+
+match /Libraries/android_support-v7_appcompat/
+	min revision 789
+	max revision 1948
+	repository net.twisterrob.travel.git
+	branch master
+	prefix /libs/android_support-v7_appcompat/
+end match
+
+match /(Documents|Examples|Hacks|Interviews|Libraries|Projects|School|Utilities|Web|Quick Public Transport)/
+	action ignore
+end match
