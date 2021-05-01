@@ -199,3 +199,37 @@ cd workdir/git-co
 git branch -a
 gitk
 ```
+
+## Post-process
+It is possible to run scripts on each commit with `git filter-branch`.
+
+### Example for editing commit messages
+Clean up commit messages in `workdir\git-co\`:
+```bash
+git filter-branch --msg-filter "$(PWD)/../../.git/script.bat"
+```
+(`PWD=%CD%\.git-rewrite\t`, hence so many `../`s.)
+
+Example script to change commit messages (`script.bat`):
+This example removes the first line of commit message based on a regex:
+```bash
+perl -p0 -e "s/^^[^^\n]*\n//"
+```
+This is a standard batch file,
+so `^` (regex's line start anchor or negated character class) needs to be escaped with `^^`.
+
+`-p0` read the whole `stdin` (commit message) as one, so multiline regex is possible.
+
+To execute only for the last commit (to test command / script), add `HEAD^..HEAD` at the end.
+
+_Note: Normally `"%CD%\..\script.bat"` would work just fine, but `git filter-branch` on Windows delegates to 
+`git/mingw64/libexec/git-core/git-filter-branch` running under MinGW Bash.
+This means that running `git` from a Command Prompt will launch Bash, which in turn will launch the Batch file.
+Escaping rules are weird, we can actually use MinGW Bash syntax inside quotes
+(properly escaped for Command Prompt, so `--msg-filter` sees it correctly.
+`%CD%` will be resolved at the time of calling `git`,
+but `$PWD` will be resolved when `git-filter-branch` executes `eval "$filter_msg"`.
+This is why it's not possible to even use `\` in `--msg-filter`._
+
+_Note: use `"source $(PWD)/../../.git/script.sh"` to run a Unix Shell script (even on Windows).
+In that case script.sh could contain: `perl -p0 -e 's/^[^\n]*\n//'` (different escaping rules)_
