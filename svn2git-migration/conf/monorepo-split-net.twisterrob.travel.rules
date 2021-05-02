@@ -1,30 +1,3 @@
-# This rules file splits up projects into multiple GIT repositories.
-
-create repository net.twisterrob.inventory.git
-end repository
-
-match /Projects/Inventory/
-	min revision 1127
-	repository net.twisterrob.inventory.git
-	branch master
-	prefix /
-end match
-
-match /Libraries/twister-lib-android/
-	min revision 1127
-	repository net.twisterrob.inventory.git
-	branch master
-	prefix /libs/twister-lib-android/
-end match
-
-match /Libraries/twister-lib-java/
-	min revision 1127
-	repository net.twisterrob.inventory.git
-	branch master
-	prefix /libs/twister-lib-java/
-end match
-
-
 create repository net.twisterrob.travel.git
 end repository
 
@@ -67,8 +40,4 @@ match /Libraries/android_support-v7_appcompat/
 	repository net.twisterrob.travel.git
 	branch master
 	prefix /libs/android_support-v7_appcompat/
-end match
-
-match /(Documents|Examples|Hacks|Interviews|Libraries|Projects|School|Utilities|Web|Quick Public Transport)/
-	action ignore
 end match

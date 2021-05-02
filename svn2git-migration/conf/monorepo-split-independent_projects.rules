@@ -44,34 +44,6 @@ match /Libraries/twister-plugin-gradle-graph/
 end match
 
 
-# TODO figure out how to deal with libs.
-create repository net.twisterrob.inventory.git
-end repository
-
-match /Projects/Inventory/
-	min revision 1127
-	repository net.twisterrob.inventory.git
-	branch master
-	prefix /
-end match
-
-
-# TODO figure out how to deal with libs.
-create repository net.twisterrob.travel.git
-end repository
-
-match /Projects/Better London Travel/
-    # > WARN: Branch "master" in repository "net.twisterrob.travel.git" doesn't exist at revision 548 -- did you resume from the wrong revision?
-    # No, the first meaningful commit was 548, which added actual contents.
-    # Before that it was only created as /Projects/Better London Transport/ in 546,
-    # but immediately renamed to /Projects/Better London Travel/ in 547.
-	min revision 548
-	repository net.twisterrob.travel.git
-	branch master
-	prefix /
-end match
-
-
 create repository net.twisterrob.cashier.git
 end repository
 

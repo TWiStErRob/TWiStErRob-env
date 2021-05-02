@@ -1,0 +1,23 @@
+create repository net.twisterrob.inventory.git
+end repository
+
+match /Projects/Inventory/
+	min revision 1127
+	repository net.twisterrob.inventory.git
+	branch master
+	prefix /
+end match
+
+match /Libraries/twister-lib-android/
+	min revision 1127
+	repository net.twisterrob.inventory.git
+	branch master
+	prefix /libs/twister-lib-android/
+end match
+
+match /Libraries/twister-lib-java/
+	min revision 1127
+	repository net.twisterrob.inventory.git
+	branch master
+	prefix /libs/twister-lib-java/
+end match
