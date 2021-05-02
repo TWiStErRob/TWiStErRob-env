@@ -55,33 +55,6 @@ match /Projects/Cashier/
 end match
 
 
-create repository net.twisterrob.cinema.git
-end repository
-
-match /Projects/Cinema/
-	min revision 561
-	repository net.twisterrob.cinema.git
-	branch master
-	prefix /
-end match
-
-match /Web/Cineworld Planner/
-	min revision 558
-	# Copied to /Projects/Cinema/AppEngine/ in 618.
-	max revision 619
-	repository net.twisterrob.cinema.git
-	branch master
-	prefix /web/
-end match
-
-match /Web/QuickJSONFormatterLib/
-	min revision 576
-	repository net.twisterrob.cinema.git
-	branch master
-	prefix /libs/QuickJSONFormatterLib/
-end match
-
-
 match /(Documents|Examples|Hacks|Interviews|Libraries|Projects|School|Utilities|Web|Quick Public Transport)/
 	action ignore
 end match
