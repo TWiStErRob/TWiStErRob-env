@@ -1,10 +1,27 @@
 # This rules file splits up projects into multiple GIT repositories.
 
 
+#create repository net.twisterrob.cinema.git
+# In separate monorepo-split-net.twisterrob.cinema.rules, because of its complexity.
+#end repository
+
+
+#create repository net.twisterrob.inventory.git
+# In separate monorepo-split-net.twisterrob.inventory.rules, because of twister-lib-android.
+#end repository
+
+
+#create repository net.twisterrob.travel.git
+# In separate monorepo-split-net.twisterrob.travel.rules, because of twister-lib-android.
+#end repository
+
+
 create repository net.twisterrob.sun.git
 end repository
 
 match /Projects/Sun/
+	# r1105 is the initial import of the Sun app.
+	# r1339 is the first public release on Google Play Store.
 	min revision 1105
 	repository net.twisterrob.sun.git
 	branch master
@@ -16,8 +33,24 @@ create repository net.twisterrob.colorfilters.git
 end repository
 
 match /Projects/Android Color Filters/
+	# r1269 is the initial import of the Android Color Filters app.
+	# r1636 is the first public release on Google Play Store.
+	# r2722 is the last public release on Google Play Store from SVN.
 	min revision 1269
 	repository net.twisterrob.colorfilters.git
+	branch master
+	prefix /
+end match
+
+
+create repository net.twisterrob.cashier.git
+end repository
+
+match /Projects/Cashier/
+	# r2251 is the initial import of the Cashier app.
+	# There were no public releases yet.
+	min revision 2251
+	repository net.twisterrob.cashier.git
 	branch master
 	prefix /
 end match
@@ -34,24 +67,12 @@ match /Libraries/twister-plugin-gradle/
 end match
 
 match /Libraries/twister-plugin-gradle-graph/
-# It was moved to a separate folder in:
-#	min revision 1782
-# but the original content started at:
+	# It was moved to a separate folder in r1782, but the original content started at r1289.
 	min revision 1289
 	repository net.twisterrob.gradle.git
 	branch master
+	# It ended as part of the project, so let's nest it to begin with.
 	prefix graph/
-end match
-
-
-create repository net.twisterrob.cashier.git
-end repository
-
-match /Projects/Cashier/
-	min revision 2251
-	repository net.twisterrob.cashier.git
-	branch master
-	prefix /
 end match
 
 

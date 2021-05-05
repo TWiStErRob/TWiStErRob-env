@@ -2,6 +2,9 @@ create repository net.twisterrob.inventory.git
 end repository
 
 match /Projects/Inventory/
+	# r1127 is the initial import of Inventory.
+	# r1934 is the first public release on Google Play Store.
+	# r3191 is the last public release on Google Play Store from SVN.
 	min revision 1127
 	repository net.twisterrob.inventory.git
 	branch master
@@ -9,15 +12,23 @@ match /Projects/Inventory/
 end match
 
 match /Libraries/twister-lib-android/
-	min revision 1127
+	# r686 is the initial import of twister-lib-android.
+	# It was first used in Inventory in r1127, when it was initially imported.
+	# Before that, it was only used in Better London Travel.
+	min revision 686
 	repository net.twisterrob.inventory.git
 	branch master
+	# svn:externals
 	prefix /libs/twister-lib-android/
 end match
 
 match /Libraries/twister-lib-java/
-	min revision 1127
+	# r685 is the initial import of twister-lib-java.
+	# It was first used in Inventory in r1127, when it was initially imported.
+	# Before that, it was only used in Better London Travel.
+	min revision 685
 	repository net.twisterrob.inventory.git
 	branch master
+	# svn:externals
 	prefix /libs/twister-lib-java/
 end match

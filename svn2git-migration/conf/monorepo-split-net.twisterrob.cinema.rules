@@ -2,6 +2,7 @@ create repository net.twisterrob.cinema.git
 end repository
 
 match /Projects/Cinema/
+	# r561 is the initial import of the AppEngine project with models.
 	min revision 561
 	repository net.twisterrob.cinema.git
 	branch master
@@ -9,17 +10,21 @@ match /Projects/Cinema/
 end match
 
 match /Web/Cineworld Planner/
+	# r558 is the initial import of the original project.
 	min revision 558
-	# Copied to /Projects/Cinema/AppEngine/ in 618.
+	# Copied to /Projects/Cinema/AppEngine/ in r618 and deleted in r619.
 	max revision 619
 	repository net.twisterrob.cinema.git
 	branch master
+	# It ended as part of the project, so let's nest it to begin with.
 	prefix /web/
 end match
 
 match /Web/QuickJSONFormatterLib/
+	# r576 is when this library was added.
 	min revision 576
 	repository net.twisterrob.cinema.git
 	branch master
+	# svn:externals
 	prefix /libs/QuickJSONFormatterLib/
 end match

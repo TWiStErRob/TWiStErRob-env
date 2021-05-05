@@ -2,10 +2,11 @@ create repository net.twisterrob.travel.git
 end repository
 
 match /Projects/Better London Travel/
-    # > WARN: Branch "master" in repository "net.twisterrob.travel.git" doesn't exist at revision 548 -- did you resume from the wrong revision?
-    # No, the first meaningful commit was 548, which added actual contents.
-    # Before that it was only created as /Projects/Better London Transport/ in 546,
-    # but immediately renamed to /Projects/Better London Travel/ in 547.
+	# > WARN: Branch "master" in repository "net.twisterrob.travel.git" doesn't exist at revision 548 -- did you resume from the wrong revision?
+	# No, the first meaningful commit was 548, which added actual contents.
+	# Before that it was only created as /Projects/Better London Transport/ in 546,
+	# but immediately renamed to /Projects/Better London Travel/ in 547.
+	# r2025 is the first public release on Google Play Store.
 	min revision 548
 	repository net.twisterrob.travel.git
 	branch master
@@ -13,31 +14,53 @@ match /Projects/Better London Travel/
 end match
 
 match /Libraries/twister-lib-android/
-	min revision 789
+	# r686 is the initial import of twister-lib-android.
+	# It was first used in BLT in r690.
+	min revision 686
 	repository net.twisterrob.travel.git
 	branch master
+	# svn:externals
 	prefix /libs/twister-lib-android/
 end match
 
 match /Libraries/twister-lib-java/
-	min revision 789
+	# r685 is the initial import of twister-lib-java.
+	# It was first used in BLT in r691.
+	min revision 685
 	repository net.twisterrob.travel.git
 	branch master
+	# svn:externals
 	prefix /libs/twister-lib-java/
 end match
 
 match /Libraries/android_google-play-services_lib/
-	min revision 789
-	max revision 1948
-	repository net.twisterrob.travel.git
-	branch master
-	prefix /libs/android_google-play-services_lib/
+	# r788 imported the library first
+	# r789 used it in Better London Travel as external.
+	# r1948 removed the external dependency.
+	# r2025 is the first (and only at the moment) release of Better London Travel.
+
+	# So, instead of tracking these binary files, it's going to be ignored.
+	action ignore
+
+	#min revision 788
+	#max revision 1948
+	#repository net.twisterrob.travel.git
+	#branch master
+	#prefix /libs/android_google-play-services_lib/
 end match
 
 match /Libraries/android_support-v7_appcompat/
-	min revision 789
-	max revision 1948
-	repository net.twisterrob.travel.git
-	branch master
-	prefix /libs/android_support-v7_appcompat/
+	# r788 imported the library first
+	# r789 used it in Better London Travel as external.
+	# r1948 removed the external dependency.
+	# r2025 is the first (and only at the moment) release of Better London Travel.
+
+	# So, instead of tracking these binary files, it's going to be ignored.
+	action ignore
+
+	#min revision 788
+	#max revision 1948
+	#repository net.twisterrob.travel.git
+	#branch master
+	#prefix /libs/android_support-v7_appcompat/
 end match
