@@ -7,9 +7,9 @@ Run on host in `.`:
 ```bash
 git clone https://github.com/svn-all-fast-export/svn2git.git
 cd svn2git
-docker build -t svn2git . # 2 minutes, ~200 MB download, 641MB space
+docker build -t svn2git . # 2-4 minutes, ~200 MB download, 641MB space
 cd ..
-docker build -t svn2git-work . # 1 minutes, ~30 MB download, 715MB space
+docker build -t svn2git-work . # 1-2 minutes, ~30 MB download, 715MB space
 ```
 
 ## Run bash inside Docker
