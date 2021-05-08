@@ -76,6 +76,7 @@ match /Libraries/twister-plugin-gradle-graph/
 end match
 
 
-match /(Documents|Examples|Hacks|Interviews|Libraries|Projects|School|Utilities|Web|Quick Public Transport)/
+match /
+	# Make svn2git happy by ignoring everything else.
 	action ignore
 end match
