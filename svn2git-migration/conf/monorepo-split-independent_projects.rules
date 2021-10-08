@@ -48,6 +48,8 @@ match /Projects/Sun/
 	# r1339 is the first public release on Google Play Store.
 	min revision 1105
 	repository net.twisterrob.sun.git
+	# Moved to https://github.com/TWiStErRob/net.twisterrob.sun
+	max revision 3302
 	branch master
 	prefix /
 end match
