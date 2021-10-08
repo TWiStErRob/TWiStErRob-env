@@ -5,6 +5,8 @@ match /Projects/Cinema/
 	# r561 is the initial import of the AppEngine project with models.
 	min revision 561
 	repository net.twisterrob.cinema.git
+	# Moved to https://github.com/TWiStErRob/net.twisterrob.cinema
+	max revision 3301
 	branch master
 	prefix /
 end match
@@ -24,6 +26,8 @@ match /Web/QuickJSONFormatterLib/
 	# r576 is when this library was added.
 	min revision 576
 	repository net.twisterrob.cinema.git
+	# Moved to https://github.com/TWiStErRob/net.twisterrob.cinema
+	max revision 3301
 	branch master
 	# svn:externals
 	prefix /libs/QuickJSONFormatterLib/
