@@ -1,0 +1,4 @@
+match /
+	# Make svn2git happy by ignoring everything else.
+	action ignore
+end match

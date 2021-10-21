@@ -1,0 +1,1 @@
+net.twisterrob.healthcheck.rules run.bat net.twisterrob.healthcheck.rules -hc 2645 2656
