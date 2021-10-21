@@ -1,16 +1,12 @@
+# Moved to https://github.com/TWiStErRob/net.twisterrob.healthcheck.
 create repository net.twisterrob.healthcheck.git
 end repository
-
-match /
-	min revision 0
-	max revision 2644
-	action ignore
-end match
 
 match /Web/Tests/
 	# Created in r2645.
 	min revision 2645
 	# Last changed in r2656.
+	# Removed in r3304.
 	max revision 2656
 	repository net.twisterrob.healthcheck.git
 	branch master
