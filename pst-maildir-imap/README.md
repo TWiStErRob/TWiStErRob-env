@@ -32,14 +32,14 @@ PST to Maildir to IMAP
 Note: Windows Explorer / Total Commander can see WSL Home in: `\\wsl$\Ubuntu\home\`
 
 # References
-Maildir format: http://cr.yp.to/proto/maildir.html
-`mbsync` docs: https://isync.sourceforge.io/
-`mbsync` man: https://isync.sourceforge.io/mbsync.html
-Date fix: https://wiki.archlinux.org/title/Isync#Emails_on_remote_server_have_the_wrong_date
-Amazing practical description: https://wiki.archlinux.org/title/Isync
-Get away from Google articles:
- * https://www.jonatkinson.co.uk/posts/syncing-gmail-with-mbsync/
- * https://jakewharton.com/removing-google-as-a-single-point-of-failure-gmail/  
+ * Maildir format: http://cr.yp.to/proto/maildir.html
+ * `mbsync` docs: https://isync.sourceforge.io/
+ * `mbsync` man: https://isync.sourceforge.io/mbsync.html
+ * Date fix: https://wiki.archlinux.org/title/Isync#Emails_on_remote_server_have_the_wrong_date
+ * Amazing practical description: https://wiki.archlinux.org/title/Isync
+ * Get away from Google articles:
+   * https://www.jonatkinson.co.uk/posts/syncing-gmail-with-mbsync/
+   * https://jakewharton.com/removing-google-as-a-single-point-of-failure-gmail/  
    https://github.com/JakeWharton/docker-mbsync
 
 # Process
@@ -50,9 +50,9 @@ Get away from Google articles:
  1. Run `script.sh` on PST file to a folder named `mail` (can be changed in `mbsync.rc`)  
     This runs `readpst` and creates a big `.mbox` file from a PST and splits it up using `mbox2maildir.pl`.
  1. Fix the timestamps with
-   ```bash
-   find mail -type f -exec python3 fix_maildir_mail_mtime.py "{}" \;
-   ```
+    ```bash
+    find mail -type f -exec python3 fix_maildir_mail_mtime.py "{}" \;
+    ```
  1. Set up mbsync.rc
  1. `export MBSYNC_PASSWORD=...`
  1. Run `mbsync --config mbsync.rc --push gmail-channel`
