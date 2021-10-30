@@ -1,0 +1,58 @@
+#!mbsync --config mbsync.rc [--push|--pull|--full] gmail-channel
+# Docs https://isync.sourceforge.io/mbsync.html (outdated or newer, see `man mbsync` instead)
+# Example https://gist.github.com/ihilt/0b488d7460f8e7d9e611eb7ab93e3eae
+
+# IMAP4 Account
+IMAPAccount gmail-account
+# https://support.google.com/mail/answer/7126229?hl=en-GB#zippy=%2Cstep-change-smtp-other-settings-in-your-email-client
+Host imap.gmail.com
+# Use SSL
+SSLType IMAPS
+Port 993
+# Authentication details, use Cmd suffix to execute commands so hard-coding is not necessary.
+#UserCmd "printenv MBSYNC_USERNAME" not supported in the version I used.
+User info@twisterrob.net
+#Pass <not hardcoded>
+PassCmd "printenv MBSYNC_PASSWORD"
+#AuthMechs LOGIN
+# GMail may hit rate limiting.
+PipelineDepth 50
+# Increase it, because on slow networks up/downloading a 25MB email might time out in default 20 seconds.
+Timeout 300
+
+# Source
+IMAPStore gmail-remote
+Account gmail-account
+
+# Target
+MaildirStore gmail-local
+SubFolders Verbatim
+Path info@twisterrob.net/
+Inbox info@twisterrob.net/Inbox
+
+# Sync rules
+Channel gmail-channel
+# Far
+Master :gmail-remote:
+# Near
+Slave :gmail-local:
+# Everything except special GMail folders:
+# [Gmail]/All Mail
+# [Gmail]/Drafts
+# [Gmail]/Important
+# [Gmail]/Sent Mail
+# [Gmail]/Spam
+# [Gmail]/Starred
+# [Gmail]/Trash
+Patterns * ![Gmail]/*
+Create Slave
+Remove Slave
+# For Expunge Master (GMail IMAP), set Auto-Expunge off and Move the message to the Trash
+# See https://mail.google.com/mail/u/0/#settings/fwdandpop
+Expunge Slave
+# https://wiki.archlinux.org/title/Isync#Emails_on_remote_server_have_the_wrong_date
+CopyArrivalDate yes
+# Save state in MaildirStore's Path/.mbsyncstate
+SyncState *
+# Use --pull or --push or --full on command line depending on what you're looking to do.
+Sync None
