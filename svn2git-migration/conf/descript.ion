@@ -1,1 +1,1 @@
-net.twisterrob.healthcheck.rules run.bat net.twisterrob.healthcheck.rules -hc 2645 2656
+net.twisterrob.healthcheck.rules run.bat monorepo-split-net.twisterrob.healthcheck -hc 2645 2656

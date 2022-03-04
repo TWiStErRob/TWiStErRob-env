@@ -2,7 +2,7 @@
 
 
 #create repository net.twisterrob.cinema.git
-# In separate monorepo-split-net.twisterrob.cinema.rules, because of its complexity.
+# In separate net.twisterrob.cinema.rules, because of its complexity.
 #end repository
 
 
