@@ -34,7 +34,4 @@ match /Web/QuickJSONFormatterLib/
 end match
 
 
-match /
-	# Make svn2git happy by ignoring everything else.
-	action ignore
-end match
+include ignore.rules

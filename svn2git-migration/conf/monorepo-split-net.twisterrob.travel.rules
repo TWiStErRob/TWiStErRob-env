@@ -66,7 +66,4 @@ match /Libraries/android_support-v7_appcompat/
 end match
 
 
-match /
-	# Make svn2git happy by ignoring everything else.
-	action ignore
-end match
+include ignore.rules
