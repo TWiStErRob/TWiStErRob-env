@@ -82,28 +82,4 @@ match /Projects/Cashier/
 end match
 
 
-create repository net.twisterrob.gradle.git
-end repository
-
-match /Libraries/twister-plugin-gradle/
-	min revision 1289
-	# Moved in https://github.com/TWiStErRob/net.twisterrob.gradle/issues/95
-	max revision 3303
-	repository net.twisterrob.gradle.git
-	branch master
-	prefix plugin/
-end match
-
-match /Libraries/twister-plugin-gradle-graph/
-	# It was moved to a separate folder in r1782, but the original content started at r1289.
-	min revision 1289
-	# Moved in https://github.com/TWiStErRob/net.twisterrob.gradle/issues/95
-	max revision 3303
-	repository net.twisterrob.gradle.git
-	branch master
-	# It ended as part of the project, so let's nest it to begin with.
-	prefix graph/
-end match
-
-
 include ignore.rules
