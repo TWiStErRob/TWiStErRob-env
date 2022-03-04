@@ -1,0 +1,15 @@
+create repository net.twisterrob.colorfilters.git
+end repository
+
+match /Projects/Android Color Filters/
+	# r1269 is the initial import of the Android Color Filters app.
+	# r1636 is the first public release on Google Play Store.
+	# r2722 is the last public release on Google Play Store from SVN.
+	min revision 1269
+	repository net.twisterrob.colorfilters.git
+	branch master
+	prefix /
+end match
+
+
+include ignore.rules
