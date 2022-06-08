@@ -1,0 +1,25 @@
+-Xms128M
+-Xmx6G
+-Didea.debug.mode=true
+-XX:+UseG1GC
+-XX:MinHeapFreeRatio=10
+-XX:MaxHeapFreeRatio=20
+-XX:SoftRefLRUPolicyMSPerMB=50
+-Dineffective="Below things are disabled with -D"
+-D-XX:ReservedCodeCacheSize=256m
+-D-XX:MaxPermSize="removed in Java 8, there's no PermGen"
+-D-XX:+UseParNewGC
+-D-XX:+UseSerialGC
+-D-XX:+CMSConcurrentMTEnabled
+-D-XX:+UseCMSCompactAtFullCollection
+-D-XX:+UseConcMarkSweepGC
+-D-ea
+-Dsun.awt.keepWorkingSetOnMinimize=true
+-Dsun.io.useCanonCaches=false
+-Djava.net.preferIPv4Stack=true
+-D-XX:+HeapDumpOnOutOfMemoryError
+-D-XX:-OmitStackTraceInFastThrow
+-D-XX:MaxJavaStackTraceDepth=-1
+-D-agentlib:yjpagent64=probe_disable=*,disablealloc,disabletracing,onlylocal,disableexceptiontelemetry,delay=10000,sessionname=IntelliJIdea2017.1
+-D-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5001
+-D-javaagent:p:\tools\misc\java-leaks\file-leak-detector-1.13-jar-with-dependencies.jar=http=19999
