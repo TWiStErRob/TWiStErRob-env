@@ -209,6 +209,7 @@ val x: Map<LoginName, List<ContributionHistory>> = process(data)
 
 fun process(map: Map<String, ContributionsResponse>): Map<LoginName, List<ContributionHistory>> =
 	map
+		.mapValues { (_, contributions) -> contributions.trim() }
 		.flatMap { (repo, contributions) ->
 			contributions.map { contrib ->
 				ContributionHistoryTemp(
@@ -221,6 +222,13 @@ fun process(map: Map<String, ContributionsResponse>): Map<LoginName, List<Contri
 		.groupBy { it.login }
 		.mergeAuthors()
 		.mapValues { (_, value) -> value.collapseRepositories() }
+
+fun ContributionsResponse.trim(): ContributionsResponse =
+	this.mapTo(ContributionsResponse()) { activity ->
+		activity.copy(
+			weeks = activity.weeks.filter { it.c > 0 },
+		)
+	}
 
 fun Map<LoginName, List<ContributionHistoryTemp>>.mergeAuthors(): Map<LoginName, List<ContributionHistoryTemp>> {
 	val merged = mutableMapOf<LoginName, List<ContributionHistoryTemp>>()
