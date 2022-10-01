@@ -188,11 +188,6 @@ fun cache(org: String, repo: String): ContributionsResponse {
 	return serializer.readValue(cache, ContributionsResponse::class.java)
 }
 
-val data = mapOf(
-	"net.twisterrob.gradle" to cache("TWiStErRob", "net.twisterrob.gradle"),
-	"net.twisterrob.cinema" to cache("TWiStErRob", "net.twisterrob.cinema"),
-)
-
 data class ContributionHistoryTemp(
 	val login: LoginName,
 	val repo: RepositoryName,
@@ -204,8 +199,6 @@ data class ContributionHistory(
 	val repo: RepositoryName,
 	val contribs: List<WeeklyContributions>,
 )
-
-val x: Map<LoginName, List<ContributionHistory>> = process(data)
 
 fun process(map: Map<String, ContributionsResponse>): Map<LoginName, List<ContributionHistory>> =
 	map
@@ -277,4 +270,11 @@ fun unique(name: LoginName): LoginName =
 		else -> name
 	}
 
-println(x)
+val data = mapOf(
+	"net.twisterrob.gradle" to cache("TWiStErRob", "net.twisterrob.gradle"),
+	"net.twisterrob.cinema" to cache("TWiStErRob", "net.twisterrob.cinema"),
+)
+
+val result: Map<LoginName, List<ContributionHistory>> = process(data)
+
+println(result)
