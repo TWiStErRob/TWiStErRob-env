@@ -12,20 +12,14 @@
 @file:DependsOn("com.fasterxml.jackson.core:jackson-databind:2.13.4")
 @file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.0")
-@file:DependsOn("org.threeten:threeten-extra:1.7.1")
 
 import Calculate_main.ContributionsResponse.ContributorActivity
 import Calculate_main.ContributionsResponse.ContributorActivity.WeeklyContributions
 import Calculate_main.LoginName
 import Calculate_main.RepositoryName
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.commons.codec.binary.Base64
-import org.threeten.extra.YearWeek
 import java.io.File
 import java.net.URI
 
@@ -34,19 +28,6 @@ typealias LoginName = String
 
 fun base64Encode(str: String): String =
 	Base64().encode(str.toByteArray()).decodeToString()
-
-class GitHubWeekDeserializer : StdDeserializer<YearWeek?>(YearWeek::class.java) {
-
-	// JDK is not recognized in IDEA, so suppress compile errors, IDs from DefaultErrorMessages in Kotlin.
-	@Suppress("UNRESOLVED_REFERENCE", "MISSING_DEPENDENCY_SUPERCLASS", "MISSING_DEPENDENCY_CLASS")
-	override fun deserialize(parser: JsonParser, context: DeserializationContext): YearWeek {
-		val epochSecond = parser.readValueAs(Long::class.java)
-		val instant = java.time.Instant.ofEpochSecond(epochSecond)
-		// GitHub "epoch" is UTC and weeks start on Sunday, so add one day to get Monday.
-		val offsetDate = instant.atOffset(java.time.ZoneOffset.UTC).plusDays(1)
-		return YearWeek.from(offsetDate)
-	}
-}
 
 /**
  * https://docs.github.com/en/rest/metrics/statistics#get-all-contributor-commit-activity
@@ -61,8 +42,7 @@ class ContributionsResponse : ArrayList<ContributorActivity>() {
 	) {
 
 		data class WeeklyContributions(
-			@JsonDeserialize(using = GitHubWeekDeserializer::class)
-			val w: YearWeek,
+			val w: Long,
 			val a: Int,
 			val d: Int,
 			val c: Int,
