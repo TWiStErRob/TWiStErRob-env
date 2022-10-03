@@ -8,7 +8,6 @@
 // Note: normally these dependencies are listed without a -jvm suffix,
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
-@file:DependsOn("commons-codec:commons-codec:1.15")
 @file:DependsOn("com.fasterxml.jackson.core:jackson-databind:2.13.4")
 @file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.0")
@@ -19,15 +18,11 @@ import Calculate_main.LoginName
 import Calculate_main.RepositoryName
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.apache.commons.codec.binary.Base64
 import java.io.File
 import java.net.URI
 
 typealias RepositoryName = String
 typealias LoginName = String
-
-fun base64Encode(str: String): String =
-	Base64().encode(str.toByteArray()).decodeToString()
 
 /**
  * https://docs.github.com/en/rest/metrics/statistics#get-all-contributor-commit-activity
