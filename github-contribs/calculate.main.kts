@@ -180,7 +180,7 @@ data class ContributionHistory(
 	val contribs: List<WeeklyContributions>,
 )
 
-fun process(map: Map<String, ContributionsResponse>): Map<LoginName, List<ContributionHistory>> =
+fun process(map: Map<String, ContributionsResponse>): List<ContributionHistory> =
 	map
 		.mapValues { (_, contributions) -> contributions.trim() }
 		.flatMap { (repo, contributions) ->
@@ -195,6 +195,8 @@ fun process(map: Map<String, ContributionsResponse>): Map<LoginName, List<Contri
 		.groupBy { it.login }
 		.mergeAuthors()
 		.mapValues { (_, value) -> value.collapseRepositories() }
+		.values
+		.flatten()
 
 fun ContributionsResponse.trim(): ContributionsResponse =
 	this.mapTo(ContributionsResponse()) { activity ->
@@ -255,6 +257,12 @@ val data = mapOf(
 	"net.twisterrob.cinema" to cache("TWiStErRob", "net.twisterrob.cinema"),
 )
 
-val result: Map<LoginName, List<ContributionHistory>> = process(data)
+val result: List<ContributionHistory> = process(data)
+result.write(File("summary.json"))
 
-println(result)
+fun Any.write(file: File) {
+	val serializer = jacksonObjectMapper().apply {
+//		configure(SerializationFeature.INDENT_OUTPUT, true)
+	}
+	serializer.writeValue(file, this)
+}
