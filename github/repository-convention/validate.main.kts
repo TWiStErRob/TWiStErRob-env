@@ -62,24 +62,24 @@ suspend fun main(vararg args: String) {
 		exitProcess(1)
 	}
 	val org = args.size == 1 && '/' !in args[0]
-	val gitHub = GitHub()
-	val repos =
-		if (org) {
-			gitHub
-				.repositories(user = args[0])
-				.map {
-					gitHub.repository(org = it.owner.login, repo = it.name)
-				}
-		} else {
-			args
-				.map { arg ->
-					arg.split("/")
-						.also { check(it.size == 2) { "Invalid <org>/<repo> pair: $arg" } }
-				}
-				.map { (org, repo) ->
-					gitHub.repository(org = org, repo = repo)
-				}
-		}
+	val repos = GitHub().use { gitHub ->
+			if (org) {
+				gitHub
+					.repositories(user = args[0])
+					.map {
+						gitHub.repository(org = it.owner.login, repo = it.name)
+					}
+			} else {
+				args
+					.map { arg ->
+						arg.split("/")
+							.also { check(it.size == 2) { "Invalid <org>/<repo> pair: $arg" } }
+					}
+					.map { (org, repo) ->
+						gitHub.repository(org = org, repo = repo)
+					}
+			}
+	}
 	val table = Table.create(
 		TextColumn.create("Name", repos.map { it.name }),
 		StringColumn.create("Type", repos.map { it.type.name }),
