@@ -10,6 +10,7 @@
 @file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.1.2")
 @file:DependsOn("tech.tablesaw:tablesaw-core:0.43.1")
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -22,13 +23,20 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.request.url
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import io.ktor.serialization.jackson.jackson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
+import org.intellij.lang.annotations.Language
 import tech.tablesaw.api.BooleanColumn
 import tech.tablesaw.api.StringColumn
 import tech.tablesaw.api.Table
@@ -148,6 +156,26 @@ class GitHub : Closeable {
 
 	override fun close() {
 		client.close()
+	}
+
+	suspend fun graph(@Language("graphql") query: String, variables: Map<String, Any?>): HttpResponse {
+		val response = client.post {
+			url("https://api.github.com/graphql")
+			contentType(ContentType.Application.Json)
+			class GraphQLRequest(
+				@JsonProperty("query")
+				val query: String,
+				@JsonProperty("variables")
+				val variables: Map<String, Any?>?,
+			)
+			setBody(
+				GraphQLRequest(
+					query = query,
+					variables = variables.takeIf { it.isNotEmpty() }
+				)
+			)
+		}
+		return response
 	}
 }
 
