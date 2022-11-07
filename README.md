@@ -9,3 +9,4 @@ I have a complex environment setup on Windows, this repository shall contain thi
    * [merged-branches](git/merged-branches) Find squashed branches from `git log`.
  * [GitHub](github)
    * [repository-convention](github/repository-convention) Self-controlled defaults for GitHub user/orgs.
+   * [manage-draft-issues](github/project-manage-draft-issues) Create/update draft issues in a GitHub project.
