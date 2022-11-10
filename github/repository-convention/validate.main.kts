@@ -43,6 +43,7 @@ import tech.tablesaw.api.Table
 import tech.tablesaw.api.TextColumn
 import tech.tablesaw.sorting.Sort
 import java.io.Closeable
+import java.net.URI
 import kotlin.system.exitProcess
 
 @Suppress("SpreadOperator")
@@ -179,6 +180,11 @@ class GitHub : Closeable {
 	}
 }
 
+suspend fun GitHub.tree(owner: String, repo: String, ref: String): TreeResponse {
+	val response = client.get("https://api.github.com/repos/${owner}/${repo}/git/trees/${ref}?recursive=true")
+	return response.body()
+}
+
 /**
  * https://docs.github.com/en/rest/repos/repos#get-a-repository
  */
@@ -226,6 +232,22 @@ fun parseLinks(link: String?): Map<String, String> {
 			val rel = wrappedRel.trim().substringAfter("rel=\"").substringBefore("\"")
 			rel to url
 		}
+}
+
+data class TreeResponse(
+	val sha: String,
+	val url: URI,
+	val tree: List<TreeEntry>,
+	val truncated: Boolean,
+) {
+	data class TreeEntry(
+		val path: String,
+		val mode: String,
+		val type: String,
+		val sha: String,
+		val size: Int?,
+		val url: URI,
+	)
 }
 
 /**
