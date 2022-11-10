@@ -54,24 +54,7 @@ runBlocking(Dispatchers.Default) { main(*args) }
 
 suspend fun main(vararg args: String) {
 	if (args.isEmpty()) {
-		println(
-			"""
-			Usage:
-			 * kotlinc -script validate.main.kts <org>
-			 * kotlinc -script validate.main.kts <org1>/<repo1> <org2>/<repo2>
-			
-			Parameters:
-			 * `<org>`: the name of the user who owns the repositories to process (organizations not supported yet).
-			 * `<org>/<repo>`: list of repository coordinates to process explicitly.
-			
-			Environment variables:
-			 * GITHUB_USER: login user name of the user who's running the script
-			 * GITHUB_TOKEN: private access token (`ghp_...`) of the user who's running the script
-			
-			GitHub Enterprise is not supported, need to change code to make it work.
-		""".trimIndent()
-		)
-		exitProcess(1)
+		usage()
 	}
 	val org = args.size == 1 && '/' !in args[0]
 	val repos = GitHub().use { gitHub ->
@@ -318,4 +301,25 @@ data class RepositoriesGet(
 	data class Owner(
 		val login: String,
 	)
+}
+
+fun usage(): Nothing {
+	println(
+		"""
+			Usage:
+			 * kotlinc -script validate.main.kts <org>
+			 * kotlinc -script validate.main.kts <org1>/<repo1> <org2>/<repo2>
+			
+			Parameters:
+			 * `<org>`: the name of the user who owns the repositories to process (organizations not supported yet).
+			 * `<org>/<repo>`: list of repository coordinates to process explicitly.
+			
+			Environment variables:
+			 * GITHUB_USER: login user name of the user who's running the script
+			 * GITHUB_TOKEN: private access token (`ghp_...`) of the user who's running the script
+			
+			GitHub Enterprise is not supported, need to change code to make it work.
+		""".trimIndent()
+	)
+	exitProcess(1)
 }
