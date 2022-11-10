@@ -1,0 +1,258 @@
+query {
+    user(login: "TWiStErRob") {
+        repositories(first: 1, isFork: false, affiliations: OWNER) {
+            __typename
+            nodes {
+                __typename
+
+                homepageUrl # url
+                ...generalFields
+                ...accessFields
+                ...codeAndAutomationFields
+                ...securityFields
+                ...integrationsFields
+
+                #hasPagesEnabled # has_pages
+                #forkingAllowed # allow_forking
+                #isFork # fork
+                isUserConfigurationRepository # GQL
+
+                # Pieces
+                isBlankIssuesEnabled # GQL
+                isSecurityPolicyEnabled # GQL
+                # Branching
+                # Issues
+                #labels(first: 10) { nodes { name, description, color } }
+            }
+        }
+    }
+}
+# General > ...
+fragment generalFields on Repository {
+    ...generalGeneralFields
+    ...generalFeaturesFields
+    ...generalPullRequestsFields
+    ...generalArchivesFields
+    ...generalPushesFields
+    ...generalDangerZoneFields
+}
+# General > General
+fragment generalGeneralFields on Repository {
+    #- Repository name
+    name # name
+    #- Template repository
+    isTemplate
+    #- Require contributors to sign off on web-based commits
+    webCommitSignoffRequired
+    #- Social Preview
+    usesCustomOpenGraphImage
+    openGraphImageUrl
+}
+# General > Features
+fragment generalFeaturesFields on Repository {
+    #- Wikis
+    hasWikiEnabled #has_wiki
+    #- Issues
+    hasIssuesEnabled # has_issues
+    #- Sponsorships
+    # MISSING
+    #- Preserve this repository
+    # MISSING
+    #- Discussions
+    hasDiscussionsEnabled # GQL-only
+    #- Projects
+    hasProjectsEnabled # has_projects
+}
+# General > Pull Requests
+fragment generalPullRequestsFields on Repository {
+    #- Allow merge commits
+    mergeCommitAllowed # allow_merge_commit
+    mergeCommitMessage
+    mergeCommitTitle
+    #- Allow squash merging
+    squashMergeAllowed # allow_squash_merge
+    squashMergeCommitTitle
+    squashMergeCommitMessage
+    #- Allow rebase merging
+    rebaseMergeAllowed # allow_rebase_merge
+    #- Always suggest updating pull request branches
+    allowUpdateBranch # allow_update_branch
+    #- Allow auto-merge
+    autoMergeAllowed # allow_auto_merge
+    #- Automatically delete head branches
+    deleteBranchOnMerge # delete_branch_on_merge
+}
+# General > Archives
+fragment generalArchivesFields on Repository {
+    __typename # placeholder
+    #-Include Git LFS objects in archives
+    # MISSING
+}
+# General > Pushes
+fragment generalPushesFields on Repository {
+    __typename # placeholder
+    #- Limit how many branches and tags can be updated in a single push
+    # MISSING
+}
+# General > Danger Zone
+fragment generalDangerZoneFields on Repository {
+    #- Change repository visibility
+    visibility
+    isPrivate # private
+    #- Transfer ownership
+    owner {
+        login
+    }
+    #- Archive this repository
+    isArchived # archived
+    #- Delete this repository
+    # N/A
+}
+
+# Access > ...
+fragment accessFields on Repository {
+    ...accessCollaboratorsFields
+    ...accessModerationInteractionLimitFields
+    ...accessModerationCodeReviewLimitFields
+}
+# Access > Collaborators > ...
+fragment accessCollaboratorsFields on Repository {
+    visibility
+    collaborators(affiliation: DIRECT) {
+        edges {
+            node {
+                login
+            }
+            permission
+        }
+    }
+}
+# Access > Moderation options > Interaction limits > Temporary interaction limits
+fragment accessModerationInteractionLimitFields on Repository {
+    interactionAbility {
+        expiresAt
+        limit
+        origin
+    }
+}
+# Access > Moderation options > Code review limits > Code review limits
+fragment accessModerationCodeReviewLimitFields on Repository {
+    __typename # placeholder
+    # Limit to users explicitly granted read or higher access
+    # MISSING
+}
+
+# Code and automation > ...
+fragment codeAndAutomationFields on Repository {
+    ...codeAndAutomationBranchesFields
+    ...codeAndAutomationTagsFields
+# TODO ...codeAndAutomationActionsFields
+# TODO ...codeAndAutomationWebhooksFields
+# TODO ...codeAndAutomationEnvironmentsFields
+# TODO ...codeAndAutomationPagesFields
+}
+# Code and automation > Branches
+fragment codeAndAutomationBranchesFields on Repository {
+    # Default branch
+    defaultBranchRef { name } # default_branch
+    # Branch protection rules
+    branchProtectionRules(first: 100) {
+        totalCount
+        nodes {
+            ...codeAndAutomationBranchProtectionRules
+        }
+    }
+}
+# Branch protection rule
+fragment codeAndAutomationBranchProtectionRules on BranchProtectionRule {
+    # Branch name pattern
+    pattern
+    # Applies to ... branches
+    matchingRefs(first: 100) {
+        totalCount
+        nodes {
+            name
+        }
+    }
+    ...codeAndAutomationBranchProtectionRulesProtection
+    ...codeAndAutomationBranchProtectionRulesAdmin
+}
+# Protect matching branches
+fragment codeAndAutomationBranchProtectionRulesProtection on BranchProtectionRule {
+    # Require a pull request before merging
+    # Require approvals
+    requiresApprovingReviews
+    requiredApprovingReviewCount
+    # Dismiss stale pull request approvals when new commits are pushed
+    dismissesStaleReviews
+    # Require review from Code Owners
+    requiresCodeOwnerReviews
+    # Require approval from someone other than the last pusher
+    requireLastPushApproval
+
+    # Require status checks to pass before merging
+    requiresStatusChecks
+    # Require branches to be up to date before merging
+    requiresStrictStatusChecks
+    # Status checks that are required.
+    requiredStatusChecks {
+        context
+        app {
+            id
+            name
+        }
+    }
+    # Require conversation resolution before merging
+    requiresConversationResolution
+    # Require signed commits
+    requiresCommitSignatures
+    # Require linear history
+    requiresLinearHistory
+    # Require deployments to succeed before merging
+    # MISSING flag
+    # MISSING list of deployments
+    # Lock branch
+    lockBranch
+    # Do not allow bypassing the above settings
+    isAdminEnforced # guess
+}
+# Rules applied to everyone including administrators
+fragment codeAndAutomationBranchProtectionRulesAdmin on BranchProtectionRule {
+    # Allow force pushes
+    allowsForcePushes
+    # Specify who can force push
+    bypassForcePushAllowances(first: 100) {
+        totalCount
+        nodes {
+            # People, teams, or apps who can force push
+            actor {
+                __typename
+                ... on App { id, slug }
+                ... on Team { id, slug }
+                ... on User { id, slug: login }
+            }
+        }
+    }
+    # Allow deletions
+    allowsDeletions
+}
+# Code and automation > Tags > Protected tags
+fragment codeAndAutomationTagsFields on Repository {
+    __typename # placeholder
+    # TODO
+}
+
+# Security > ...
+fragment securityFields on Repository {
+    __typename # placeholder
+    # Code security and analysis
+    # TODO MISSING?
+    # TODO ...securityDeployKeys
+    # TODO ...securitySecrets
+}
+
+# Integrations > ...
+fragment integrationsFields on Repository {
+    __typename # placeholder
+    # TODO
+}

@@ -12,6 +12,8 @@
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.Auth
@@ -43,6 +45,7 @@ import tech.tablesaw.api.Table
 import tech.tablesaw.api.TextColumn
 import tech.tablesaw.sorting.Sort
 import java.io.Closeable
+import java.io.File
 import java.net.URI
 import kotlin.system.exitProcess
 
@@ -185,6 +188,15 @@ suspend fun GitHub.tree(owner: String, repo: String, ref: String): TreeResponse 
 	return response.body()
 }
 
+suspend fun GitHub.repositoriesDetails(): String {
+	val response = graph(
+		query = File("repositoriesWithDetails.graphql").readText(),
+		variables = mapOf(
+		),
+	)
+	return response.bodyAsText().also { it.checkGraphQLError() }
+}
+
 /**
  * https://docs.github.com/en/rest/repos/repos#get-a-repository
  */
@@ -232,6 +244,33 @@ fun parseLinks(link: String?): Map<String, String> {
 			val rel = wrappedRel.trim().substringAfter("rel=\"").substringBefore("\"")
 			rel to url
 		}
+}
+
+fun String.checkGraphQLError() {
+	val jackson = jacksonObjectMapper().apply {
+		configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+	}
+	val response: ErrorResponse = jackson.readValue(this)
+	if (response.errors != null) {
+		fun ErrorResponse.Error.asString(): String =
+			run { "${type ?: "UNKNOWN"}@${locations?.joinToString { "${it.line}:${it.column}" }} ${message}" }
+		error("GraphQL error:\n${response.errors.joinToString("\n") { it.asString() }}")
+	}
+}
+
+data class ErrorResponse(
+	val errors: List<Error>?,
+) {
+	data class Error(
+		val message: String,
+		val type: String?,
+		val locations: List<Location>?,
+	) {
+		data class Location(
+			val line: Int,
+			val column: Int,
+		)
+	}
 }
 
 data class TreeResponse(

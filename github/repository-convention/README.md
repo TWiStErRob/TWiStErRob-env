@@ -4,4 +4,5 @@ Having many repos means that when there's a new setting the adoption is slow, an
 
 ## Development
 
-This is a Kotlin Script. See [DEVELOPMENT.md](../../docs/DEVELOPMENT.md) for more information.
+This is a Kotlin Script + GitHub GraphQL with `public_repo`, `admin:org`, `read:user` and `read:discussion` scopes.
+See [DEVELOPMENT.md](../../docs/DEVELOPMENT.md) for more information.
