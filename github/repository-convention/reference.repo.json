@@ -1,0 +1,54 @@
+{
+	"__typename": "Repository",
+	"homepageUrl": "https://play.google.com/store/apps/details?id=net.twisterrob.inventory",
+	"name": "net.twisterrob.inventory",
+	"isTemplate": false,
+	"webCommitSignoffRequired": false,
+	"usesCustomOpenGraphImage": false,
+	"openGraphImageUrl": "https://opengraph.githubassets.com/c88498a5dd4eff6f681b47a537eb601cbf6d2738c49a4627fc3d99be4c72b70a/TWiStErRob/net.twisterrob.inventory",
+	"hasWikiEnabled": false,
+	"hasIssuesEnabled": true,
+	"hasDiscussionsEnabled": true,
+	"hasProjectsEnabled": false,
+	"mergeCommitAllowed": true,
+	"mergeCommitMessage": "PR_TITLE",
+	"mergeCommitTitle": "MERGE_MESSAGE",
+	"squashMergeAllowed": true,
+	"squashMergeCommitTitle": "COMMIT_OR_PR_TITLE",
+	"squashMergeCommitMessage": "COMMIT_MESSAGES",
+	"rebaseMergeAllowed": true,
+	"allowUpdateBranch": false,
+	"autoMergeAllowed": true,
+	"deleteBranchOnMerge": true,
+	"visibility": "PUBLIC",
+	"isPrivate": false,
+	"owner": {
+		"login": "TWiStErRob"
+	},
+	"isArchived": false,
+	"collaborators": {
+		"edges": [
+			{
+				"node": {
+					"login": "TWiStErRob"
+				},
+				"permission": "ADMIN"
+			}
+		]
+	},
+	"interactionAbility": {
+		"expiresAt": null,
+		"limit": "NO_LIMIT",
+		"origin": "REPOSITORY"
+	},
+	"defaultBranchRef": {
+		"name": "master"
+	},
+	"branchProtectionRules": {
+		"totalCount": 0,
+		"nodes": []
+	},
+	"isUserConfigurationRepository": false,
+	"isBlankIssuesEnabled": true,
+	"isSecurityPolicyEnabled": false
+}

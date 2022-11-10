@@ -2,6 +2,8 @@
 // Note: normally these dependencies are listed without a -jvm suffix,
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
+@file:DependsOn("javax.json:javax.json-api:1.1.2")
+@file:DependsOn("org.glassfish:javax.json:1.1.2")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.0")
 @file:DependsOn("io.ktor:ktor-client-java-jvm:2.1.2")
 @file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:2.1.2")
@@ -38,7 +40,13 @@ import kotlinx.coroutines.runBlocking
 import org.intellij.lang.annotations.Language
 import java.io.Closeable
 import java.io.File
+import java.io.StringReader
+import java.io.StringWriter
+import java.io.Writer
 import java.net.URI
+import javax.json.Json
+import javax.json.JsonValue
+import javax.json.stream.JsonGenerator
 import kotlin.system.exitProcess
 
 @Suppress("SpreadOperator")
@@ -48,9 +56,34 @@ suspend fun main(vararg args: String) {
 	if (args.isEmpty()) {
 		usage()
 	}
-	val repos = GitHub().use { gitHub ->
-		gitHub.repositoriesDetails()
+	GitHub().use { gitHub ->
+		val response = Json.createReader(StringReader(gitHub.repositoriesDetails())).use { it.readValue() }.asJsonObject()
+		val repos = response.getValue("/data/user/repositories/nodes").asJsonArray()
+		val reference = Json.createReader(File("reference.repo.json").reader()).use { it.readValue().asJsonObject() }
+		repos.forEach { repoJson ->
+			val repo = repoJson.asJsonObject()
+			val diff = Json.createDiff(repo, reference).toJsonArray()
+			val mergeDiff = Json.createMergeDiff(repo, reference).toJsonValue().asJsonObject()
+			println(diff.format())
+			println(mergeDiff.format())
+		}
 	}
+}
+
+fun JsonValue.format(): String =
+	StringWriter()
+		.apply { use { it.prettyPrint(this@format) } }
+		.toString()
+
+fun Writer.prettyPrint(value: JsonValue) {
+	Json
+		.createWriterFactory(
+			mapOf(
+				JsonGenerator.PRETTY_PRINTING to true
+			)
+		)
+		.createWriter(this)
+		.use { it.write(value) }
 }
 
 class GitHub : Closeable {
