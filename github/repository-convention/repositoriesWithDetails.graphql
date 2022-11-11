@@ -22,7 +22,7 @@ query {
                 isSecurityPolicyEnabled # GQL
                 # Branching
                 # Issues
-                #labels(first: 10) { nodes { name, description, color } }
+                #labels { nodes { name, description, color } }
             }
         }
     }
@@ -35,7 +35,7 @@ fragment aboutFields on Repository {
     # Website
     homepageUrl # url
     # Topics
-    repositoryTopics(first: 10) { nodes { topic { name } } }
+    repositoryTopics(first: 100) { nodes { topic { name } } }
     # Include in the home page (Releases, Packages, Environments)
     # MISSING
 }
@@ -98,7 +98,7 @@ fragment generalPullRequestsFields on Repository {
 # General > Archives
 fragment generalArchivesFields on Repository {
     __typename # placeholder
-    #-Include Git LFS objects in archives
+    #- Include Git LFS objects in archives
     # MISSING
 }
 # General > Pushes
@@ -151,7 +151,7 @@ fragment accessModerationInteractionLimitFields on Repository {
 # Access > Moderation options > Code review limits > Code review limits
 fragment accessModerationCodeReviewLimitFields on Repository {
     __typename # placeholder
-    # Limit to users explicitly granted read or higher access
+    #- Limit to users explicitly granted read or higher access
     # MISSING
 }
 
@@ -159,17 +159,18 @@ fragment accessModerationCodeReviewLimitFields on Repository {
 fragment codeAndAutomationFields on Repository {
     ...codeAndAutomationBranchesFields
     ...codeAndAutomationTagsFields
-# TODO ...codeAndAutomationActionsFields
-# TODO ...codeAndAutomationWebhooksFields
-# TODO ...codeAndAutomationEnvironmentsFields
-# TODO ...codeAndAutomationPagesFields
+    ...codeAndAutomationActionsFields
+    ...codeAndAutomationWebhooksFields
+    ...codeAndAutomationEnvironmentsFields
+    ...codeAndAutomationCodespacesFields
+    ...codeAndAutomationPagesFields
 }
 # Code and automation > Branches
 fragment codeAndAutomationBranchesFields on Repository {
-    # Default branch
+    #- Default branch
     defaultBranchRef { name } # default_branch
-    # Branch protection rules
-    branchProtectionRules(first: 5) {
+    #- Branch protection rules
+    branchProtectionRules(first: 10) {
         totalCount
         nodes {
             ...codeAndAutomationBranchProtectionRules
@@ -178,10 +179,10 @@ fragment codeAndAutomationBranchesFields on Repository {
 }
 # Branch protection rule
 fragment codeAndAutomationBranchProtectionRules on BranchProtectionRule {
-    # Branch name pattern
+    #- Branch name pattern
     pattern
-    # Applies to ... branches
-    matchingRefs(first: 10) {
+    #- Applies to ... branches
+    matchingRefs {
         totalCount
         nodes {
             name
@@ -231,10 +232,10 @@ fragment codeAndAutomationBranchProtectionRulesProtection on BranchProtectionRul
 }
 # Rules applied to everyone including administrators
 fragment codeAndAutomationBranchProtectionRulesAdmin on BranchProtectionRule {
-    # Allow force pushes
+    #- Allow force pushes
     allowsForcePushes
-    # Specify who can force push
-    bypassForcePushAllowances(first: 10) {
+    #- Specify who can force push
+    bypassForcePushAllowances {
         totalCount
         nodes {
             # People, teams, or apps who can force push
@@ -252,20 +253,144 @@ fragment codeAndAutomationBranchProtectionRulesAdmin on BranchProtectionRule {
 # Code and automation > Tags > Protected tags
 fragment codeAndAutomationTagsFields on Repository {
     __typename # placeholder
-    # TODO
+    #- Protected tag rules
+    # ...MISSING
+}
+# Code and automation > Actions
+fragment codeAndAutomationActionsFields on Repository {
+    __typename # placeholder
+    #- General > Actions permissions
+    # MISSING
+    #- General > Artifact and log retention
+    # MISSING
+    #- General > Fork pull request workflows from outside collaborators
+    # MISSING
+    #- General > Workflow permissions
+    # MISSING
+    #- Runners
+    # ...MISSING
+}
+# Code and automation > Webhooks
+fragment codeAndAutomationWebhooksFields on Repository {
+    __typename # placeholder
+    #- Payload URL
+    # MISSING
+    #- Content type
+    # MISSING
+    #- Secret
+    # MISSING
+    #- Which events would you like to trigger this webhook?
+    # MISSING
+    #- Active
+    # MISSING
+}
+# Code and automation > Environments
+fragment codeAndAutomationEnvironmentsFields on Repository {
+    environment(name: "github-pages") {
+        id
+        name
+        #- Environment protection rules
+        protectionRules {
+            nodes {
+                type
+                # Wait timer
+                timeout
+                # Required reviewers
+                reviewers {
+                    nodes {
+                        ... on User {
+                            id
+                            slug: login
+                        }
+                        ... on Team {
+                            id
+                            slug
+                        }
+                    }
+                }
+            }
+        }
+        #- Deployment branches
+        # ...MISSING
+        #- Environment secrets
+        # ...MISSING
+    }
+}
+# Code and automation > Codespaces
+fragment codeAndAutomationCodespacesFields on Repository {
+    __typename # placeholder
+    #- Prebuild configuration
+    # MISSING
+}
+# Code and automation > Pages
+fragment codeAndAutomationPagesFields on Repository {
+    __typename # placeholder
+    #- Build and deployment > Source
+    # MISSING
+    #- Build and deployment > Branch, Folder
+    # MISSING
+    #- Custom domain
+    # MISSING
+    #- Enforce HTTPS
+    # MISSING
 }
 
 # Security > ...
 fragment securityFields on Repository {
+    ...securityAnalysisFields
+    ...securityDeployKeys
+    ...securitySecrets
+}
+# Security > Code security and analysis
+fragment securityAnalysisFields on Repository {
     __typename # placeholder
-    # Code security and analysis
-    # TODO MISSING?
-    # TODO ...securityDeployKeys
-    # TODO ...securitySecrets
+    #- Private vulnerability reporting
+    # MISSING
+    #- Dependency graph
+    # MISSING
+    #- Dependabot
+    # ...MISSING
+    #- Code scanning
+    # MISSING
+    #- Secret scanning
+    # MISSING
+}
+# Security > Deploy keys
+fragment securityDeployKeys on Repository {
+    #- Deploy keys
+    deployKeys(first: 100) {
+        totalCount
+        nodes {
+            #- Title
+            title
+            #- Key
+            key
+            #- Allow write access
+            readOnly
+            # ?
+            verified
+        }
+    }
+}
+# Security > Secrets
+fragment securitySecrets on Repository {
+    __typename # placeholder
+    # Actions > Actions secrets
+    #- Environment secrets
+    # ...MISSING
+    #- Repository secrets
+    # ...MISSING
+    #- Codespaces secrets
+    # ...MISSING
+    #- Dependabot secrets
+    # ...MISSING
 }
 
 # Integrations > ...
 fragment integrationsFields on Repository {
     __typename # placeholder
-    # TODO
+    # GitHub apps > Installed GitHub Apps
+    # ...MISSING
+    # Email notifications > Email notifications
+    # ...MISSING
 }
