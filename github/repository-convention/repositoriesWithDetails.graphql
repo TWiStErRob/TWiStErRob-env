@@ -5,12 +5,12 @@ query {
             nodes {
                 __typename
 
-                ...aboutFields
-                ...generalFields
-                ...accessFields
-                ...codeAndAutomationFields
-                ...securityFields
-                ...integrationsFields
+                ...about
+                ...general
+                ...access
+                ...codeAndAutomation
+                ...security
+                ...integrations
 
                 #hasPagesEnabled # has_pages
                 #forkingAllowed # allow_forking
@@ -29,7 +29,7 @@ query {
 }
 
 # About > Edit repository details
-fragment aboutFields on Repository {
+fragment about on Repository {
     # Description
     description
     # Website
@@ -41,16 +41,16 @@ fragment aboutFields on Repository {
 }
 
 # General > ...
-fragment generalFields on Repository {
-    ...generalGeneralFields
-    ...generalFeaturesFields
-    ...generalPullRequestsFields
-    ...generalArchivesFields
-    ...generalPushesFields
-    ...generalDangerZoneFields
+fragment general on Repository {
+    ...generalGeneral
+    ...generalFeatures
+    ...generalPullRequests
+    ...generalArchives
+    ...generalPushes
+    ...generalDangerZone
 }
 # General > General
-fragment generalGeneralFields on Repository {
+fragment generalGeneral on Repository {
     #- Repository name
     name # name
     #- Template repository
@@ -62,7 +62,7 @@ fragment generalGeneralFields on Repository {
     openGraphImageUrl
 }
 # General > Features
-fragment generalFeaturesFields on Repository {
+fragment generalFeatures on Repository {
     #- Wikis
     hasWikiEnabled #has_wiki
     #- Issues
@@ -77,7 +77,7 @@ fragment generalFeaturesFields on Repository {
     hasProjectsEnabled # has_projects
 }
 # General > Pull Requests
-fragment generalPullRequestsFields on Repository {
+fragment generalPullRequests on Repository {
     #- Allow merge commits
     mergeCommitAllowed # allow_merge_commit
     mergeCommitMessage
@@ -96,19 +96,19 @@ fragment generalPullRequestsFields on Repository {
     deleteBranchOnMerge # delete_branch_on_merge
 }
 # General > Archives
-fragment generalArchivesFields on Repository {
+fragment generalArchives on Repository {
     __typename # placeholder
     #- Include Git LFS objects in archives
     # MISSING
 }
 # General > Pushes
-fragment generalPushesFields on Repository {
+fragment generalPushes on Repository {
     __typename # placeholder
     #- Limit how many branches and tags can be updated in a single push
     # MISSING
 }
 # General > Danger Zone
-fragment generalDangerZoneFields on Repository {
+fragment generalDangerZone on Repository {
     #- Change repository visibility
     visibility
     isPrivate # private
@@ -123,13 +123,13 @@ fragment generalDangerZoneFields on Repository {
 }
 
 # Access > ...
-fragment accessFields on Repository {
-    ...accessCollaboratorsFields
-    ...accessModerationInteractionLimitFields
-    ...accessModerationCodeReviewLimitFields
+fragment access on Repository {
+    ...accessCollaborators
+    ...accessModerationInteractionLimit
+    ...accessModerationCodeReviewLimit
 }
 # Access > Collaborators > ...
-fragment accessCollaboratorsFields on Repository {
+fragment accessCollaborators on Repository {
     visibility
     collaborators(affiliation: DIRECT) {
         edges {
@@ -141,7 +141,7 @@ fragment accessCollaboratorsFields on Repository {
     }
 }
 # Access > Moderation options > Interaction limits > Temporary interaction limits
-fragment accessModerationInteractionLimitFields on Repository {
+fragment accessModerationInteractionLimit on Repository {
     interactionAbility {
         expiresAt
         limit
@@ -149,24 +149,24 @@ fragment accessModerationInteractionLimitFields on Repository {
     }
 }
 # Access > Moderation options > Code review limits > Code review limits
-fragment accessModerationCodeReviewLimitFields on Repository {
+fragment accessModerationCodeReviewLimit on Repository {
     __typename # placeholder
     #- Limit to users explicitly granted read or higher access
     # MISSING
 }
 
 # Code and automation > ...
-fragment codeAndAutomationFields on Repository {
-    ...codeAndAutomationBranchesFields
-    ...codeAndAutomationTagsFields
-    ...codeAndAutomationActionsFields
-    ...codeAndAutomationWebhooksFields
-    ...codeAndAutomationEnvironmentsFields
-    ...codeAndAutomationCodespacesFields
-    ...codeAndAutomationPagesFields
+fragment codeAndAutomation on Repository {
+    ...codeAndAutomationBranches
+    ...codeAndAutomationTags
+    ...codeAndAutomationActions
+    ...codeAndAutomationWebhooks
+    ...codeAndAutomationEnvironments
+    ...codeAndAutomationCodespaces
+    ...codeAndAutomationPages
 }
 # Code and automation > Branches
-fragment codeAndAutomationBranchesFields on Repository {
+fragment codeAndAutomationBranches on Repository {
     #- Default branch
     defaultBranchRef { name } # default_branch
     #- Branch protection rules
@@ -251,13 +251,13 @@ fragment codeAndAutomationBranchProtectionRulesAdmin on BranchProtectionRule {
     allowsDeletions
 }
 # Code and automation > Tags > Protected tags
-fragment codeAndAutomationTagsFields on Repository {
+fragment codeAndAutomationTags on Repository {
     __typename # placeholder
     #- Protected tag rules
     # ...MISSING
 }
 # Code and automation > Actions
-fragment codeAndAutomationActionsFields on Repository {
+fragment codeAndAutomationActions on Repository {
     __typename # placeholder
     #- General > Actions permissions
     # MISSING
@@ -271,7 +271,7 @@ fragment codeAndAutomationActionsFields on Repository {
     # ...MISSING
 }
 # Code and automation > Webhooks
-fragment codeAndAutomationWebhooksFields on Repository {
+fragment codeAndAutomationWebhooks on Repository {
     __typename # placeholder
     #- Payload URL
     # MISSING
@@ -285,7 +285,7 @@ fragment codeAndAutomationWebhooksFields on Repository {
     # MISSING
 }
 # Code and automation > Environments
-fragment codeAndAutomationEnvironmentsFields on Repository {
+fragment codeAndAutomationEnvironments on Repository {
     environment(name: "github-pages") {
         id
         name
@@ -317,13 +317,13 @@ fragment codeAndAutomationEnvironmentsFields on Repository {
     }
 }
 # Code and automation > Codespaces
-fragment codeAndAutomationCodespacesFields on Repository {
+fragment codeAndAutomationCodespaces on Repository {
     __typename # placeholder
     #- Prebuild configuration
     # MISSING
 }
 # Code and automation > Pages
-fragment codeAndAutomationPagesFields on Repository {
+fragment codeAndAutomationPages on Repository {
     __typename # placeholder
     #- Build and deployment > Source
     # MISSING
@@ -336,13 +336,13 @@ fragment codeAndAutomationPagesFields on Repository {
 }
 
 # Security > ...
-fragment securityFields on Repository {
-    ...securityAnalysisFields
+fragment security on Repository {
+    ...securityAnalysis
     ...securityDeployKeys
     ...securitySecrets
 }
 # Security > Code security and analysis
-fragment securityAnalysisFields on Repository {
+fragment securityAnalysis on Repository {
     __typename # placeholder
     #- Private vulnerability reporting
     # MISSING
@@ -387,7 +387,7 @@ fragment securitySecrets on Repository {
 }
 
 # Integrations > ...
-fragment integrationsFields on Repository {
+fragment integrations on Repository {
     __typename # placeholder
     # GitHub apps > Installed GitHub Apps
     # ...MISSING
