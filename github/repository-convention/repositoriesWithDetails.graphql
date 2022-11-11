@@ -5,7 +5,7 @@ query {
             nodes {
                 __typename
 
-                homepageUrl # url
+                ...aboutFields
                 ...generalFields
                 ...accessFields
                 ...codeAndAutomationFields
@@ -27,6 +27,19 @@ query {
         }
     }
 }
+
+# About > Edit repository details
+fragment aboutFields on Repository {
+    # Description
+    description
+    # Website
+    homepageUrl # url
+    # Topics
+    repositoryTopics(first: 10) { nodes { topic { name } } }
+    # Include in the home page (Releases, Packages, Environments)
+    # MISSING
+}
+
 # General > ...
 fragment generalFields on Repository {
     ...generalGeneralFields

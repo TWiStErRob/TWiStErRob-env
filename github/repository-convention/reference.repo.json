@@ -1,11 +1,21 @@
 {
 	"__typename": "Repository",
-	"homepageUrl": "https://play.google.com/store/apps/details?id=net.twisterrob.inventory",
-	"name": "net.twisterrob.inventory",
+	"homepageUrl": "<REPOSITORY_SPECIFIC>",
+	"description": "<REPOSITORY_SPECIFIC>",
+	"repositoryTopics": {
+		"nodes": [
+			{
+				"topic": {
+					"name": "<REPOSITORY_SPECIFIC>"
+				}
+			}
+		]
+	},
+	"name": "<REPOSITORY_SPECIFIC>",
 	"isTemplate": false,
 	"webCommitSignoffRequired": false,
 	"usesCustomOpenGraphImage": false,
-	"openGraphImageUrl": "https://opengraph.githubassets.com/c88498a5dd4eff6f681b47a537eb601cbf6d2738c49a4627fc3d99be4c72b70a/TWiStErRob/net.twisterrob.inventory",
+	"openGraphImageUrl": "<REPOSITORY_SPECIFIC>",
 	"hasWikiEnabled": false,
 	"hasIssuesEnabled": true,
 	"hasDiscussionsEnabled": true,
@@ -42,11 +52,50 @@
 		"origin": "REPOSITORY"
 	},
 	"defaultBranchRef": {
-		"name": "master"
+		"name": "main"
 	},
 	"branchProtectionRules": {
-		"totalCount": 0,
-		"nodes": []
+		"totalCount": 1,
+		"nodes": [
+			{
+				"pattern": "main",
+				"matchingRefs": {
+					"totalCount": 1,
+					"nodes": [
+						{
+							"name": "main"
+						}
+					]
+				},
+				"requiresApprovingReviews": false,
+				"requiredApprovingReviewCount": null,
+				"dismissesStaleReviews": false,
+				"requiresCodeOwnerReviews": false,
+				"requireLastPushApproval": false,
+				"requiresStatusChecks": true,
+				"requiresStrictStatusChecks": true,
+				"requiredStatusChecks": [
+					{
+						"context": "<REPOSITORY_SPECIFIC>",
+						"app": {
+							"id": "MDM6QXBwMTUzNjg=",
+							"name": "GitHub Actions"
+						}
+					}
+				],
+				"requiresConversationResolution": true,
+				"requiresCommitSignatures": false,
+				"requiresLinearHistory": true,
+				"lockBranch": false,
+				"isAdminEnforced": false,
+				"allowsForcePushes": true,
+				"bypassForcePushAllowances": {
+					"totalCount": 0,
+					"nodes": []
+				},
+				"allowsDeletions": false
+			}
+		]
 	},
 	"isUserConfigurationRepository": false,
 	"isBlankIssuesEnabled": true,

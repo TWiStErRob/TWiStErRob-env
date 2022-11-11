@@ -12,6 +12,9 @@
 @file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.1.2")
 @file:DependsOn("tech.tablesaw:tablesaw-core:0.43.1")
 
+import Validate_main.JsonX.filterNot
+import Validate_main.JsonX.format
+import Validate_main.JsonX.getSafeString
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -45,6 +48,10 @@ import java.io.StringWriter
 import java.io.Writer
 import java.net.URI
 import javax.json.Json
+import javax.json.JsonArray
+import javax.json.JsonObject
+import javax.json.JsonPatch
+import javax.json.JsonString
 import javax.json.JsonValue
 import javax.json.stream.JsonGenerator
 import kotlin.system.exitProcess
@@ -57,33 +64,95 @@ suspend fun main(vararg args: String) {
 		usage()
 	}
 	GitHub().use { gitHub ->
-		val response = Json.createReader(StringReader(gitHub.repositoriesDetails())).use { it.readValue() }.asJsonObject()
-		val repos = response.getValue("/data/user/repositories/nodes").asJsonArray()
-		val reference = Json.createReader(File("reference.repo.json").reader()).use { it.readValue().asJsonObject() }
-		repos.forEach { repoJson ->
-			val repo = repoJson.asJsonObject()
-			val diff = Json.createDiff(repo, reference).toJsonArray()
-			val mergeDiff = Json.createMergeDiff(repo, reference).toJsonValue().asJsonObject()
+		val response = if (@Suppress("ConstantConditionIf", "RedundantSuppression") true) {
+			Json.createReader(StringReader(gitHub.repositoriesDetails())).use { it.readValue() }.asJsonObject()
+		} else {
+			Json.createReader(File("cached.repos.json").reader()).use { it.readValue() }
+		}
+		Json.createWriter(File("response.repos.json").writer()).use { it.write(response) }
+		val repos = response.asJsonObject().getValue("/data/user/repositories/nodes").asJsonArray()
+		val reference = Json.createReader(File("reference.repo.json").reader()).use { it.readValue() }
+		repos.forEach { repo ->
+			val diff = JsonX.createDiff(repo, reference).clean()
+			val mergeDiff = JsonX.createMergeDiff(repo, reference).clean()
+			println(repo.asJsonObject().getString("name"))
 			println(diff.format())
 			println(mergeDiff.format())
 		}
 	}
 }
 
-fun JsonValue.format(): String =
-	StringWriter()
-		.apply { use { it.prettyPrint(this@format) } }
-		.toString()
+fun JsonObject.clean(): JsonObject =
+	Json.createObjectBuilder(this)
+		.apply {
+			keys
+				.filter { getValue("/$it").valueType == JsonValue.ValueType.OBJECT }
+				.forEach { add(it, getJsonObject(it).clean()) }
+			keys
+				.filter { getSafeString(it) == "<REPOSITORY_SPECIFIC>" }
+				.forEach { remove(it) }
+			remove("repositoryTopics")
+		}
+		.build()
 
-fun Writer.prettyPrint(value: JsonValue) {
-	Json
-		.createWriterFactory(
-			mapOf(
-				JsonGenerator.PRETTY_PRINTING to true
+fun JsonArray.clean(): JsonArray =
+	this
+		.filterNot { value ->
+			value.asJsonObject().getSafeString("value") == "<REPOSITORY_SPECIFIC>"
+					&& value.asJsonObject().getString("op") == JsonPatch.Operation.REPLACE.operationName()
+		}
+		.filterNot { value ->
+			value.asJsonObject().getString("path").matches("""^/repositoryTopics/nodes/\d+$""".toRegex())
+					&& value.asJsonObject().getString("op") == JsonPatch.Operation.REMOVE.operationName()
+		}
+		.filterNot { value ->
+			value.asJsonObject().getString("path")
+				.matches("""^/branchProtectionRules/nodes/\d+/requiredStatusChecks/\d+$""".toRegex())
+					&& value.asJsonObject().getString("op") == JsonPatch.Operation.REMOVE.operationName()
+		}
+
+object JsonX {
+
+	fun JsonArray.filterNot(predicate: (JsonValue) -> Boolean): JsonArray =
+		Json.createArrayBuilder()
+			.apply { forEach { if (!predicate(it)) add(it) } }
+			.build()
+
+	fun createMergeDiff(source: JsonValue, target: JsonValue): JsonObject =
+		Json.createMergeDiff(source, target).toJsonValue().asJsonObject()
+
+	fun createDiff(source: JsonValue, target: JsonValue): JsonArray =
+		Json.createDiff(source.asJsonObject(), target.asJsonObject()).toJsonArray()
+
+	fun JsonObject.getSafeString(key: String): String? =
+		this[key]?.let { value ->
+			if (value.valueType == JsonValue.ValueType.STRING) {
+				(value as JsonString).string
+			} else {
+				null
+			}
+		}
+
+	fun List<JsonValue>.asJsonArray(): JsonArray =
+		Json.createArrayBuilder()
+			.apply { forEach(::add) }
+			.build()
+
+	fun JsonValue.format(): String =
+		StringWriter()
+			.apply { use { it.prettyPrint(this@format) } }
+			.toString()
+
+	private fun Writer.prettyPrint(value: JsonValue) {
+		Json
+			.createWriterFactory(
+				mapOf(
+					JsonGenerator.PRETTY_PRINTING to true
+				)
 			)
-		)
-		.createWriter(this)
-		.use { it.write(value) }
+			.createWriter(this)
+			.use { it.write(value) }
+	}
 }
 
 class GitHub : Closeable {
