@@ -229,6 +229,11 @@ fun String.checkGraphQLError() {
 	}
 	val response: ErrorResponse = jackson.readValue(this)
 	if (response.errors != null) {
+		if (response.errors.all {
+				it.message.matches("""^Could not resolve to an Environment with the name github-pages\.$""".toRegex())
+		}) {
+			return
+		}
 		fun ErrorResponse.Error.asString(): String =
 			run { "${type ?: "UNKNOWN"}@${locations?.joinToString { "${it.line}:${it.column}" }} ${message}" }
 		error("GraphQL error:\n${response.errors.joinToString("\n") { it.asString() }}")

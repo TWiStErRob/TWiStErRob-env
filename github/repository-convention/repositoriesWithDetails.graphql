@@ -182,7 +182,7 @@ fragment codeAndAutomationBranchProtectionRules on BranchProtectionRule {
     #- Branch name pattern
     pattern
     #- Applies to ... branches
-    matchingRefs {
+    matchingRefs(first: 100) {
         totalCount
         nodes {
             name
@@ -235,7 +235,7 @@ fragment codeAndAutomationBranchProtectionRulesAdmin on BranchProtectionRule {
     #- Allow force pushes
     allowsForcePushes
     #- Specify who can force push
-    bypassForcePushAllowances {
+    bypassForcePushAllowances(first: 100) {
         totalCount
         nodes {
             # People, teams, or apps who can force push
@@ -287,10 +287,9 @@ fragment codeAndAutomationWebhooks on Repository {
 # Code and automation > Environments
 fragment codeAndAutomationEnvironments on Repository {
     environment(name: "github-pages") {
-        id
         name
         #- Environment protection rules
-        protectionRules {
+        protectionRules(first: 100) {
             nodes {
                 type
                 # Wait timer
@@ -299,11 +298,9 @@ fragment codeAndAutomationEnvironments on Repository {
                 reviewers {
                     nodes {
                         ... on User {
-                            id
                             slug: login
                         }
                         ... on Team {
-                            id
                             slug
                         }
                     }
