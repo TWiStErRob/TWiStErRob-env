@@ -65,7 +65,7 @@ suspend fun main(vararg args: String) {
 	}
 	GitHub().use { gitHub ->
 		val response = if (@Suppress("ConstantConditionIf", "RedundantSuppression") true) {
-			Json.createReader(StringReader(gitHub.repositoriesDetails())).use { it.readValue() }.asJsonObject()
+			Json.createReader(StringReader(gitHub.repositoriesDetails(args[0]))).use { it.readValue() }.asJsonObject()
 		} else {
 			Json.createReader(File("cached.repos.json").reader()).use { it.readValue() }
 		}
@@ -213,10 +213,11 @@ class GitHub : Closeable {
 	}
 }
 
-suspend fun GitHub.repositoriesDetails(): String {
+suspend fun GitHub.repositoriesDetails(owner: String): String {
 	val response = graph(
 		query = File("repositoriesWithDetails.graphql").readText(),
 		variables = mapOf(
+			"login" to owner,
 		),
 	)
 	return response.bodyAsText().also { it.checkGraphQLError() }
@@ -274,12 +275,10 @@ fun usage(): Nothing {
 	println(
 		"""
 			Usage:
-			 * kotlinc -script validate.main.kts <org>
-			 * kotlinc -script validate.main.kts <org1>/<repo1> <org2>/<repo2>
+			 * kotlinc -script validate.main.kts <owner>
 			
 			Parameters:
 			 * `<org>`: the name of the user who owns the repositories to process (organizations not supported yet).
-			 * `<org>/<repo>`: list of repository coordinates to process explicitly.
 			
 			Environment variables:
 			 * GITHUB_USER: login user name of the user who's running the script

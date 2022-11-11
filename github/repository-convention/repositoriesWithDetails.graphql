@@ -1,5 +1,5 @@
-query {
-    user(login: "TWiStErRob") {
+query($login: String!) {
+    user(login: $login) {
         repositories(first: 100, isFork: false, affiliations: OWNER) {
             __typename
             nodes {
