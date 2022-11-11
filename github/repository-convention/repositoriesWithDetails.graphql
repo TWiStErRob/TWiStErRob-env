@@ -1,6 +1,6 @@
 query {
     user(login: "TWiStErRob") {
-        repositories(first: 1, isFork: false, affiliations: OWNER) {
+        repositories(first: 100, isFork: false, affiliations: OWNER) {
             __typename
             nodes {
                 __typename
@@ -156,7 +156,7 @@ fragment codeAndAutomationBranchesFields on Repository {
     # Default branch
     defaultBranchRef { name } # default_branch
     # Branch protection rules
-    branchProtectionRules(first: 100) {
+    branchProtectionRules(first: 5) {
         totalCount
         nodes {
             ...codeAndAutomationBranchProtectionRules
@@ -168,7 +168,7 @@ fragment codeAndAutomationBranchProtectionRules on BranchProtectionRule {
     # Branch name pattern
     pattern
     # Applies to ... branches
-    matchingRefs(first: 100) {
+    matchingRefs(first: 10) {
         totalCount
         nodes {
             name
@@ -221,7 +221,7 @@ fragment codeAndAutomationBranchProtectionRulesAdmin on BranchProtectionRule {
     # Allow force pushes
     allowsForcePushes
     # Specify who can force push
-    bypassForcePushAllowances(first: 100) {
+    bypassForcePushAllowances(first: 10) {
         totalCount
         nodes {
             # People, teams, or apps who can force push
