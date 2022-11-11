@@ -15,6 +15,7 @@
 import Validate_main.JsonX.filterNot
 import Validate_main.JsonX.format
 import Validate_main.JsonX.getSafeString
+import Validate_main.JsonX.map
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -73,7 +74,7 @@ suspend fun main(vararg args: String) {
 		val repos = response.asJsonObject().getValue("/data/user/repositories/nodes").asJsonArray()
 		val reference = Json.createReader(File("reference.repo.json").reader()).use { it.readValue() }
 		repos.forEach { repo ->
-			val diff = JsonX.createDiff(repo, reference).clean()
+			val diff = JsonX.createDiff(repo, reference).clean().adorn(repo.asJsonObject())
 			val mergeDiff = JsonX.createMergeDiff(repo, reference).clean()
 			println(repo.asJsonObject().getString("name"))
 			println(diff.format())
@@ -111,11 +112,37 @@ fun JsonArray.clean(): JsonArray =
 					&& value.asJsonObject().getString("op") == JsonPatch.Operation.REMOVE.operationName()
 		}
 
+fun JsonArray.adorn(source: JsonObject): JsonArray =
+	this
+		.map { value ->
+			val target = value.asJsonObject()
+			when (target.getString("op")) {
+				JsonPatch.Operation.REPLACE.operationName(),
+				JsonPatch.Operation.REMOVE.operationName(),
+				-> {
+					Json.createObjectBuilder(target)
+						.remove("value") // Remove and re-add so "original" is inserted before.
+						.add("original", source.getValue(target.getString("path")))
+						.run { if (target.containsKey("value")) add("value", target["value"]) else this }
+						.build()
+				}
+
+				else -> {
+					target
+				}
+			}
+		}
+
 object JsonX {
 
 	fun JsonArray.filterNot(predicate: (JsonValue) -> Boolean): JsonArray =
 		Json.createArrayBuilder()
 			.apply { forEach { if (!predicate(it)) add(it) } }
+			.build()
+
+	fun JsonArray.map(transform: (JsonValue) -> JsonValue): JsonArray =
+		Json.createArrayBuilder()
+			.apply { forEach { add(transform(it)) } }
 			.build()
 
 	fun createMergeDiff(source: JsonValue, target: JsonValue): JsonObject =
