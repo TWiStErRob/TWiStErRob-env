@@ -72,7 +72,9 @@ fun main(vararg args: String) {
 			.allPages("d6d80a4765fe470dbae06fd5cd3d3f41")
 			.filter { it.properties["Event"]!!.relation!!.singleOrNull()?.id == droidConLondon2022.id }
 			.associateBy { it.title!! }
-		existingSessions.keys.forEach { println("Found existing session: ${it}") }
+		existingSessions.forEach { (title, page) ->
+			println("Found existing session: ${title} (${page.id})")
+		}
 		sessions.filter { it.title !in existingSessions }.forEach { session ->
 			client.createPage(
 				parent = PageParent.database("d6d80a4765fe470dbae06fd5cd3d3f41"),
@@ -92,6 +94,12 @@ fun main(vararg args: String) {
 						PageProperty.PageReference(topicPages.getValue(it.name).id)
 					}),
 				).filterValues { it != null }.mapValues { it.value!! },
+				children = @Suppress("SpreadOperator") listOf(
+					HeadingOneBlock(heading1 = HeadingOneBlock.Element("Abstract".asRichText())),
+					*session.description.split("\r\n\r\n")
+						.map { ParagraphBlock(ParagraphBlock.Element(it.asRichText())) }
+						.toTypedArray(),
+				),
 			)
 		}
 	}
@@ -225,7 +233,7 @@ fun ensureTopics(client: NotionClient, wantedTopicNames: List<String>): Map<Stri
 fun String.asRichText(): List<PageProperty.RichText> =
 	listOf(PageProperty.RichText(text = PageProperty.RichText.Text(content = this)))
 
-val Page.title: String? 
+val Page.title: String?
 	get() {
 		val prop = this.properties.values.singleOrNull { it.id == "title" && it.type == PropertyType.Title }
 			?: error("Missing property of type 'title', available properties: ${this.properties.keys}")
