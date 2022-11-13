@@ -72,6 +72,9 @@ fun main(vararg args: String) {
 			.allPages("d6d80a4765fe470dbae06fd5cd3d3f41")
 			.filter { it.properties["Event"]!!.relation!!.singleOrNull()?.id == droidConLondon2022.id }
 			.associateBy { it.title!! }
+		val typeOptions = client
+			.retrieveDatabase("d6d80a4765fe470dbae06fd5cd3d3f41")
+			.properties["Type"]!!.select!!.options!!
 		existingSessions.forEach { (title, page) ->
 			println("Found existing session: ${title} (${page.id})")
 		}
@@ -93,6 +96,14 @@ fun main(vararg args: String) {
 					"Topics" to PageProperty(relation = session.categories.single { it.name == "Tags" }.categoryItems.map {
 						PageProperty.PageReference(topicPages.getValue(it.name).id)
 					}),
+					"Type" to PageProperty(select = typeOptions.single {
+						it.name == when (session.format) {
+							"Lightning talk" -> "Lightning Talk"
+							"Session" -> "Talk"
+							"Workshop" -> "Workshop"
+							else -> error("Unknown format: ${session.format}")
+						}
+					})
 				).filterValues { it != null }.mapValues { it.value!! },
 				children = @Suppress("SpreadOperator") listOf(
 					HeadingOneBlock(heading1 = HeadingOneBlock.Element("Abstract".asRichText())),
@@ -132,6 +143,9 @@ data class Group(
 
 val Group.Session.duration: Duration?
 	get() = if (startsAt != null && endsAt != null) Duration.between(startsAt, endsAt) else null
+
+val Group.Session.format: String
+	get() = categories.single { it.name == "Session format" }.categoryItems.single().name
 
 data class Speaker(
 	val fullName: String,
