@@ -15,10 +15,8 @@ import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import notion.api.v1.NotionClient
 import notion.api.v1.http.OkHttp4Client
-import notion.api.v1.model.databases.Database
-import notion.api.v1.model.databases.DatabaseProperty
-import notion.api.v1.model.databases.MultiSelectPropertySchema
-import notion.api.v1.model.databases.SelectOptionSchema
+import notion.api.v1.model.common.PropertyType
+import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
 import java.io.File
@@ -44,23 +42,31 @@ fun main(vararg args: String) {
 	val secret = System.getenv("NOTION_TOKEN")
 		?: error("NOTION_TOKEN environment variable not set, copy secret from 'Internal Integration Token' at ${helpUrl}.")
 
-	NotionClient(token = secret).apply { httpClient = OkHttp4Client() }.use { client ->
+	NotionClient(token = secret).apply { httpClient = OkHttp4Client(connectTimeoutMillis = 30_000) }.use { client ->
 		val droidConLondon2022 = client.retrievePage("8b215fe74d6e4fbcabb88f96917b6092")
-		val sessionDatabase = client
-			.retrieveDatabase("d6d80a4765fe470dbae06fd5cd3d3f41")
-			.ensureSpeakers(client, sessions.flatMap { it.speakers }.map { it.name }.distinct())
-		val speakerOptions = sessionDatabase.speakers().associateBy { it.name }
-		sessions.forEach { session ->
+		val jsonSpeakers = sessions.flatMap { it.speakers }.map { it.name }.distinct()
+		val speakerPages = ensureSpeakers(client, jsonSpeakers)
+		val existingSessions = client
+			.allPages("d6d80a4765fe470dbae06fd5cd3d3f41")
+			.filter { it.properties["Event"]!!.relation!!.singleOrNull()?.id == droidConLondon2022.id }
+			.associateBy { it.title!! }
+		existingSessions.keys.forEach { println("Found existing session: ${it}") }
+		sessions.filter { it.title !in existingSessions }.forEach { session ->
 			client.createPage(
-				parent = PageParent.database(sessionDatabase.id),
+				parent = PageParent.database("d6d80a4765fe470dbae06fd5cd3d3f41"),
 				properties = mapOf(
 					"title" to PageProperty(title = session.title.asRichText()),
-					"Date" to PageProperty(date = PageProperty.Date(DateTimeFormatter.ISO_LOCAL_DATE.format(session.startsAt))),
-					"Time" to PageProperty(richText = DateTimeFormatter.ISO_LOCAL_TIME.format(session.startsAt).asRichText()),
-					"Length (minutes)" to PageProperty(number = session.duration?.toMinutes()),
+					"Date" to session.startsAt?.let { time ->
+						PageProperty(date = PageProperty.Date(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(time)))
+					},
+					"Length (minutes)" to session.duration?.let { duration ->
+						PageProperty(number = duration.toMinutes())
+					},
 					"Event" to PageProperty(relation = listOf(PageProperty.PageReference(droidConLondon2022.id))),
-					"Author(s)" to PageProperty(multiSelect = session.speakers.map { speakerOptions.getValue(it.name) })
-				),
+					"Author(s)" to PageProperty(relation = session.speakers.map {
+						PageProperty.PageReference(speakerPages.getValue(it.name).id)
+					})
+				).filterValues { it != null }.mapValues { it.value!! },
 			)
 		}
 	}
@@ -85,25 +91,33 @@ data class Group(
 val Group.Session.duration: Duration?
 	get() = if (startsAt != null && endsAt != null) Duration.between(startsAt, endsAt) else null
 
-fun Database.ensureSpeakers(client: NotionClient, speakerNames: List<String>): Database {
-	val speakersInSessionsDatabase = this.speakers().map { it.name!! }
-	return if (speakersInSessionsDatabase.containsAll(speakerNames)) {
-		this
-	} else {
-		val originalOptions = speakers().map { SelectOptionSchema(it.name!!) }
-		val missingNames = speakerNames.toSet() - speakersInSessionsDatabase.toSet()
-		val missingOptions = missingNames.map { SelectOptionSchema(it) }
-		client.updateDatabase(
-			databaseId = id,
+fun NotionClient.allPages(databaseId: String): List<Page> =
+	generateSequence(queryDatabase(databaseId)) { results ->
+		results.nextCursor?.let { queryDatabase(databaseId, startCursor = it) }
+	}.flatMap { it.results }.toList()
+
+fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>): Map<String, Page> {
+	val speakerPages = client.allPages("aecb82387adf4d7fa6816b791b0a579c")
+	val existingPages = speakerPages.associateBy { it.title ?: it.id }
+	val newSpeakerNames = wantedSpeakerNames - existingPages.keys
+	val newSpeakers = newSpeakerNames.associateWith { speakerName ->
+		client.createPage(
+			parent = PageParent.database("aecb82387adf4d7fa6816b791b0a579c"),
 			properties = mapOf(
-				"Author(s)" to MultiSelectPropertySchema(originalOptions + missingOptions)
-			)
+				"title" to PageProperty(title = speakerName.asRichText()),
+			),
 		)
 	}
+	return existingPages + newSpeakers
 }
-
-fun Database.speakers(): List<DatabaseProperty.MultiSelect.Option> =
-	properties["Author(s)"]!!.multiSelect!!.options!!
 
 fun String.asRichText(): List<PageProperty.RichText> =
 	listOf(PageProperty.RichText(text = PageProperty.RichText.Text(content = this)))
+
+val Page.title: String? 
+	get() {
+		val prop = this.properties.values.singleOrNull { it.id == "title" && it.type == PropertyType.Title }
+			?: error("Missing property of type 'title', available properties: ${this.properties.keys}")
+		val title = prop.title ?: error("Missing title structure")
+		return title.singleOrNull()?.plainText
+	}
