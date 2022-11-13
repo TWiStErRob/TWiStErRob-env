@@ -1,0 +1,746 @@
+[
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1667989800000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "a37b95a0079d4436b5f958d6b7d9a5c7",
+		"yh": true,
+		"mb": false,
+		"lG": 1664462034955,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "registration-breakfast-sandbox",
+		"Uh": [],
+		"Pa": 1667986200000,
+		"timeZone": "Europe/London",
+		"title": "Registration / Breakfast / Sandbox",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1667990700000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "613127443d8446dda9ab236fc5adc488",
+		"yh": true,
+		"mb": false,
+		"lG": 1667215536912,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "welcome-key-priorities",
+		"Uh": [
+			"b2cd10f4a2674f03aba43da8bc6bd306"
+		],
+		"Pa": 1667989800000,
+		"timeZone": "Europe/London",
+		"title": "Welcome & Key Priorities",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1667993100000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "d878d22990a84179bea223aad2f0278d",
+		"yh": true,
+		"mb": false,
+		"lG": 1666621286841,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "panel-qa-mad",
+		"Uh": [
+			"0b2859ece0d74792a0ab41f280093fb0",
+			"bdf44d1e406e42b39dd72f4cbecfd07b",
+			"39eb3fb0a3d14992b0f8fb0bf322ba8b",
+			"5aae9b6787bd4394b2db560fa5d7871b",
+			"ca9301ab762c4809ac1a5ad4ad8f4633",
+			"edc513ab34024b1e9fcfe1c18812d21a",
+			"2f3d0c38cc2c42cdb5c0d05013fb83f9"
+		],
+		"Pa": 1667990700000,
+		"timeZone": "Europe/London",
+		"title": "Panel Q&A - Modern Android Development",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1667995500000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "4eea45e8b6ef4e51a58e9029cafdcfc2",
+		"yh": true,
+		"mb": false,
+		"lG": 1667215745153,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "panel-qa-platform",
+		"Uh": [
+			"6e5872e473ba4d75b9954ce954ae9713",
+			"4f9ff7a6cde74e7988fca0479b0b8a89",
+			"34e180387e044e5fb9314ffe4cd3f22a",
+			"d38027eac6bc4e9ebc381afa552f53b5"
+		],
+		"Pa": 1667993100000,
+		"timeZone": "Europe/London",
+		"title": "Platform Panel Q&A",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1667998800000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "f3a56522e42b4b09930bfbe5e3ca75df",
+		"yh": true,
+		"mb": false,
+		"lG": 1664464431825,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "lunch",
+		"Uh": [],
+		"Pa": 1667995500000,
+		"timeZone": "Europe/London",
+		"title": "Lunch & Sandbox Experiences",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668000000000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "c5477ed3971b4bdf9b3ad20916fe1748",
+		"yh": true,
+		"mb": false,
+		"lG": 1666903265398,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "form-factors-part-one",
+		"Uh": [
+			"5e2d48dbf7c64c06b9a9f8a5dad61e2c",
+			"e45c32e09e5644e89e56ec6eab5f58ef"
+		],
+		"Pa": 1667998800000,
+		"timeZone": "Europe/London",
+		"title": "Build Better UIs Across Form Factors with Android Studio",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668001200000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "19d29a1211934807b3813be1eb8fbf4d",
+		"yh": true,
+		"mb": false,
+		"lG": 1666906337883,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "optimizing-apps-large-screens",
+		"Uh": [
+			"26fdb3ea6ccb4369ac5dce8333076829",
+			"ca9301ab762c4809ac1a5ad4ad8f4633"
+		],
+		"Pa": 1668000000000,
+		"timeZone": "Europe/London",
+		"title": "Do’s and Don’ts: Mindset for Optimizing Apps for Large Screens",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668002400000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "3b6c4fa63c7b41889b36987cd22afe2b",
+		"yh": true,
+		"mb": false,
+		"lG": 1666903298417,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "designing-layouts-for-larger-screens",
+		"Uh": [
+			"66e031dcc88a4d1c861f6fe1c72c47b2",
+			"26fdb3ea6ccb4369ac5dce8333076829"
+		],
+		"Pa": 1668001200000,
+		"timeZone": "Europe/London",
+		"title": "Designing for Large Screens: Canonical Layouts and Visual Hierarchy",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668002400000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "d56a8447c29f4e42a14b313c4a3aa66b",
+		"yh": true,
+		"mb": false,
+		"lG": 1666903320399,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "responsive-ui-larger-screens",
+		"Uh": [
+			"786594ce8e154782b5aef2f156339124",
+			"4cbdbf12990649e4bc25329fb3475724"
+		],
+		"Pa": 1668001200000,
+		"timeZone": "Europe/London",
+		"title": "Compose: Implementing Responsive UI for Large Screens",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668004200000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "e49895f26c7b4ed88fc5d2f31c9a5ebe",
+		"yh": true,
+		"mb": false,
+		"lG": 1666903338144,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "your-camera-app-on-different-form-factors",
+		"Uh": [
+			"d523256651094337ace9f5826fba2d75",
+			"4d2fb5e5a7594c708757055b32221fc0"
+		],
+		"Pa": 1668003600000,
+		"timeZone": "Europe/London",
+		"title": "Your Camera App on Different Form Factors",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668005400000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "9a502780313b4680b529b944727ec99c",
+		"yh": true,
+		"mb": false,
+		"lG": 1664462594958,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "coffee-break-sandbox",
+		"Uh": [],
+		"Pa": 1668004200000,
+		"timeZone": "Europe/London",
+		"title": "Coffee break / Sandbox",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668006300000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "36380f4b43c743e8ad4b8625303f8964",
+		"yh": true,
+		"mb": false,
+		"lG": 1666903358396,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "do-more-with-multi-window-and-activity-embedding",
+		"Uh": [
+			"c7411785589049cc96143ad48b40e35b",
+			"b163aef73dbb4f40995c7a31fabb2d75"
+		],
+		"Pa": 1668005400000,
+		"timeZone": "Europe/London",
+		"title": "Do More with Multi-Window and Activity Embedding",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668006600000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "b9deb42bcc03464d8a299d3f04e0c495",
+		"yh": true,
+		"mb": false,
+		"lG": 1666903380700,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "what-s-new-with-the-car-app-library",
+		"Uh": [
+			"e8270c1ced6540329dd6496a5363c5b7"
+		],
+		"Pa": 1668006300000,
+		"timeZone": "Europe/London",
+		"title": "What’s New with The Car App Library",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668007200000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "02d4070b28af4f739c2611b0bd416ffd",
+		"yh": true,
+		"mb": false,
+		"lG": 1666903400920,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "improving-the-tv-user-experience",
+		"Uh": [
+			"eaa4f9cc663d43dea77ea3404b26f144"
+		],
+		"Pa": 1668006600000,
+		"timeZone": "Europe/London",
+		"title": "Improving the TV user experience",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668008400000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "0f246adcff474af880fd41ea9fa3200a",
+		"yh": true,
+		"mb": false,
+		"lG": 1667215800973,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "deep-dive-into-wear-os-app-architecture",
+		"Uh": [
+			"3fa998f932854aeca3598e0ae5c2e5db",
+			"91625d881c3d465fbb5269f8f9e7f899"
+		],
+		"Pa": 1668007200000,
+		"timeZone": "Europe/London",
+		"title": "Deep Dive into Wear OS App Architecture",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668009600000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "59bb7dbb1a9c438b80732e56d4933c80",
+		"yh": true,
+		"mb": false,
+		"lG": 1667215835769,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "creating-helpful-fitness-experiences",
+		"Uh": [
+			"a7ee03108adb4e84acc6fb3cb206f9a7",
+			"014267950c8f489b8430d5842d7f1a42"
+		],
+		"Pa": 1668008400000,
+		"timeZone": "Europe/London",
+		"title": "Creating Helpful Fitness Experiences with Health Services and Health Connect",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668010800000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "e404ba1c01b94bf7807e9ea0a316521c",
+		"yh": true,
+		"mb": false,
+		"lG": 1666903463089,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "building-media-apps-on-wear-os",
+		"Uh": [
+			"e831f9c283ed4ed59171a1aa808f9e8d",
+			"91625d881c3d465fbb5269f8f9e7f899"
+		],
+		"Pa": 1668009600000,
+		"timeZone": "Europe/London",
+		"title": "Building Media Apps on Wear OS",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668012000000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "0ee57692d9eb414198d940aedc84f9aa",
+		"yh": true,
+		"mb": false,
+		"lG": 1667215911101,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "ask-android-form-factors",
+		"Uh": [
+			"874dadace57347f29caddeb01e49d6a2",
+			"022d5f2cac3b4b1c88ac881610b59b0f",
+			"e8270c1ced6540329dd6496a5363c5b7",
+			"eaa4f9cc663d43dea77ea3404b26f144",
+			"786594ce8e154782b5aef2f156339124",
+			"26fdb3ea6ccb4369ac5dce8333076829",
+			"5e2d48dbf7c64c06b9a9f8a5dad61e2c",
+			"ca9301ab762c4809ac1a5ad4ad8f4633"
+		],
+		"Pa": 1668010800000,
+		"timeZone": "Europe/London",
+		"title": "#askAndroid Form Factors",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668013200000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "17aef09080d94e09a87f5f34f6ca0c06",
+		"yh": true,
+		"mb": false,
+		"lG": 1667216025580,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "panel-qa-form-factors",
+		"Uh": [
+			"874dadace57347f29caddeb01e49d6a2",
+			"022d5f2cac3b4b1c88ac881610b59b0f",
+			"e8270c1ced6540329dd6496a5363c5b7",
+			"eaa4f9cc663d43dea77ea3404b26f144",
+			"786594ce8e154782b5aef2f156339124",
+			"26fdb3ea6ccb4369ac5dce8333076829",
+			"5e2d48dbf7c64c06b9a9f8a5dad61e2c",
+			"ca9301ab762c4809ac1a5ad4ad8f4633"
+		],
+		"Pa": 1668012000000,
+		"timeZone": "Europe/London",
+		"title": "Form Factors Panel Q&A",
+		"qf": false,
+		"sg": false
+	},
+	{
+		"Ia": {
+			"ub": 0,
+			"Db": false,
+			"re": false,
+			"pb": null,
+			"lc": null
+		},
+		"code": "",
+		"description": "",
+		"Ab": 1668018600000,
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"WF": false,
+		"id": "67998159a9ae497b948b629f92022b93",
+		"yh": true,
+		"mb": false,
+		"lG": 1667216056068,
+		"livestream": {
+			"isEnabled": false,
+			"status": "NOT_STARTED",
+			"settings": {
+				"ue": false,
+				"type": "YOUTUBE",
+				"yw": false
+			}
+		},
+		"slug": "office-hours-sandbox-happy-hour",
+		"Uh": [],
+		"Pa": 1668013200000,
+		"timeZone": "Europe/London",
+		"title": "Happy Hour and Office Hours",
+		"qf": false,
+		"sg": false
+	}
+]
