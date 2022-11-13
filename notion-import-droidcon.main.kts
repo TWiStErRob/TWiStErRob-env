@@ -36,7 +36,10 @@ fun main(vararg args: String) {
 	}
 	val sessions = jsonMapper
 		.readValue<List<Group>>(File("droidcon-2022-london/sessions.json"))
-		.single().sessions
+		.single()
+		.sessions
+		.let { remap(it) }
+	describe(sessions)
 
 	val helpUrl = "https://www.notion.so/my-integrations"
 	val secret = System.getenv("NOTION_TOKEN")
@@ -44,8 +47,18 @@ fun main(vararg args: String) {
 
 	NotionClient(token = secret).apply { httpClient = OkHttp4Client(connectTimeoutMillis = 30_000) }.use { client ->
 		val droidConLondon2022 = client.retrievePage("8b215fe74d6e4fbcabb88f96917b6092")
-		val jsonSpeakers = sessions.flatMap { it.speakers }.map { it.name }.distinct()
+		val jsonSpeakers = sessions
+			.flatMap { it.speakers }
+			.map { it.name }
+			.distinct()
+		val jsonTags = sessions
+			.flatMap { it.categories }
+			.filter { it.name == "Tags" }
+			.flatMap { it.categoryItems }
+			.map { it.name }
+			.distinct()
 		val speakerPages = ensureSpeakers(client, jsonSpeakers)
+		val topicPages = ensureTopics(client, jsonTags)
 		val existingSessions = client
 			.allPages("d6d80a4765fe470dbae06fd5cd3d3f41")
 			.filter { it.properties["Event"]!!.relation!!.singleOrNull()?.id == droidConLondon2022.id }
@@ -65,7 +78,10 @@ fun main(vararg args: String) {
 					"Event" to PageProperty(relation = listOf(PageProperty.PageReference(droidConLondon2022.id))),
 					"Author(s)" to PageProperty(relation = session.speakers.map {
 						PageProperty.PageReference(speakerPages.getValue(it.name).id)
-					})
+					}),
+					"Topics" to PageProperty(relation = session.categories.single { it.name == "Tags" }.categoryItems.map {
+						PageProperty.PageReference(topicPages.getValue(it.name).id)
+					}),
 				).filterValues { it != null }.mapValues { it.value!! },
 			)
 		}
@@ -81,10 +97,19 @@ data class Group(
 		val startsAt: LocalDateTime?,
 		val endsAt: LocalDateTime?,
 		val speakers: List<Speaker>,
+		val categories: List<Category>,
 	) {
 		data class Speaker(
 			val name: String,
 		)
+		data class Category(
+			val name: String,
+			val categoryItems: List<CategoryItem>,
+		) {
+			data class CategoryItem(
+				val name: String,
+			)
+		}
 	}
 }
 
@@ -99,8 +124,8 @@ fun NotionClient.allPages(databaseId: String): List<Page> =
 fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>): Map<String, Page> {
 	val speakerPages = client.allPages("aecb82387adf4d7fa6816b791b0a579c")
 	val existingPages = speakerPages.associateBy { it.title ?: it.id }
-	val newSpeakerNames = wantedSpeakerNames - existingPages.keys
-	val newSpeakers = newSpeakerNames.associateWith { speakerName ->
+	val newSpeakersNames = wantedSpeakerNames - existingPages.keys
+	val newPages = newSpeakersNames.associateWith { speakerName ->
 		client.createPage(
 			parent = PageParent.database("aecb82387adf4d7fa6816b791b0a579c"),
 			properties = mapOf(
@@ -108,7 +133,22 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>): Map<
 			),
 		)
 	}
-	return existingPages + newSpeakers
+	return existingPages + newPages
+}
+
+fun ensureTopics(client: NotionClient, wantedTopicNames: List<String>): Map<String, Page> {
+	val topicPages = client.allPages("a05a1b8d8eed43a1bc2e684b9fae50e0")
+	val existingPages = topicPages.associateBy { it.title ?: it.id }
+	val newTopicNames = wantedTopicNames - existingPages.keys
+	val newPages = newTopicNames.associateWith { topicName ->
+		client.createPage(
+			parent = PageParent.database("a05a1b8d8eed43a1bc2e684b9fae50e0"),
+			properties = mapOf(
+				"title" to PageProperty(title = topicName.asRichText()),
+			),
+		)
+	}
+	return existingPages + newPages
 }
 
 fun String.asRichText(): List<PageProperty.RichText> =
@@ -120,4 +160,53 @@ val Page.title: String?
 			?: error("Missing property of type 'title', available properties: ${this.properties.keys}")
 		val title = prop.title ?: error("Missing title structure")
 		return title.singleOrNull()?.plainText
+	}
+
+@Suppress("NestedLambdaShadowedImplicitParameter")
+fun describe(sessions: List<Group.Session>) {
+	sessions
+		.flatMap { it.categories }
+		.map { it.name }
+		.distinct()
+		.forEach { cat ->
+			val items = sessions
+				.mapNotNull { it.categories.find { it.name == cat } }
+				.flatMap { it.categoryItems }
+				.map { it.name }
+				.distinct()
+				.map { item -> item to sessions.count { it.categories.any { it.categoryItems.any { it.name == item } } } }
+			println("${cat}: ${items}")
+		}
+}
+
+fun remap(sessions: List<Group.Session>): List<Group.Session> =
+	sessions.map { session ->
+		val others = session.categories.filter { it.name != "Tags" }
+		val tags = session
+			.categories
+			.flatMap { cat ->
+				cat.categoryItems
+					.mapNotNull { item ->
+						when (cat.name to item.name) {
+							"Track" to "droidcon" -> null
+							"Track" to "Flutter" -> "Flutter"
+							"Track" to "enterprise & security" -> "Enterprise"
+							"Tags" to "Other" -> null
+							"Tags" to "Compose" -> "Jetpack Compose"
+							"Tags" to "KMP" -> "Kotlin Multiplatform"
+							"Tags" to "Flow" -> "Kotlin Coroutines Flow"
+							else ->
+								if (cat.name == "Tags")
+									item.name
+								else
+									null
+						}
+					}
+			}
+			.distinct()
+			.map { name -> Group.Session.Category.CategoryItem(name) }
+			.let { items -> Group.Session.Category("Tags", items) }
+		session.copy(
+			categories = others + tags
+		)
 	}
