@@ -15,11 +15,16 @@ import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import notion.api.v1.NotionClient
 import notion.api.v1.http.OkHttp4Client
+import notion.api.v1.model.blocks.HeadingOneBlock
+import notion.api.v1.model.blocks.ParagraphBlock
+import notion.api.v1.model.common.ExternalFileDetails
+import notion.api.v1.model.common.FileType
 import notion.api.v1.model.common.PropertyType
 import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
 import java.io.File
+import java.net.URI
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -27,6 +32,7 @@ import java.time.format.DateTimeFormatter
 @Suppress("SpreadOperator")
 main(*args)
 
+@Suppress("LongMethod")
 fun main(vararg args: String) {
 	check(args.isEmpty()) { "No arguments expected." }
 	val jsonMapper = jsonMapper {
@@ -40,6 +46,9 @@ fun main(vararg args: String) {
 		.sessions
 		.let { remap(it) }
 	describe(sessions)
+	val speakers = jsonMapper
+		.readValue<List<Speaker>>(File("droidcon-2022-london/speakers.json"))
+	describe(speakers)
 
 	val helpUrl = "https://www.notion.so/my-integrations"
 	val secret = System.getenv("NOTION_TOKEN")
@@ -57,7 +66,7 @@ fun main(vararg args: String) {
 			.flatMap { it.categoryItems }
 			.map { it.name }
 			.distinct()
-		val speakerPages = ensureSpeakers(client, jsonSpeakers)
+		val speakerPages = ensureSpeakers(client, jsonSpeakers, speakers)
 		val topicPages = ensureTopics(client, jsonTags)
 		val existingSessions = client
 			.allPages("d6d80a4765fe470dbae06fd5cd3d3f41")
@@ -116,20 +125,82 @@ data class Group(
 val Group.Session.duration: Duration?
 	get() = if (startsAt != null && endsAt != null) Duration.between(startsAt, endsAt) else null
 
+data class Speaker(
+	val fullName: String,
+	val bio: String,
+	val tagLine: String,
+	val profilePicture: URI,
+	val links: List<Link>,
+) {
+	data class Link(
+		val title: String,
+		val linkType: String,
+		val url: String,
+	)
+}
+
 fun NotionClient.allPages(databaseId: String): List<Page> =
 	generateSequence(queryDatabase(databaseId)) { results ->
 		results.nextCursor?.let { queryDatabase(databaseId, startCursor = it) }
 	}.flatMap { it.results }.toList()
 
-fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>): Map<String, Page> {
+fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speakers: List<Speaker>): Map<String, Page> {
+	val speakerDetails = speakers.associateBy { it.fullName }
 	val speakerPages = client.allPages("aecb82387adf4d7fa6816b791b0a579c")
 	val existingPages = speakerPages.associateBy { it.title ?: it.id }
 	val newSpeakersNames = wantedSpeakerNames - existingPages.keys
 	val newPages = newSpeakersNames.associateWith { speakerName ->
+		val details = speakerDetails.getValue(speakerName)
+		val (company, role) = when {
+			"""( at |@|, )""".toRegex().findAll(details.tagLine).count() > 1 -> {
+				null to details.tagLine
+			}
+			" at " in details.tagLine -> {
+				val (role, company) = details.tagLine.split(" at ")
+				company.trim() to role.trim()
+			}
+			", " in details.tagLine -> {
+				val (role, company) = details.tagLine.split(", ")
+				company.trim() to role.trim()
+			}
+			"@" in details.tagLine -> {
+				val (role, company) = details.tagLine.split("@")
+				company.trim() to role.trim()
+			}
+			else -> {
+				null to details.tagLine
+			}
+		}
+		fun Speaker.link(linkType: String): PageProperty? =
+			this.links.singleOrNull { it.linkType == linkType }?.let { PageProperty(url = it.url) }
+
 		client.createPage(
 			parent = PageParent.database("aecb82387adf4d7fa6816b791b0a579c"),
+			icon = notion.api.v1.model.common.File(
+				type = FileType.External,
+				external = ExternalFileDetails(url = details.profilePicture.toString())
+			),
 			properties = mapOf(
 				"title" to PageProperty(title = speakerName.asRichText()),
+				"Company" to company?.let { PageProperty(richText = it.asRichText()) },
+				"Role" to PageProperty(richText = role.asRichText()),
+				"Twitter" to details.link("Twitter"),
+				"LinkedIn" to details.link("LinkedIn"),
+				"Blog" to details.link("Blog"),
+				"Website" to details.link("Company_Website"),
+				"Profile picture" to PageProperty(
+					files = listOf(
+						PageProperty.File(
+							name = "Profile picture",
+							type = FileType.External,
+							external = ExternalFileDetails(url = details.profilePicture.toString())
+						)
+					)
+				),
+			).filterValues { it != null }.mapValues { it.value!! },
+			children = listOf(
+				HeadingOneBlock(heading1 = HeadingOneBlock.Element("Bio at DroidCon 2022".asRichText())),
+				ParagraphBlock(ParagraphBlock.Element(details.bio.asRichText())),
 			),
 		)
 	}
@@ -163,6 +234,7 @@ val Page.title: String?
 	}
 
 @Suppress("NestedLambdaShadowedImplicitParameter")
+@JvmName("describeSessions")
 fun describe(sessions: List<Group.Session>) {
 	sessions
 		.flatMap { it.categories }
@@ -210,3 +282,14 @@ fun remap(sessions: List<Group.Session>): List<Group.Session> =
 			categories = others + tags
 		)
 	}
+
+@Suppress("NestedLambdaShadowedImplicitParameter")
+@JvmName("describeSpeakers")
+fun describe(speakers: List<Speaker>) {
+	println("Link types: ${speakers.flatMap { it.links }.map { it.linkType to it.title }.distinct()}")
+	speakers.forEach {
+		if (it.links.groupingBy { it.linkType }.eachCount().filterValues { it > 1 }.isNotEmpty()) {
+			println("Duplicate types for ${it.fullName}: ${it.links}")
+		}
+	}
+}
