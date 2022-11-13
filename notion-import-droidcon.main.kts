@@ -21,9 +21,6 @@ import notion.api.v1.model.databases.MultiSelectPropertySchema
 import notion.api.v1.model.databases.SelectOptionSchema
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
-import notion.api.v1.request.databases.RetrieveDatabaseRequest
-import notion.api.v1.request.databases.UpdateDatabaseRequest
-import notion.api.v1.request.pages.RetrievePageRequest
 import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
@@ -46,12 +43,11 @@ fun main(vararg args: String) {
 	val helpUrl = "https://www.notion.so/my-integrations"
 	val secret = System.getenv("NOTION_TOKEN")
 		?: error("NOTION_TOKEN environment variable not set, copy secret from 'Internal Integration Token' at ${helpUrl}.")
-	val databaseId = "d6d80a4765fe470dbae06fd5cd3d3f41"
 
 	NotionClient(token = secret).apply { httpClient = OkHttp4Client() }.use { client ->
-		val droidConLondon2022 = client.retrievePage(RetrievePageRequest("8b215fe74d6e4fbcabb88f96917b6092"))
+		val droidConLondon2022 = client.retrievePage("8b215fe74d6e4fbcabb88f96917b6092")
 		val sessionDatabase = client
-			.retrieveDatabase(RetrieveDatabaseRequest(databaseId))
+			.retrieveDatabase("d6d80a4765fe470dbae06fd5cd3d3f41")
 			.ensureSpeakers(client, sessions.flatMap { it.speakers }.map { it.name }.distinct())
 		val speakerOptions = sessionDatabase.speakers().associateBy { it.name }
 		sessions.forEach { session ->
@@ -98,11 +94,9 @@ fun Database.ensureSpeakers(client: NotionClient, speakerNames: List<String>): D
 		val missingNames = speakerNames.toSet() - speakersInSessionsDatabase.toSet()
 		val missingOptions = missingNames.map { SelectOptionSchema(it) }
 		client.updateDatabase(
-			UpdateDatabaseRequest(
-				id,
-				properties = mapOf(
-					"Author(s)" to MultiSelectPropertySchema(originalOptions + missingOptions)
-				)
+			databaseId = id,
+			properties = mapOf(
+				"Author(s)" to MultiSelectPropertySchema(originalOptions + missingOptions)
 			)
 		)
 	}
