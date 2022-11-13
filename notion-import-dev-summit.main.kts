@@ -19,12 +19,12 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import notion.api.v1.NotionClient
 import notion.api.v1.http.OkHttp4Client
 import notion.api.v1.model.common.ExternalFileDetails
+import notion.api.v1.model.common.File
 import notion.api.v1.model.common.FileType
 import notion.api.v1.model.common.PropertyType
 import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
-import java.io.File
 import java.net.URI
 import java.time.Duration
 import java.time.LocalDateTime
@@ -42,8 +42,8 @@ fun main(vararg args: String) {
 		addModule(JavaTimeModule())
 		configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 	}
-	val sessions = jsonMapper.readValue<List<Session>>(File("dev-summit-2022/london.json"))
-	val speakers = jsonMapper.readValue<List<Speaker>>(File("dev-summit-2022/london-speakers.json"))
+	val sessions = jsonMapper.readValue<List<Session>>(java.io.File("dev-summit-2022/london.json"))
+	val speakers = jsonMapper.readValue<List<Speaker>>(java.io.File("dev-summit-2022/london-speakers.json"))
 	val speakersById = speakers.associateBy { it.id }
 
 	val helpUrl = "https://www.notion.so/my-integrations"
@@ -109,7 +109,7 @@ data class Speaker(
 	@JsonProperty("vm")
 	val role: String,
 	@JsonProperty("sh")
-	val photo: Photo,
+	val photo: Photo?,
 ) {
 	data class Photo(
 		@JsonProperty("url")
@@ -138,24 +138,28 @@ fun ensureSpeakers(client: NotionClient, speakers: List<Speaker>): Map<String, P
 		val speaker = speakerDetails.getValue(speakerName)
 		client.createPage(
 			parent = PageParent.database("aecb82387adf4d7fa6816b791b0a579c"),
-			icon = notion.api.v1.model.common.File(
-				type = FileType.External,
-				external = ExternalFileDetails(url = speaker.photo.url.toString())
-			),
+			icon = speaker.photo?.let { photo ->
+				File(
+					type = FileType.External,
+					external = ExternalFileDetails(url = photo.url.toString())
+				)
+			},
 			properties = mapOf(
 				"title" to PageProperty(title = speakerName.asRichText()),
 				"Company" to PageProperty(richText = "Google".asRichText()),
 				"Role" to PageProperty(richText = speaker.role.asRichText()),
-				"Profile picture" to PageProperty(
-					files = listOf(
-						PageProperty.File(
-							name = "Profile picture",
-							type = FileType.External,
-							external = ExternalFileDetails(url = speaker.photo.url.toString())
+				"Profile picture" to speaker.photo?.let { photo ->
+					PageProperty(
+						files = listOf(
+							PageProperty.File(
+								name = "Profile picture",
+								type = FileType.External,
+								external = ExternalFileDetails(url = photo.url.toString())
+							)
 						)
 					)
-				),
-			),
+				},
+			).filterValues { it != null }.mapValues { it.value!! }
 		)
 	}
 	return existingPages + newPages
