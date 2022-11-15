@@ -13,11 +13,11 @@
 @file:DependsOn("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.4")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.0")
 
-import Calculate_main.ContributionsResponse.ContributorActivity
-import Calculate_main.ContributionsResponse.ContributorActivity.WeeklyContributions
-import Calculate_main.LoginName
-import Calculate_main.OrganisationName
-import Calculate_main.RepositoryName
+import Summarize_main.ContributionsResponse.ContributorActivity
+import Summarize_main.ContributionsResponse.ContributorActivity.WeeklyContributions
+import Summarize_main.LoginName
+import Summarize_main.OrganisationName
+import Summarize_main.RepositoryName
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
@@ -31,6 +31,32 @@ import java.net.URI
 typealias OrganisationName = String
 typealias RepositoryName = String
 typealias LoginName = String
+
+@Suppress("SpreadOperator")
+main(*args)
+
+/** Hack to expose this to the lowest level [unique] function. */
+lateinit var params: Params
+fun main(vararg args: String) {
+	check(args.size == 2) {
+		"""
+			Usage: kotlinc -script summarize.main.kts <params.summarize.yml> <output.json>
+			Invalid arguments: ${args.contentToString()}
+		""".trimIndent()
+	}
+	val paramsFile = File(args[0])
+	val summaryFile = File(args[1])
+	params = paramsFile.readYaml()
+	val data = params.orgs
+		.flatMap { org ->
+			org.repos.map { repo ->
+				repo to cache(org.name, repo)
+			}
+		}
+
+	val result: List<ContributionHistory> = process(data)
+	summaryFile.writeJson(result)
+}
 
 /**
  * https://docs.github.com/en/rest/metrics/statistics#get-all-contributor-commit-activity
@@ -256,34 +282,24 @@ data class Params(
 	val orgs: List<Org>,
 	val remapping: Map<LoginName, LoginName>,
 ) {
+
 	data class Org(
 		val name: OrganisationName,
 		val repos: List<RepositoryName>,
 	)
 }
 
-fun readParams(file: File): Params {
+inline fun <reified T> File.readYaml(): T {
 	val yaml = ObjectMapper(YAMLFactory()).apply {
 		registerKotlinModule()
 	}
-	return yaml.readValue(file.reader())
+	return yaml.readValue(this.reader())
 }
 
-val params = readParams(File("summary/example.yml"))
-val data = params.orgs
-	.flatMap { org ->
-		org.repos.map { repo ->
-			repo to cache(org.name, repo)
-		}
-	}
-
-val result: List<ContributionHistory> = process(data)
-result.write(File("summary.json"))
-
-fun Any.write(file: File) {
+fun File.writeJson(obj: Any) {
 	val serializer = jsonMapper {
 		addModule(kotlinModule())
 //		configure(SerializationFeature.INDENT_OUTPUT, true)
 	}
-	serializer.writeValue(file, this)
+	serializer.writeValue(this, obj)
 }
