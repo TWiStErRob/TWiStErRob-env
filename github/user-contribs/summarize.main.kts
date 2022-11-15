@@ -1,9 +1,3 @@
-// Based on:
-// main.kts: https://kotlinlang.org/docs/custom-script-deps-tutorial.html
-// Jackson: https://ktor.io/docs/serialization-client.html > Jackson
-// jackson {} config: https://www.baeldung.com/jackson-deserialize-json-unknown-properties
-// Base64: https://www.baeldung.com/java-base64-encode-and-decode
-
 // Implicit dependency: Java 11 (because ktor 2.x is compiled as Class 55)
 // Note: normally these dependencies are listed without a -jvm suffix,
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
