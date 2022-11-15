@@ -5,4 +5,5 @@
 /get-*.bat
 /get-*.log
 /*.html
+!/summary.html
 /*.json
