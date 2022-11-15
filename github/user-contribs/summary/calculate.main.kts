@@ -64,7 +64,7 @@ class ContributionsResponse : ArrayList<ContributorActivity>() {
 			 * @sample "octocat"
 			 * @param required
 			 */
-			val login: String,
+			val login: LoginName,
 			/**
 			 * @sample 1
 			 * @param required
@@ -163,7 +163,7 @@ class ContributionsResponse : ArrayList<ContributorActivity>() {
 	}
 }
 
-fun cache(org: String, repo: String): ContributionsResponse {
+fun cache(org: OrganisationName, repo: RepositoryName): ContributionsResponse {
 	val cache = File("cache/$org/$repo/contributors.json")
 	val serializer = jsonMapper {
 		addModule(kotlinModule())
@@ -184,9 +184,9 @@ data class ContributionHistory(
 	val contribs: List<WeeklyContributions>,
 )
 
-fun process(map: Map<String, ContributionsResponse>): List<ContributionHistory> =
+fun process(map: List<Pair<RepositoryName, ContributionsResponse>>): List<ContributionHistory> =
 	map
-		.mapValues { (_, contributions) -> contributions.trim() }
+		.map { (repo, contributions) -> repo to contributions.trim() }
 		.flatMap { (repo, contributions) ->
 			contributions.map { contrib ->
 				ContributionHistoryTemp(
@@ -276,7 +276,6 @@ val data = params.orgs
 			repo to cache(org.name, repo)
 		}
 	}
-	.toMap()
 
 val result: List<ContributionHistory> = process(data)
 result.write(File("summary.json"))
