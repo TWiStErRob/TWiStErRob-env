@@ -1,9 +1,9 @@
 /.idea/
-/cache/
 /temp/
 
-/get-*.bat
+# Generated output
+/cache/
+/get-com-all.bat
+/get-enterprise-all.bat
 /get-*.log
-/*.html
-!/summary.html
 /*.json
