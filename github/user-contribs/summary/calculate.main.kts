@@ -10,17 +10,26 @@
 @file:Repository("https://repo1.maven.org/maven2/")
 @file:DependsOn("com.fasterxml.jackson.core:jackson-databind:2.13.4")
 @file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4")
+@file:DependsOn("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.4")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.0")
 
 import Calculate_main.ContributionsResponse.ContributorActivity
 import Calculate_main.ContributionsResponse.ContributorActivity.WeeklyContributions
 import Calculate_main.LoginName
+import Calculate_main.OrganisationName
 import Calculate_main.RepositoryName
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.jsonMapper
+import com.fasterxml.jackson.module.kotlin.kotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import java.io.File
 import java.net.URI
 
+typealias OrganisationName = String
 typealias RepositoryName = String
 typealias LoginName = String
 
@@ -241,16 +250,33 @@ fun List<ContributorActivity>.merge(): List<WeeklyContributions> =
 		.toList()
 
 fun unique(name: LoginName): LoginName =
-	when (name) {
-		"renovate-bot" -> "renovate"
-		"renovate[bot]" -> "renovate"
-		else -> name
-	}
+	params.remapping[name] ?: name
 
-val data = mapOf(
-	"net.twisterrob.gradle" to cache("TWiStErRob", "net.twisterrob.gradle"),
-	"net.twisterrob.cinema" to cache("TWiStErRob", "net.twisterrob.cinema"),
-)
+data class Params(
+	val orgs: List<Org>,
+	val remapping: Map<LoginName, LoginName>,
+) {
+	data class Org(
+		val name: OrganisationName,
+		val repos: List<RepositoryName>,
+	)
+}
+
+fun readParams(file: File): Params {
+	val yaml = ObjectMapper(YAMLFactory()).apply {
+		registerKotlinModule()
+	}
+	return yaml.readValue(file.reader())
+}
+
+val params = readParams(File("summary/example.yml"))
+val data = params.orgs
+	.flatMap { org ->
+		org.repos.map { repo ->
+			repo to cache(org.name, repo)
+		}
+	}
+	.toMap()
 
 val result: List<ContributionHistory> = process(data)
 result.write(File("summary.json"))
