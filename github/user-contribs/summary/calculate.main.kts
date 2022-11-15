@@ -21,7 +21,6 @@ import Calculate_main.RepositoryName
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.jsonMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -166,7 +165,8 @@ class ContributionsResponse : ArrayList<ContributorActivity>() {
 
 fun cache(org: String, repo: String): ContributionsResponse {
 	val cache = File("cache/$org/$repo/contributors.json")
-	val serializer = jacksonObjectMapper().apply {
+	val serializer = jsonMapper {
+		addModule(kotlinModule())
 		configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 	}
 	return serializer.readValue(cache, ContributionsResponse::class.java)
@@ -282,7 +282,8 @@ val result: List<ContributionHistory> = process(data)
 result.write(File("summary.json"))
 
 fun Any.write(file: File) {
-	val serializer = jacksonObjectMapper().apply {
+	val serializer = jsonMapper {
+		addModule(kotlinModule())
 //		configure(SerializationFeature.INDENT_OUTPUT, true)
 	}
 	serializer.writeValue(file, this)
