@@ -1,0 +1,9 @@
+/.idea/
+/temp/
+
+# Generated output
+/cache/
+/get-com-all.bat
+/get-enterprise-all.bat
+/get-*.log
+/*.json

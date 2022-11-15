@@ -1,0 +1,9 @@
+orgs:
+  - name: TWiStErRob
+    repos:
+      - net.twisterrob.gradle
+      - net.twisterrob.cinema
+
+remapping:
+  renovate-bot: renovate
+  renovate[bot]: renovate

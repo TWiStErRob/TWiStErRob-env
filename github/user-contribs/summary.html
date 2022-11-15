@@ -1,0 +1,285 @@
+<head>
+	<title>Contributor Summary</title>
+	<!--[if IE 0]>
+	Hack for IntelliJ IDEA so it recognizes d3 below.
+	<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.js"></script>
+	<![endif]-->
+	<style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #controls {
+            top: 0;
+            left: 0;
+            position: absolute;
+        }
+
+        #sorting {
+            width: 60px;
+        }
+
+        .highlighted text {
+            font-weight: bold;
+        }
+
+        .highlighted circle {
+            /*noinspection CssUnknownProperty*/
+            r: 5 !important; /*svg*/
+            z-index: 10000;
+        }
+
+        .highlighted line {
+            stroke: #888 !important;
+        }
+
+        /*used by classed() in onmouseover/out*/
+        /*noinspection CssUnusedSymbol*/
+        circle.timelighted {
+            /*noinspection CssUnknownProperty*/
+            r: 5 !important; /*svg*/
+        }
+	</style>
+</head>
+<body>
+<div id="chart"></div>
+<div id="controls">
+	<!--suppress HtmlFormInputWithoutLabel -->
+	<select id="sorting"></select>
+	<div id="selected"></div>
+</div>
+</body>
+<script type="module">
+	import * as d3 from "https://cdn.skypack.dev/d3@7";
+
+	function Chart(data) {
+		const marginTop = 10;
+		const marginRight = 0;
+		const marginBottom = 0;
+		const chartTop = 30;
+		const chartStart = 50;
+		const colors = d3.schemeSpectral[11]
+
+
+		const x = d => d.w * 1000 // given d in data, returns the (temporal) x-value
+		const y = d => d.c // given d in data, returns the (quantitative) y-value
+		const z = d => d.login // given d in data, returns the (categorical) z-value
+
+		const width = window.innerWidth;
+		const size = (window.innerHeight - marginTop - marginBottom - chartTop)
+		             / (new d3.InternSet(d3.map(data, z)).size + 1)
+
+		const X = d3.map(data, x);
+		const Y = d3.map(data, y);
+		const Z = d3.map(data, z);
+
+		const xDomain = d3.extent(X);
+		const yDomain = [0, d3.max(Y)];
+		const zDomain = new d3.InternSet(Z);
+
+		// Omit any data not present in the z-domain.
+		const I = d3.range(X.length).filter(i => zDomain.has(Z[i]));
+
+		const height = zDomain.size * size + marginTop + marginBottom + chartTop;
+
+		const xScale = d3.scaleTime(xDomain, [chartStart, width - marginRight]);
+		const yScale = d3.scaleLinear(yDomain, [size / 6, size / 2]);
+		const zScale = d3.scaleOrdinal(zDomain, d3.range(zDomain.size));
+
+		function monthDiff(dateFrom, dateTo) {
+			return dateTo.getMonth() - dateFrom.getMonth() + (12 * (dateTo.getFullYear() - dateFrom.getFullYear()));
+		}
+
+		const color = z => colors[zScale(z) % colors.length];
+		const colorD = d => color(z(d));
+
+		const svg = d3.create("svg")
+				.attr("id", "chart")
+				.attr("width", width)
+				.attr("height", height)
+				.attr("viewBox", [0, 0, width, height])
+				.attr("style", "max-width: 100%; height: auto; height: intrinsic;")
+				.attr("font-family", "sans-serif")
+				.attr("font-size", size * 1.2)
+		;
+
+		const g = svg.selectAll("g")
+				.data(d3.group(I, i => Z[i]))
+				.join("g")
+				.on("mouseover", function (e, [z]) {
+					d3.select(this).classed("highlighted", true);
+					d3.select("#selected").text(z);
+				})
+				.on("mouseout", function () {
+					d3.select(this).classed("highlighted", false);
+					d3.select("#selected").text("");
+				})
+				.attr("transform", (_, i) => `translate(0,${i * size + marginTop + chartTop})`)
+		;
+		g.append("rect")
+				.attr("y", -size / 2)
+				.attr("width", width)
+				.attr("height", size)
+				.attr("fill", "transparent")
+
+		g.append("line")
+				.attr("class", ([z]) => "line-" + zScale(z))
+				.attr("x1", chartStart)
+				.attr("x2", width)
+				.attr("y1", 0)
+				.attr("y2", 0)
+				.style("stroke", "#eee")
+		;
+		g.append("text")
+				.attr("class", ([z]) => "text-" + zScale(z))
+				.attr("x", 0)
+				.attr("y", 0)
+				.attr("alignment-baseline", "middle")
+				.style("fill", "black")
+				.style("stroke", ([z]) => color(z))
+				.style("stroke-width", "0.3")
+				.text(([z]) => z)
+		;
+
+		g
+				.selectAll("dot")
+				.data(([, I]) => I.map(i => data[i]))
+				.enter()
+				.append("circle")
+				.attr("class", (d) => `dot-${zScale(z(d))}` + " " + `time-${x(d)}`)
+				.on("mouseover", function () {
+					const timeClass = Array.from(this.classList).find(s => s.startsWith("time-"));
+					d3.selectAll(`.${timeClass}`).classed("timelighted", true);
+				})
+				.on("mouseout", function () {
+					const timeClass = Array.from(this.classList).find(s => s.startsWith("time-"));
+					d3.selectAll(`.${timeClass}`).classed("timelighted", false);
+				})
+				.style("fill", colorD)
+				.attr("cx", d => xScale(x(d)))
+				.attr("cy", 0)
+				.attr("r", d => yScale(y(d)))
+				.style("stroke", "#aaa")
+				.append("title")
+				.text(d => `${y(d)} commits by ${d.login} in ${d.repo} on ${d3.timeFormat("%Y %b (%G w%u)")(x(d))}`)
+		;
+
+		svg.append("g")
+				.attr("transform", `translate(0,${marginTop})`)
+				.call(
+						// https://github.com/d3/d3-axis
+						d3.axisBottom(xScale)
+								.ticks(d3.timeMonth.every(1))
+								.tickFormat(d3.timeFormat("%b"))
+								.tickSizeOuter(0)
+				)
+				.call(g => g.selectAll("text").attr("transform", `translate(${width / monthDiff(new Date(xDomain[0]), new Date(xDomain[1])) / 2},0) rotate(-90)`).attr("transform-origin", "2 15"))
+				.call(g => g.select(".domain").remove())
+		;
+
+		// Year ticks, but without labels.
+		svg.append("g")
+				.attr("transform", `translate(0,${marginTop})`)
+				.call(
+						// https://github.com/d3/d3-axis
+						d3.axisTop(xScale)
+								.ticks(d3.timeYear.every(1))
+								.tickFormat(() => null)
+								.tickSizeOuter(0)
+				)
+				.call(g => g.select(".domain").remove())
+		;
+
+		// Year ticks, at every half year (so that year label is centered).
+		svg.append("g")
+				.attr("transform", `translate(0,${marginTop})`)
+				.call(
+						// https://github.com/d3/d3-axis
+						d3.axisTop(xScale)
+								.ticks(d3.timeMonth.every(6))
+								.tickSize(0) // remove tick line, label only.
+								.tickFormat((d) => {
+									if (d.getUTCMonth() === 0) {
+										return null;
+									} else {
+										return d3.timeFormat("%Y")(d);
+									}
+								})
+				)
+				.call(g => g.select(".domain").remove())
+		;
+
+		return svg.node();
+	}
+
+	const summary = await d3.json("summary.json");
+	const prep = summary.flatMap(d =>
+			d.contribs.map(c =>
+					({
+						login: d.login,
+						repo: d.repo,
+						a: c.a,
+						c: c.c,
+						d: c.d,
+						w: c.w
+					})
+			)
+	);
+
+	function render(sortFun) {
+		const logins = new d3.InternSet(d3.map(prep, d => d.login));
+		const sortedLogins = d3.sort(logins, sortFun);
+		const data = d3.sort(prep, d => sortedLogins.indexOf(d.login), d => d.repo);
+		console.log(data);
+		console.log(data[0]);
+		document.getElementById("chart").replaceWith(Chart(data));
+	}
+
+	function firstCommit(l) {
+		return d3.min(d3.map(d3.filter(prep, d => d.login === l && d.c > 0), d => d.w))
+	}
+
+	function lastCommit(l) {
+		return d3.max(d3.map(d3.filter(prep, d => d.login === l && d.c > 0), d => d.w))
+	}
+
+	const allGroup = {
+		"first_asc": {
+			"label": "First commit (asc)",
+			"sort": l => firstCommit(l)
+		},
+		"first_desc": {
+			"label": "First commit (desc)",
+			"sort": l => -firstCommit(l)
+		},
+		"last_asc": {
+			"label": "Last commit (asc)",
+			"sort": l => lastCommit(l)
+		},
+		"last_desc": {
+			"label": "Last commit (desc)",
+			"sort": l => -lastCommit(l)
+		},
+		"long_asc": {
+			"label": "Longest service (asc)",
+			"sort": l => lastCommit(l) - firstCommit(l)
+		},
+		"long_desc": {
+			"label": "Longest service (desc)",
+			"sort": l => firstCommit(l) - lastCommit(l)
+		},
+	}
+	render(allGroup["first_asc"].sort);
+	const select = d3.select("#sorting")
+			.on("change", (e) => render(allGroup[e.target.value].sort))
+	;
+	select
+			.selectAll('myOptions')
+			.data(Object.keys(allGroup))
+			.enter()
+			.append("option")
+			.text(d => allGroup[d].label)
+			.attr("value", d => d)
+	;
+</script>
