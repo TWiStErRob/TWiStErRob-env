@@ -12,6 +12,11 @@ For self-hosted GitHub Enterprise the URL is a bit different. So `get-enterpise.
 curl --header "Authorization: Basic BASE64_TOKEN" https://github.mycompany.com/api/v3/repos/%1/%2/stats/contributors > %1-%2.json
 ```
 
+Base64 encoding on command line to get `BASE64_TOKEN`:
+```shell
+powershell "[convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(\"user:pat\"))"
+```
+
 This solution doesn't work, because sometimes GitHub will respond with a 202 status code. This means that the data is not ready yet.
 See https://docs.github.com/en/rest/metrics/statistics#a-word-about-caching.
 
@@ -23,7 +28,7 @@ I based the solution on:
  * `HttpClient`: https://ktor.io/docs/http-client-engines.html#java
  * `Jackson`: https://ktor.io/docs/serialization-client.html > Jackson
  * `jackson {}` config: https://www.baeldung.com/jackson-deserialize-json-unknown-properties
- * `Base64`: https://www.baeldung.com/java-base64-encode-and-decode
+ * Base64: ~~https://www.baeldung.com/java-base64-encode-and-decode~~ ktor has a built-in function
 
 # Aggregating lot of repos
 Then I wrapped these in a get-all.bat file:

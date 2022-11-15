@@ -2,7 +2,6 @@
 // Note: normally these dependencies are listed without a -jvm suffix,
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
-@file:DependsOn("commons-codec:commons-codec:1.15")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.0")
 @file:DependsOn("io.ktor:ktor-client-java-jvm:2.1.1")
 @file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:2.1.1")
@@ -19,16 +18,13 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readBytes
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
+import io.ktor.util.encodeBase64
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.apache.commons.codec.binary.Base64
 import java.io.File
 import java.net.URI
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.seconds
-
-fun base64Encode(str: String): String =
-	Base64().encode(str.toByteArray()).decodeToString()
 
 /**
  * https://docs.github.com/en/rest/metrics/statistics#get-all-contributor-commit-activity
@@ -208,7 +204,7 @@ suspend fun HttpClient.contributions(
 	token: String
 ): HttpResponse {
 	val response = get("https://$host/repos/$org/$repo/stats/contributors") {
-		header("Authorization", "Basic ${base64Encode("$user:$token")}")
+		header("Authorization", "Basic ${"$user:$token".encodeBase64()}")
 	}
 	return when (response.status) {
 		HttpStatusCode.OK -> response
