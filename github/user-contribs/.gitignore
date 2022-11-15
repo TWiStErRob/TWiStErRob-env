@@ -1,0 +1,8 @@
+/.idea/
+/cache/
+/temp/
+
+/data/get-*.bat
+/data/get-*.log
+/outputs/*.html
+/outputs/*.json
