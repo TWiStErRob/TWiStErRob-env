@@ -9,25 +9,28 @@
 import com.opencsv.CSVReader
 import notion.api.v1.NotionClient
 import notion.api.v1.http.OkHttp4Client
+import notion.api.v1.model.common.ExternalFileDetails
+import notion.api.v1.model.common.File
+import notion.api.v1.model.common.FileType
 import notion.api.v1.model.common.PropertyType
+import notion.api.v1.model.databases.Database
 import notion.api.v1.model.databases.DatabaseProperty
 import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
-import java.io.File
 
 @Suppress("SpreadOperator")
 main(*args)
-fun File.readCSV(): List<Array<String>> =
+fun java.io.File.readCSV(): List<Array<String>> =
 	reader().use { reader ->
 		CSVReader(reader).use { csvReader ->
-			csvReader.readAll() 
+			csvReader.readAll()
 		}
 	}
-@Suppress("LongMethod")
+
 fun main(vararg args: String) {
 	check(args.size == 2) { "Usage: kotlinc -script notion-import-csv.main.kts <databaseID> <csvFileName>" }
-	val csv = File(args[1]).readCSV()
+	val csv = java.io.File(args[1]).readCSV()
 	val headers = csv[0]
 	val data = csv.drop(1)
 
@@ -37,19 +40,26 @@ fun main(vararg args: String) {
 
 	NotionClient(token = secret).apply { httpClient = OkHttp4Client(connectTimeoutMillis = 30_000) }.use { client ->
 		val database = client.retrieveDatabase(args[0])
-		val properties = headers.map { header ->  
-			database.properties[header]
-				?: error("No property named '${header}' in database, pick one of ${database.properties.keys}.")
-		}
+		val properties = headers.map { header -> database.property(header) }
 		data.forEach { row ->
-			check(row.size == headers.size) { 
+			check(row.size == headers.size) {
 				"Row has ${row.size} columns, expected ${headers.size}.\n{${headers.contentToString()}\n${row.contentToString()}"
-			} 
+			}
+			val icon = if ("icon" in headers) row[headers.indexOf("icon")] else null
 			client.createPage(
 				parent = PageParent.database(database.id),
+				icon = icon?.let { File(type = FileType.External, external = ExternalFileDetails(url = it)) },
 				properties = row.mapIndexedNotNull { index, value ->
-					val property = properties[index]
-					property.convert(client, value)?.let { property.name!! to it }
+					when (headers[index]) {
+						"icon" -> {
+							// No property value for "icon" as it's a special separate field on "Page".
+							null
+						}
+						else -> {
+							val property = properties[index]!!
+							property.convert(client, value)?.let { property.name!! to it }
+						}
+					}
 				}.toMap()
 			)
 		}
@@ -77,7 +87,15 @@ fun DatabaseProperty.convert(client: NotionClient, value: String): PageProperty?
 		PropertyType.Rollup -> null
 		PropertyType.Title -> PageProperty(title = value.asRichText())
 		PropertyType.People -> PageProperty(people = value.split(",").map { client.retrieveUser(value.trim()) })
-		PropertyType.Files -> TODO()
+		PropertyType.Files -> PageProperty(
+			files = value.split(",").map { url ->
+				PageProperty.File(
+					name = url,
+					type = FileType.External,
+					external = ExternalFileDetails(url = url)
+				)
+			}
+		)
 		PropertyType.Checkbox -> PageProperty(checkbox = value.toBoolean())
 		PropertyType.Url -> PageProperty(url = value)
 		PropertyType.Email -> PageProperty(email = value)
@@ -104,3 +122,25 @@ val Page.title: String?
 		val title = prop.title ?: error("Missing title structure")
 		return title.singleOrNull()?.plainText
 	}
+
+fun Database.property(name: String): DatabaseProperty? {
+	val prop = properties[name]
+	val special = name == "icon"
+	return when {
+		prop == null && special -> {
+			null
+		}
+
+		prop == null && !special -> {
+			error("No property named '${name}' in database, pick one of ${properties.keys}.")
+		}
+
+		prop != null && special -> {
+			error("Property name '${name}' is reserved for special use.")
+		}
+
+		else -> {
+			prop
+		}
+	}
+}
