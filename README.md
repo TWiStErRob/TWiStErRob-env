@@ -10,3 +10,5 @@ I have a complex environment setup on Windows, this repository shall contain thi
  * [GitHub](github)
    * [repository-convention](github/repository-convention) Self-controlled defaults for GitHub user/orgs.
    * [manage-draft-issues](github/project-manage-draft-issues) Create/update draft issues in a GitHub project.
+ * [Notion](notion)
+   * [notion-import](notion/import-data) Import data from JSON and CSV into Notion Databases.
