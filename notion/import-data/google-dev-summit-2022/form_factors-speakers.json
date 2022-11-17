@@ -1,0 +1,839 @@
+[
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Garan",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "014267950c8f489b8430d5842d7f1a42",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Jenkin",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/garanjenkin.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Anne-Kari",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "022d5f2cac3b4b1c88ac881610b59b0f",
+		"isVisible": true,
+		"vm": "Product Manager, Wear Developer Tools",
+		"Gc": "Mannsåker",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/akmannsaker.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Nick",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "0b2859ece0d74792a0ab41f280093fb0",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Butcher",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/0230-400o400o2-76a4baac-37c2-4192-9eb6-c8d81ce5d6e0.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Daniel",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "26fdb3ea6ccb4369ac5dce8333076829",
+		"isVisible": true,
+		"vm": "Product Manager",
+		"Gc": "Jacobson",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/events/danieljacobson.png"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Anna-Chiara",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "2f3d0c38cc2c42cdb5c0d05013fb83f9",
+		"isVisible": true,
+		"vm": "Product Manager",
+		"Gc": "Bellini",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/anna.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Andrew",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "34e180387e044e5fb9314ffe4cd3f22a",
+		"isVisible": true,
+		"vm": "Software Engineer",
+		"Gc": "Lewis",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/andrew.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Jose",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "39eb3fb0a3d14992b0f8fb0bf322ba8b",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Alcérreca",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/josealcerreca.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Ataul",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "3fa998f932854aeca3598e0ae5c2e5db",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Munim",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/ataul.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Matvei",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "4cbdbf12990649e4bc25329fb3475724",
+		"isVisible": true,
+		"vm": "Software Engineer",
+		"Gc": "Malkov",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/events/matveimalkov.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Sarah",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "4d2fb5e5a7594c708757055b32221fc0",
+		"isVisible": true,
+		"vm": "Product Manager",
+		"Gc": "Shamsie",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/sarahshamsie.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Corina",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "4f9ff7a6cde74e7988fca0479b0b8a89",
+		"isVisible": true,
+		"vm": "Software Engineer",
+		"Gc": "Grigoras",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/corina.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Wojtek",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "5aae9b6787bd4394b2db560fa5d7871b",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Kaliciński",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/wojtek.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Paris",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "5e2d48dbf7c64c06b9a9f8a5dad61e2c",
+		"isVisible": true,
+		"vm": "Product Manager",
+		"Gc": "Hsu",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/events/parishsu.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Liam",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "66e031dcc88a4d1c861f6fe1c72c47b2",
+		"isVisible": true,
+		"vm": "Senior Design Advocate",
+		"Gc": "Spradlin",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/events/liam.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Yacine",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "6e5872e473ba4d75b9954ce954ae9713",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Rezgui",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/events/yacinerezgui.png"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Alex",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "786594ce8e154782b5aef2f156339124",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Vanyo",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/emails/alexvanyo.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Paul",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "874dadace57347f29caddeb01e49d6a2",
+		"isVisible": true,
+		"vm": "Manager, Android DevRel",
+		"Gc": "Matthews",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/pmatthews.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Yuri",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "91625d881c3d465fbb5269f8f9e7f899",
+		"isVisible": true,
+		"vm": "Engineering Manager",
+		"Gc": "Schimke",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/yuri.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Breana",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "a7ee03108adb4e84acc6fb3cb206f9a7",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Tate",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/events/breanatate.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Ran",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "b163aef73dbb4f40995c7a31fabb2d75",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Nachmany",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/ran.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Ade",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "b2cd10f4a2674f03aba43da8bc6bd306",
+		"isVisible": true,
+		"vm": "Devices Lead",
+		"Gc": "Oshineye",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/ade.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Florina",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "bdf44d1e406e42b39dd72f4cbecfd07b",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Muntenescu",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/florinamuntenescu.png"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Rob",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "c7411785589049cc96143ad48b40e35b",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Orgiu",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/robo.png"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Clara",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "ca9301ab762c4809ac1a5ad4ad8f4633",
+		"isVisible": true,
+		"vm": "Engineering Manager",
+		"Gc": "Bayarri",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/events/clarabayarri.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Fung",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "d38027eac6bc4e9ebc381afa552f53b5",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Lam",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/funglam.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Francesco",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "d523256651094337ace9f5826fba2d75",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Romano",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/francescoromano.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Jerome",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "e45c32e09e5644e89e56ec6eab5f58ef",
+		"isVisible": true,
+		"vm": "Software Engineer",
+		"Gc": "Gaillard",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/events/jeromegaillard.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Ben",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "e8270c1ced6540329dd6496a5363c5b7",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Sagmoe",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/events/bensagmoe.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Chiara",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "e831f9c283ed4ed59171a1aa808f9e8d",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Chiappini",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/events/chiarachiappini.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Paul",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "eaa4f9cc663d43dea77ea3404b26f144",
+		"isVisible": true,
+		"vm": "Developer Relations Engineer",
+		"Gc": "Lammertsma",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/paullammertsma.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	},
+	{
+		"Pg": "",
+		"rl": "",
+		"Xc": "Chris",
+		"eventId": "5be5b2befbf942dca72c99f28c939715",
+		"id": "edc513ab34024b1e9fcfe1c18812d21a",
+		"isVisible": true,
+		"vm": "Software Engineer",
+		"Gc": "Warrington",
+		"sh": {
+			"aspect": "square",
+			"altText": "",
+			"fit": "none",
+			"position": {
+				"x": 50,
+				"y": 50
+			},
+			"size": 100,
+			"url": "https://services.google.com/fh/files/misc/chrisw.jpg"
+		},
+		"bk": {
+			"xC": "",
+			"cE": "",
+			"kE": "",
+			"iE": ""
+		}
+	}
+]
