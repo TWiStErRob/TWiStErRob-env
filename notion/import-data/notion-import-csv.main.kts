@@ -41,6 +41,12 @@ fun main(vararg args: String) {
 	NotionClient(token = secret).apply { httpClient = OkHttp4Client(connectTimeoutMillis = 30_000) }.use { client ->
 		val database = client.retrieveDatabase(args[0])
 		val properties = headers.map { header -> database.property(header) }
+		val relations = properties.map {
+			if (it?.type == PropertyType.Relation) 
+				client.allPages(it.relation!!.databaseId!!)
+			else
+				emptyList()
+		}
 		val titleProperty = properties.filterNotNull().single { it.type == PropertyType.Title }
 		val existingPages = client.allPages(database.id)
 			// TODO ability to key by multiple properties
@@ -77,7 +83,7 @@ fun main(vararg args: String) {
 
 							else -> {
 								val property = properties[index]!!
-								property.convert(client, value)?.let { property.name!! to it }
+								property.convert(client, value, relations[index])?.let { property.name!! to it }
 							}
 						}
 					}.toMap()
@@ -90,7 +96,7 @@ fun main(vararg args: String) {
 }
 
 @Suppress("ComplexMethod")
-fun DatabaseProperty.convert(client: NotionClient, value: String): PageProperty? {
+fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Page>): PageProperty? {
 	if (value.isBlank()) return null
 	return when (type) {
 		PropertyType.RichText -> PageProperty(richText = value.asRichText())
@@ -137,7 +143,17 @@ fun DatabaseProperty.convert(client: NotionClient, value: String): PageProperty?
 		}
 		PropertyType.Formula -> TODO()
 		PropertyType.Relation -> PageProperty(
-			relation = value.split(",").map { PageProperty.PageReference(it.trim().takeLast(32)) }
+			relation = when {
+				// 0123456789abcdef0123456789abcdef
+				// 0123456789abcdef0123456789abcdef,0123456789abcdef0123456789abcdef
+				// https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef,https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef
+				value.matches("""^((https://www.notion.so/([^,]*)-)?[0-9a-f]{32},?)+$""".toRegex()) -> {
+					value.split(",").map { PageProperty.PageReference(it.trim().takeLast(32)) }
+				}
+				else -> {
+					listOf(PageProperty.PageReference(pages.single { it.title == value }.id))
+				}
+			}
 		)
 		PropertyType.Rollup -> null
 		PropertyType.Title -> PageProperty(title = value.asRichText())
@@ -171,11 +187,13 @@ fun NotionClient.allPages(databaseId: String): List<Page> =
 fun String.asRichText(): List<PageProperty.RichText> =
 	listOf(PageProperty.RichText(text = PageProperty.RichText.Text(content = this)))
 
+val Page.titleProperty: PageProperty
+	get() = this.properties.values.singleOrNull { it.type == PropertyType.Title }
+		?: error("Missing property of type 'title', available properties: ${this.properties.mapValues { it.value.type }}")
+
 val Page.title: String?
 	get() {
-		val prop = this.properties.values.singleOrNull { it.id == "title" && it.type == PropertyType.Title }
-			?: error("Missing property of type 'title', available properties: ${this.properties.keys}")
-		val title = prop.title ?: error("Missing title structure")
+		val title = this.titleProperty.title ?: error("Missing title structure")
 		return title.singleOrNull()?.plainText
 	}
 
