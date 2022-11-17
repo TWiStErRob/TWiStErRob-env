@@ -9,8 +9,8 @@
 @file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.1.2")
 @file:DependsOn("com.jayway.jsonpath:json-path:2.7.0")
 
-import Create_project_draft_issues_main.GitHubDAO.FieldType
-import Create_project_draft_issues_main.GitHubDAO.ProjectItemField
+import Manage_draft_issues_main.GitHubDAO.FieldType
+import Manage_draft_issues_main.GitHubDAO.ProjectItemField
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
