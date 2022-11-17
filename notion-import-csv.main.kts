@@ -134,7 +134,9 @@ fun Database.property(name: String): DatabaseProperty? {
 		}
 
 		prop == null && !special -> {
-			error("No property named '${name}' in database, pick one of ${properties.keys}.")
+			error(
+				"No property named '${name}' in database, pick one of ${properties.keys}.\n" +
+						"If the column you're missing is a Relation, make sure the referenced Database also has the Connection.")
 		}
 
 		prop != null && special -> {
