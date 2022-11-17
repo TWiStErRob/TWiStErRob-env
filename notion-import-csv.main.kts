@@ -73,10 +73,24 @@ fun DatabaseProperty.convert(client: NotionClient, value: String): PageProperty?
 		PropertyType.RichText -> PageProperty(richText = value.asRichText())
 		PropertyType.Number -> PageProperty(number = value.toDouble())
 		PropertyType.Select -> PageProperty(
-			select = this.select!!.options!!.single { it.name == value }
+			select = this.select!!.options!!.singleOrNull { it.name == value }
+//				?: error("Cannot find option '${value}' in ${this.select!!.options!!.map { it.name!! }}")
+				?: DatabaseProperty.Select.Option(name = value)
+					.also {
+						val existingOptions = this.select!!.options!!.map { it.name!! }
+						System.err.println("WARNING: Select option ${value} not found in ${existingOptions}, creating it.")
+					}
 		)
 		PropertyType.MultiSelect -> PageProperty(
-			multiSelect = value.split(",").map { multiSelect!!.options!!.single { it.name == value } }
+			multiSelect = value.split(",").map {
+				multiSelect!!.options!!.singleOrNull { it.name == value }
+//					?: error("Cannot find option '${value}' in ${this.multiSelect!!.options!!.map { it.name!! }}")
+					?: DatabaseProperty.MultiSelect.Option(name = value)
+						.also {
+							val existingOptions = this.multiSelect!!.options!!.map { it.name!! }
+							System.err.println("WARNING: Multi-select option ${value} not found in ${existingOptions}, creating it.")
+						}
+			}
 		)
 		PropertyType.Date -> {
 			val match = """^(?<start>.*?)(?:->|→)(?<end>.*?)$""".toRegex().matchEntire(value)
