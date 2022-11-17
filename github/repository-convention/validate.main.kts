@@ -74,18 +74,18 @@ suspend fun main(vararg args: String) {
 		val repos = response.asJsonObject()
 			.getValue("/data/user/repositories/nodes").asJsonArray()
 		val reference = Json.createReader(File("reference.repo.json").reader()).use { it.readValue() }
-		repos.forEach {
+		repos.map {
 			val repo = it.asJsonObject()!!
 			val diff = JsonX.createDiff(repo, reference).clean().adorn(repo)
 			val mergeDiff = JsonX.createMergeDiff(repo, reference).clean()
-			println()
-			println("----------------------------------")
-			println("Repository: ${args[0]}/${repo.getString("name")} - ${repo.getString("url")}")
-			println("Actions to do to get to conventional state:")
-			println(diff.format())
-			println("Values that need changing to get to conventional state:")
-			println(mergeDiff.format())
+			Json.createObjectBuilder()
+				.add("name", repo.getString("name"))
+				.add("url", repo.getString("url"))
+				.add("diff", diff)
+				.add("mergeDiff", mergeDiff)
+				.build()
 		}
+		println(Json.createArrayBuilder().apply { repos.forEach(::add) }.build().format())
 	}
 }
 
@@ -211,7 +211,7 @@ class GitHub : Closeable {
 		install(Logging) {
 			logger = object : Logger {
 				override fun log(message: String) {
-					println(message)
+					System.err.println(message)
 				}
 			}
 			level = LogLevel.ALL
