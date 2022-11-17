@@ -47,7 +47,7 @@ fun main(vararg args: String) {
 			// example: What’s new with Amazon Appstore for Developers (Meet at devLounge):
 			// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-1587d2a54f1845a1850653895d4aa1cd
 			// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-6ed906121f514addb58cf039b1cd13a2
-			.groupBy { it.title ?: error("Page without title: ${it.url}") }
+			.groupBy { it.title?.lowercase() ?: error("Page without title: ${it.url}") }
 			.also { entry ->
 				val duplicates = entry.filterValues { it.size > 1 }
 				check(duplicates.isEmpty()) {
@@ -61,7 +61,8 @@ fun main(vararg args: String) {
 			check(row.size == headers.size) {
 				"Row has ${row.size} columns, expected ${headers.size}.\n{${headers.contentToString()}\n${row.contentToString()}"
 			}
-			val existing = existingPages[row[headers.indexOf(titleProperty.name)]]
+			val title = row[headers.indexOf(titleProperty.name)]
+			val existing = existingPages[title.lowercase()]
 			if (existing == null) {
 				val icon = if ("icon" in headers) row[headers.indexOf("icon")].takeIf { it.isNotBlank() } else null
 				client.createPage(
