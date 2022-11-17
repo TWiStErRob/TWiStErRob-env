@@ -78,9 +78,26 @@ fun DatabaseProperty.convert(client: NotionClient, value: String): PageProperty?
 		PropertyType.MultiSelect -> PageProperty(
 			multiSelect = value.split(",").map { multiSelect!!.options!!.single { it.name == value } }
 		)
-		PropertyType.Date -> PageProperty(
-			date = PageProperty.Date(value)
-		)
+		PropertyType.Date -> {
+			val match = """^(?<start>.*?)(?:->|→)(?<end>.*?)$""".toRegex().matchEntire(value)
+			val (start, end) = 
+				if (match != null) {
+					match.groupValues[1].trim() to match.groupValues[2].trim()
+				} else {
+					value to null
+				}
+			fun String.fixDate(): String =
+				if (this.matches("""^\d{4}/\d{2}/\d{2}$""".toRegex()))
+					this.replace('/', '-')
+				else
+					this
+			PageProperty(
+				date = PageProperty.Date(
+					start = start.fixDate(),
+					end = end?.fixDate(),
+				)
+			)
+		}
 		PropertyType.Formula -> TODO()
 		PropertyType.Relation -> PageProperty(
 			relation = value.split(",").map { PageProperty.PageReference(it.trim().takeLast(32)) }
