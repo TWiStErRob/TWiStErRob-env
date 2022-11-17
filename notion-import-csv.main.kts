@@ -45,7 +45,7 @@ fun main(vararg args: String) {
 			check(row.size == headers.size) {
 				"Row has ${row.size} columns, expected ${headers.size}.\n{${headers.contentToString()}\n${row.contentToString()}"
 			}
-			val icon = if ("icon" in headers) row[headers.indexOf("icon")] else null
+			val icon = if ("icon" in headers) row[headers.indexOf("icon")].takeIf { it.isNotBlank() } else null
 			client.createPage(
 				parent = PageParent.database(database.id),
 				icon = icon?.let { File(type = FileType.External, external = ExternalFileDetails(url = it)) },
@@ -67,8 +67,9 @@ fun main(vararg args: String) {
 }
 
 @Suppress("ComplexMethod")
-fun DatabaseProperty.convert(client: NotionClient, value: String): PageProperty? =
-	when (type) {
+fun DatabaseProperty.convert(client: NotionClient, value: String): PageProperty? {
+	if (value.isBlank()) return null
+	return when (type) {
 		PropertyType.RichText -> PageProperty(richText = value.asRichText())
 		PropertyType.Number -> PageProperty(number = value.toDouble())
 		PropertyType.Select -> PageProperty(
@@ -106,6 +107,7 @@ fun DatabaseProperty.convert(client: NotionClient, value: String): PageProperty?
 		PropertyType.LastEditedBy -> PageProperty(lastEditedBy = client.retrieveUser(value))
 		PropertyType.PropertyItem -> TODO()
 	}
+}
 
 fun NotionClient.allPages(databaseId: String): List<Page> =
 	generateSequence(queryDatabase(databaseId)) { results ->
