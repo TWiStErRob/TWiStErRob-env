@@ -41,27 +41,49 @@ fun main(vararg args: String) {
 	NotionClient(token = secret).apply { httpClient = OkHttp4Client(connectTimeoutMillis = 30_000) }.use { client ->
 		val database = client.retrieveDatabase(args[0])
 		val properties = headers.map { header -> database.property(header) }
+		val titleProperty = properties.filterNotNull().single { it.type == PropertyType.Title }
+		val existingPages = client.allPages(database.id)
+			// TODO ability to key by multiple properties
+			// example: What’s new with Amazon Appstore for Developers (Meet at devLounge):
+			// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-1587d2a54f1845a1850653895d4aa1cd
+			// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-6ed906121f514addb58cf039b1cd13a2
+			.groupBy { it.title ?: error("Page without title: ${it.url}") }
+			.also { entry ->
+				val duplicates = entry.filterValues { it.size > 1 }
+				check(duplicates.isEmpty()) {
+					val duplicateDescription = duplicates.entries
+						.joinToString(separator = "\n") { (title, pages) -> "${title}: ${pages.map { it.url }}" }
+					"Duplicate pages:\n$duplicateDescription"
+				}
+			}
+			.mapValues { (_, pages) -> pages.single() }
 		data.forEach { row ->
 			check(row.size == headers.size) {
 				"Row has ${row.size} columns, expected ${headers.size}.\n{${headers.contentToString()}\n${row.contentToString()}"
 			}
-			val icon = if ("icon" in headers) row[headers.indexOf("icon")].takeIf { it.isNotBlank() } else null
-			client.createPage(
-				parent = PageParent.database(database.id),
-				icon = icon?.let { File(type = FileType.External, external = ExternalFileDetails(url = it)) },
-				properties = row.mapIndexedNotNull { index, value ->
-					when (headers[index]) {
-						"icon" -> {
-							// No property value for "icon" as it's a special separate field on "Page".
-							null
+			val existing = existingPages[row[headers.indexOf(titleProperty.name)]]
+			if (existing == null) {
+				val icon = if ("icon" in headers) row[headers.indexOf("icon")].takeIf { it.isNotBlank() } else null
+				client.createPage(
+					parent = PageParent.database(database.id),
+					icon = icon?.let { File(type = FileType.External, external = ExternalFileDetails(url = it)) },
+					properties = row.mapIndexedNotNull { index, value ->
+						when (headers[index]) {
+							"icon" -> {
+								// No property value for "icon" as it's a special separate field on "Page".
+								null
+							}
+
+							else -> {
+								val property = properties[index]!!
+								property.convert(client, value)?.let { property.name!! to it }
+							}
 						}
-						else -> {
-							val property = properties[index]!!
-							property.convert(client, value)?.let { property.name!! to it }
-						}
-					}
-				}.toMap()
-			)
+					}.toMap()
+				)
+			} else {
+				System.err.println("Page ${existing.title} already exists: ${existing.url}")
+			}
 		}
 	}
 }
