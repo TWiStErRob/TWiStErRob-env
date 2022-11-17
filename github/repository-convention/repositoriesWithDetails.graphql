@@ -4,6 +4,8 @@ query($login: String!) {
             __typename
             nodes {
                 __typename
+                # URL of the repository in the GitHub UI.
+                url
 
                 ...about
                 ...general

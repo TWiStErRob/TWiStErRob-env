@@ -2,6 +2,13 @@
 
 Having many repos means that when there's a new setting the adoption is slow, and it can be confusing which repo has what settings. This project is meant to help maintain a healthy setup between repositories' settings.
 
+## Usage
+```
+set GITHUB_USER=<user>
+set GITHUB_TOKEN=ghp_...
+kotlinc -script validate.main.kts <org or user>
+```
+
 ## Development
 
 This is a Kotlin Script + GitHub GraphQL with `public_repo`, `admin:org`, `read:user` and `read:discussion` scopes.

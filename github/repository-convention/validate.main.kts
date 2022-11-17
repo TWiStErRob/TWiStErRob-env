@@ -71,13 +71,19 @@ suspend fun main(vararg args: String) {
 			Json.createReader(File("cached.repos.json").reader()).use { it.readValue() }
 		}
 		Json.createWriter(File("response.repos.json").writer()).use { it.write(response) }
-		val repos = response.asJsonObject().getValue("/data/user/repositories/nodes").asJsonArray()
+		val repos = response.asJsonObject()
+			.getValue("/data/user/repositories/nodes").asJsonArray()
 		val reference = Json.createReader(File("reference.repo.json").reader()).use { it.readValue() }
-		repos.forEach { repo ->
-			val diff = JsonX.createDiff(repo, reference).clean().adorn(repo.asJsonObject())
+		repos.forEach {
+			val repo = it.asJsonObject()!!
+			val diff = JsonX.createDiff(repo, reference).clean().adorn(repo)
 			val mergeDiff = JsonX.createMergeDiff(repo, reference).clean()
-			println(repo.asJsonObject().getString("name"))
+			println()
+			println("----------------------------------")
+			println("Repository: ${args[0]}/${repo.getString("name")} - ${repo.getString("url")}")
+			println("Actions to do to get to conventional state:")
 			println(diff.format())
+			println("Values that need changing to get to conventional state:")
 			println(mergeDiff.format())
 		}
 	}
@@ -169,6 +175,7 @@ object JsonX {
 		StringWriter()
 			.apply { use { it.prettyPrint(this@format) } }
 			.toString()
+			.trim()
 
 	private fun Writer.prettyPrint(value: JsonValue) {
 		Json
