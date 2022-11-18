@@ -16,6 +16,7 @@ import Validate_main.JsonX.filterNot
 import Validate_main.JsonX.format
 import Validate_main.JsonX.getSafeString
 import Validate_main.JsonX.map
+import Validate_main.JsonX.prettyPrint
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -85,6 +86,7 @@ suspend fun main(vararg args: String) {
 				.add("mergeDiff", mergeDiff)
 				.build()
 		}
+		File("result.repos.json").writer().use { it.prettyPrint(result) }
 		println(Json.createArrayBuilder().apply { result.forEach(::add) }.build().format())
 	}
 }
@@ -177,7 +179,7 @@ object JsonX {
 			.toString()
 			.trim()
 
-	private fun Writer.prettyPrint(value: JsonValue) {
+	fun Writer.prettyPrint(value: JsonValue) {
 		Json
 			.createWriterFactory(
 				mapOf(
