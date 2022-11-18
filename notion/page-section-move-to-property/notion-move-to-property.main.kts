@@ -26,17 +26,16 @@ fun main(vararg args: String) {
 		val pages = client.allPages(args[0])
 		pages.forEach { page ->
 			val body = client.retrieveBlockChildren(page.id).results
-			val section = body.sectionBetween(
+			val (heading, section) = body.sectionBetween(
 				start = { it.isHeading && it.headingText.asString() == args[1] },
 				end = { it.isHeading }
 			)
-			val error = section.validate(page, args[1])
+			val error = page.validate(section, heading, args[1])
 			if (error != null) {
 				System.err.println(error)
 				return@forEach
 			}
-			val text = section!!
-				.drop(1)
+			val text = section
 				.map { it.asParagraph().paragraph.richText }
 				// Ignore empty paragraphs as they don't contribute content.
 				.filter { it.asString().isNotBlank() }
@@ -52,6 +51,7 @@ fun main(vararg args: String) {
 				)
 			)
 			section.forEach { client.deleteBlock(it.id!!) }
+			client.deleteBlock(heading!!.id!!)
 		}
 	}
 }
@@ -78,16 +78,16 @@ fun String.asRichText(): List<PageProperty.RichText> =
 fun List<PageProperty.RichText>.asString(): String =
 	this.joinToString { it.text!!.content!! }
 
-fun List<Block>.sectionBetween(start: (Block) -> Boolean, end: (Block) -> Boolean): List<Block>? {
+fun List<Block>.sectionBetween(start: (Block) -> Boolean, end: (Block) -> Boolean): Pair<Block?, List<Block>> {
 	val headingStartIndex = this.indexOfFirst(start)
-	if (headingStartIndex == -1) return null
+	if (headingStartIndex == -1) return null to emptyList()
 	val headingEndIndexPart = this.subList(headingStartIndex + 1, size).indexOfFirst(end)
 	val headingEndIndex =
 		if (headingEndIndexPart == -1)
 			this.size
 		else
 			headingStartIndex + 1 + headingEndIndexPart
-	return this.subList(headingStartIndex, headingEndIndex)
+	return this[headingStartIndex] to this.subList(headingStartIndex + 1, headingEndIndex)
 }
 
 fun <T> Iterable<T>.joinTo(
@@ -105,18 +105,18 @@ fun <T> Iterable<T>.joinTo(
 	return buffer
 }
 
-fun List<Block>?.validate(page: Page, heading: String): String? =
+fun Page.validate(section: List<Block>, heading: Block?, header: String): String? =
 	when {
-		this == null ->
-			"${page.id} / ${page.url}: Section heading ${heading} is missing."
-		this.isEmpty() || !this.first().isHeading ->
-			"${page.id} / ${page.url}: Section is missing heading (${heading})."
-		this.size == 1 ->
-			"${page.id} / ${page.url}: Section between heading ${heading} and next heading is empty."
-		!this.drop(1).all { it.type == BlockType.Paragraph } ->
-			"${page.id} / ${page.url}: Section is not all paragraphs: ${this.map { it.type }}"
-		this.any { it.hasChildren == true } ->
-			"${page.id} / ${page.url}: Section elements have children: ${this.filter { it.hasChildren == true }}."
+		heading == null ->
+			"${this.id} / ${this.url}: Section heading ${header} is missing."
+		heading.hasChildren == true ->
+			"${this.id} / ${this.url}: Section heading has children: ${heading}."
+		section.isEmpty() ->
+			"${this.id} / ${this.url}: Section between heading ${header} and next heading is empty."
+		!section.all { it.type == BlockType.Paragraph } ->
+			"${this.id} / ${this.url}: Section is not all paragraphs: ${section.map { it.type }}"
+		section.any { it.hasChildren == true } ->
+			"${this.id} / ${this.url}: Section elements have children: ${section.filter { it.hasChildren == true }}."
 		else ->
 			null
 	}
