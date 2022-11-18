@@ -83,7 +83,7 @@ suspend fun main(vararg args: String) {
 		).use { it.readValue() }
 		val result = repos.map {
 			val repo = it.asJsonObject()!!
-			val diff = JsonX.createDiff(repo, reference).clean().adorn(repo)
+			val diff = JsonX.createDiff(repo, reference).adorn(repo).clean()
 			val mergeDiff = JsonX.createMergeDiff(repo, reference).clean()
 			Json.createObjectBuilder()
 				.add("name", repo.getString("name"))
@@ -113,17 +113,26 @@ fun JsonObject.clean(): JsonObject =
 fun JsonArray.clean(): JsonArray =
 	this
 		.filterNot { value ->
-			value.asJsonObject().getSafeString("value") == "<REPOSITORY_SPECIFIC>"
-					&& value.asJsonObject().getString("op") == JsonPatch.Operation.REPLACE.operationName()
+			// Only in case we're changing a value from "a" to "b".
+			value.asJsonObject().getString("op") == JsonPatch.Operation.REPLACE.operationName()
+					// If the value we should change to is <REPOSITORY_SPECIFIC>, then those are ignored.
+					&& value.asJsonObject().getSafeString("value") == "<REPOSITORY_SPECIFIC>"
+					// But if the original value is null, then that means the specific value is missing,
+					// so we should keep it.
+					&& !value.asJsonObject().isNull("original")
 		}
 		.filterNot { value ->
-			value.asJsonObject().getString("path").matches("""^/repositoryTopics/nodes/\d+$""".toRegex())
-					&& value.asJsonObject().getString("op") == JsonPatch.Operation.REMOVE.operationName()
+			// The reference only contains a topic so that it's flagged for addition,
+			// it doesn't mean that the extra topics must be removed.
+			value.asJsonObject().getString("op") == JsonPatch.Operation.REMOVE.operationName()
+					&& value.asJsonObject().getString("path").matches("""^/repositoryTopics/nodes/\d+$""".toRegex())
 		}
 		.filterNot { value ->
-			value.asJsonObject().getString("path")
+			// The reference only contains a required status check so that it's flagged for addition,
+			// it doesn't mean that the extra checks must be removed.
+			value.asJsonObject().getString("op") == JsonPatch.Operation.REMOVE.operationName()
+					&& value.asJsonObject().getString("path")
 				.matches("""^/branchProtectionRules/nodes/\d+/requiredStatusChecks/\d+$""".toRegex())
-					&& value.asJsonObject().getString("op") == JsonPatch.Operation.REMOVE.operationName()
 		}
 
 fun JsonArray.adorn(source: JsonObject): JsonArray =
