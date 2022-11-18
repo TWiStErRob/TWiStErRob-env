@@ -68,28 +68,35 @@ fun main(vararg args: String) {
 				"Row has ${row.size} columns, expected ${headers.size}.\n{${headers.contentToString()}\n${row.contentToString()}"
 			}
 			val title = row[headers.indexOf(titleProperty.name)]
+			val icon = if ("icon" in headers) row[headers.indexOf("icon")].takeIf { it.isNotBlank() } else null
 			val existing = existingPages[title.lowercase()]
+			val iconValue = icon?.let { File(type = FileType.External, external = ExternalFileDetails(url = it)) }
+			val propertyValues = row.mapIndexedNotNull { index, value ->
+				when (headers[index]) {
+					"icon" -> {
+						// No property value for "icon" as it's a special separate field on "Page".
+						null
+					}
+
+					else -> {
+						val property = properties[index]!!
+						property.convert(client, value, relations[index])?.let { property.name!! to it }
+					}
+				}
+			}.toMap()
 			if (existing == null) {
-				val icon = if ("icon" in headers) row[headers.indexOf("icon")].takeIf { it.isNotBlank() } else null
 				client.createPage(
 					parent = PageParent.database(database.id),
-					icon = icon?.let { File(type = FileType.External, external = ExternalFileDetails(url = it)) },
-					properties = row.mapIndexedNotNull { index, value ->
-						when (headers[index]) {
-							"icon" -> {
-								// No property value for "icon" as it's a special separate field on "Page".
-								null
-							}
-
-							else -> {
-								val property = properties[index]!!
-								property.convert(client, value, relations[index])?.let { property.name!! to it }
-							}
-						}
-					}.toMap()
+					icon = iconValue,
+					properties = propertyValues
 				)
 			} else {
 				System.err.println("Page ${existing.title} already exists: ${existing.url}")
+				client.updatePage(
+					pageId = existing.id,
+					icon = iconValue,
+					properties = propertyValues
+				)
 			}
 		}
 	}
