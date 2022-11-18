@@ -1,5 +1,6 @@
 {
 	"__typename": "Repository",
+	"url": "<REPOSITORY_SPECIFIC>",
 	"homepageUrl": "<REPOSITORY_SPECIFIC>",
 	"description": "<REPOSITORY_SPECIFIC>",
 	"repositoryTopics": {
@@ -18,16 +19,16 @@
 	"openGraphImageUrl": "<REPOSITORY_SPECIFIC>",
 	"hasWikiEnabled": false,
 	"hasIssuesEnabled": true,
-	"hasDiscussionsEnabled": true,
+	"hasDiscussionsEnabled": false,
 	"hasProjectsEnabled": false,
-	"mergeCommitAllowed": true,
+	"mergeCommitAllowed": false,
 	"mergeCommitMessage": "PR_TITLE",
 	"mergeCommitTitle": "MERGE_MESSAGE",
 	"squashMergeAllowed": true,
-	"squashMergeCommitTitle": "COMMIT_OR_PR_TITLE",
-	"squashMergeCommitMessage": "COMMIT_MESSAGES",
-	"rebaseMergeAllowed": true,
-	"allowUpdateBranch": false,
+	"squashMergeCommitTitle": "PR_TITLE",
+	"squashMergeCommitMessage": "BLANK",
+	"rebaseMergeAllowed": false,
+	"allowUpdateBranch": true,
 	"autoMergeAllowed": true,
 	"deleteBranchOnMerge": true,
 	"visibility": "PUBLIC",
@@ -52,24 +53,24 @@
 		"origin": "REPOSITORY"
 	},
 	"defaultBranchRef": {
-		"name": "main"
+		"name": "<REPOSITORY_SPECIFIC>"
 	},
 	"branchProtectionRules": {
 		"totalCount": 1,
 		"nodes": [
 			{
-				"pattern": "main",
+				"pattern": "<REPOSITORY_SPECIFIC>",
 				"matchingRefs": {
 					"totalCount": 1,
 					"nodes": [
 						{
-							"name": "main"
+							"name": "<REPOSITORY_SPECIFIC>"
 						}
 					]
 				},
-				"requiresApprovingReviews": false,
-				"requiredApprovingReviewCount": null,
-				"dismissesStaleReviews": false,
+				"requiresApprovingReviews": true,
+				"requiredApprovingReviewCount": 0,
+				"dismissesStaleReviews": true,
 				"requiresCodeOwnerReviews": false,
 				"requireLastPushApproval": false,
 				"requiresStatusChecks": true,
@@ -88,7 +89,7 @@
 				"requiresLinearHistory": true,
 				"lockBranch": false,
 				"isAdminEnforced": false,
-				"allowsForcePushes": true,
+				"allowsForcePushes": false,
 				"bypassForcePushAllowances": {
 					"totalCount": 0,
 					"nodes": []
