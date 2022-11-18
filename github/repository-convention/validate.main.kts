@@ -260,6 +260,7 @@ suspend fun GitHub.repositoriesDetails(owner: String): String {
 		query = File("repositoriesWithDetails.graphql").readText(),
 		variables = mapOf(
 			"login" to owner,
+			"production" to true,
 		),
 	)
 	return response.bodyAsText().also { it.checkGraphQLError() }

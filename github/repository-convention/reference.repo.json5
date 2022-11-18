@@ -98,12 +98,12 @@
 			}
 		]
 	},
-	"environment": {
-		"name": "github-pages",
-		"protectionRules": {
-			"nodes": []
-		}
-	},
+	//"environment": {
+	//	"name": "github-pages",
+	//	"protectionRules": {
+	//		"nodes": []
+	//	}
+	//},
 	"deployKeys": {
 		"totalCount": 0,
 		"nodes": []
