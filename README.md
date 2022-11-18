@@ -12,4 +12,5 @@ I have a complex environment setup on Windows, this repository shall contain thi
    * [manage-draft-issues](github/project-manage-draft-issues) Create/update draft issues in a GitHub project.
    * [user-contribs](github/user-contribs) Interactive GitHub User Contribution Stats for multiple repositories.
  * [Notion](notion)
-   * [notion-import](notion/import-data) Import data from JSON and CSV into Notion Databases.
+   * [import-data](notion/import-data) Import data from JSON and CSV into Notion Databases.
+   * [move-to-property](notion/page-section-move-to-property) Move a page section to a property of the page.
