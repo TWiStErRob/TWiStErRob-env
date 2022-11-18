@@ -120,7 +120,7 @@ fun NotionClient.updatePage(page: Page, icon: File?, properties: Map<String, Pag
 	}
 	if (filtered.isNotEmpty()) {
 		if (ignored.isNotEmpty()) {
-			println("Ignoring redundant properties: ${ignored.keys}")
+			println("Ignoring redundant properties on '${page.title}' (${page.url}): ${ignored.keys}")
 		}
 		this.updatePage(
 			pageId = page.id,
@@ -320,8 +320,8 @@ fun classify(
 			oldValue == null || (old.isRichText && oldValue == emptyList<PageProperty.RichText>())
 		}
 	return Triple(
-		fresh.associateBy({ it.first }, { it.second }),
-		redundant.associateBy({ it.first }, { it.second }),
+		fresh.associateBy({ it.first }, { it.third }),
+		redundant.associateBy({ it.first }, { it.third }),
 		conflicting.associateBy({ it.first }, { it.second to it.third }),
 	)
 }
