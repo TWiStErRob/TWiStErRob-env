@@ -44,7 +44,7 @@ fun main(vararg args: String) {
 		val database = client.retrieveDatabase(args[0])
 		val properties = headers.map { header -> database.property(header) }
 		val relations = properties.map {
-			if (it?.type == PropertyType.Relation) 
+			if (it?.type == PropertyType.Relation)
 				client.allPages(it.relation!!.databaseId!!)
 			else
 				emptyList()
@@ -283,13 +283,12 @@ fun Database.property(name: String): DatabaseProperty? {
 		prop == null && special -> {
 			null
 		}
-
 		prop == null && !special -> {
 			error(
 				"No property named '${name}' in database, pick one of ${properties.keys}.\n" +
-						"If the column you're missing is a Relation, make sure the referenced Database also has the Connection.")
+						"If the column you're missing is a Relation, make sure the referenced Database also has the Connection."
+			)
 		}
-
 		prop != null && special -> {
 			error("Property name '${name}' is reserved for special use.")
 		}
