@@ -18,6 +18,8 @@ import notion.api.v1.model.databases.DatabaseProperty
 import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import kotlin.reflect.KProperty1
 
 @Suppress("SpreadOperator")
 main(*args)
@@ -41,33 +43,97 @@ fun main(vararg args: String) {
 	NotionClient(token = secret).apply { httpClient = OkHttp4Client(connectTimeoutMillis = 30_000) }.use { client ->
 		val database = client.retrieveDatabase(args[0])
 		val properties = headers.map { header -> database.property(header) }
+		val relations = properties.map {
+			if (it?.type == PropertyType.Relation)
+				client.allPages(it.relation!!.databaseId!!)
+			else
+				emptyList()
+		}
+		val titleProperty = properties.filterNotNull().single { it.type == PropertyType.Title }
+		val existingPages = client.getAllPagesByUniqueTitle(database.id)
 		data.forEach { row ->
 			check(row.size == headers.size) {
 				"Row has ${row.size} columns, expected ${headers.size}.\n{${headers.contentToString()}\n${row.contentToString()}"
 			}
+			val title = row[headers.indexOf(titleProperty.name)]
 			val icon = if ("icon" in headers) row[headers.indexOf("icon")].takeIf { it.isNotBlank() } else null
-			client.createPage(
-				parent = PageParent.database(database.id),
-				icon = icon?.let { File(type = FileType.External, external = ExternalFileDetails(url = it)) },
-				properties = row.mapIndexedNotNull { index, value ->
-					when (headers[index]) {
-						"icon" -> {
-							// No property value for "icon" as it's a special separate field on "Page".
-							null
-						}
-						else -> {
-							val property = properties[index]!!
-							property.convert(client, value)?.let { property.name!! to it }
-						}
+			val existing = existingPages[title.lowercase()]
+			val iconValue = icon?.let { File(type = FileType.External, external = ExternalFileDetails(url = it)) }
+			val propertyValues = row.mapIndexedNotNull { index, value ->
+				when (headers[index]) {
+					"icon" -> {
+						// No property value for "icon" as it's a special separate field on "Page".
+						null
 					}
-				}.toMap()
-			)
+
+					else -> {
+						val property = properties[index]!!
+						property.convert(client, value, relations[index])?.let { property.name!! to it }
+					}
+				}
+			}.toMap()
+			if (existing == null) {
+				client.createPage(database, iconValue, propertyValues)
+			} else {
+				client.updatePage(existing, iconValue, propertyValues)
+			}
 		}
 	}
 }
 
+fun NotionClient.getAllPagesByUniqueTitle(database: String): Map<String, Page> =
+	this.allPages(database)
+		// TODO ability to key by multiple properties
+		// example: What’s new with Amazon Appstore for Developers (Meet at devLounge):
+		// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-1587d2a54f1845a1850653895d4aa1cd
+		// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-6ed906121f514addb58cf039b1cd13a2
+		.groupBy { it.title?.lowercase() ?: error("Page without title: ${it.url}") }
+		.also { entry ->
+			val duplicates = entry.filterValues { it.size > 1 }
+			check(duplicates.isEmpty()) {
+				val duplicateDescription = duplicates.entries
+					.joinToString(separator = "\n") { (title, pages) -> "${title}: ${pages.map { it.url }}" }
+				"Duplicate pages:\n$duplicateDescription"
+			}
+		}
+		.mapValues { (_, pages) -> pages.single() }
+
+fun NotionClient.createPage(database: Database, icon: File?, properties: Map<String, PageProperty>) {
+	this.createPage(
+		parent = PageParent.database(database.id),
+		icon = icon,
+		properties = properties
+	)
+}
+
+fun NotionClient.updatePage(page: Page, icon: File?, properties: Map<String, PageProperty>) {
+	val (filtered, ignored, conflicting) = classify(page.properties, properties)
+	if (conflicting.isNotEmpty()) {
+		val conflictDetails = conflicting.entries.joinToString(separator = "\n\n") { (name, props) ->
+			"${name} (old):\n${props.first}\n${name} (new):\n${props.second}"
+		}
+		error(
+			"Existing page '${page.title}' (${page.url}) has conflicting values:\n" +
+					conflictDetails +
+					"\nPlease update the CSV data or the target Database in Notion to resolve this."
+		)
+	}
+	if (filtered.isNotEmpty()) {
+		if (ignored.isNotEmpty()) {
+			println("Ignoring redundant properties on '${page.title}' (${page.url}): ${ignored.keys}")
+		}
+		this.updatePage(
+			pageId = page.id,
+			icon = icon,
+			properties = filtered
+		)
+	} else {
+		println("All properties (${ignored.keys}) were up to date in '${page.title}' (${page.url})")
+	}
+}
+
 @Suppress("ComplexMethod")
-fun DatabaseProperty.convert(client: NotionClient, value: String): PageProperty? {
+fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Page>): PageProperty? {
 	if (value.isBlank()) return null
 	return when (type) {
 		PropertyType.RichText -> PageProperty(richText = value.asRichText())
@@ -93,28 +159,17 @@ fun DatabaseProperty.convert(client: NotionClient, value: String): PageProperty?
 			}
 		)
 		PropertyType.Date -> {
-			val match = """^(?<start>.*?)(?:->|→)(?<end>.*?)$""".toRegex().matchEntire(value)
-			val (start, end) = 
-				if (match != null) {
-					match.groupValues[1].trim() to match.groupValues[2].trim()
-				} else {
-					value to null
-				}
-			fun String.fixDate(): String =
-				if (this.matches("""^\d{4}/\d{2}/\d{2}$""".toRegex()))
-					this.replace('/', '-')
-				else
-					this
+			val (start, end) = parseDateRange(value)
 			PageProperty(
 				date = PageProperty.Date(
-					start = start.fixDate(),
-					end = end?.fixDate(),
+					start = start,
+					end = end,
 				)
 			)
 		}
 		PropertyType.Formula -> TODO()
 		PropertyType.Relation -> PageProperty(
-			relation = value.split(",").map { PageProperty.PageReference(it.trim().takeLast(32)) }
+			relation = value.parseReferencedIds(pages).map { PageProperty.PageReference(it) }
 		)
 		PropertyType.Rollup -> null
 		PropertyType.Title -> PageProperty(title = value.asRichText())
@@ -140,20 +195,85 @@ fun DatabaseProperty.convert(client: NotionClient, value: String): PageProperty?
 	}
 }
 
+fun parseDateRange(value: String): Pair<String, String?> {
+	val match = """^(?<start>.*?)(?:->|→)(?<end>.*?)$""".toRegex().matchEntire(value)
+	val (start, end) =
+		if (match != null) {
+			match.groupValues[1].trim() to match.groupValues[2].trim()
+		} else {
+			value to null
+		}
+	fun String.fixDate(): String =
+		if (this.matches("""^\d{4}/\d{2}/\d{2}$""".toRegex()))
+			this.replace('/', '-')
+		else
+			this
+
+	val start1 = start.fixDate()
+	val end1 = end?.fixDate()
+	return Pair(start1, end1)
+}
+
+fun String.parseReferencedIds(pages: List<Page>): List<String> =
+	when {
+		// 0123456789abcdef0123456789abcdef
+		// 0123456789abcdef0123456789abcdef,0123456789abcdef0123456789abcdef
+		// https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef,https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef
+		this.matches("""^((https://www.notion.so/([^,]*)-)?[0-9a-f]{32},?)+$""".toRegex()) -> {
+			this.split(",").map { it.trim().takeLast(32) }
+		}
+		else -> {
+			listOf(pages.single { it.title == this }.id)
+		}
+	}
+
 fun NotionClient.allPages(databaseId: String): List<Page> =
 	generateSequence(queryDatabase(databaseId)) { results ->
 		results.nextCursor?.let { queryDatabase(databaseId, startCursor = it) }
 	}.flatMap { it.results }.toList()
 
+val PageProperty.isRichText: Boolean
+	get() = this.type == PropertyType.RichText || this.type == PropertyType.Title
+
 fun String.asRichText(): List<PageProperty.RichText> =
 	listOf(PageProperty.RichText(text = PageProperty.RichText.Text(content = this)))
 
+fun List<PageProperty.RichText>.asString(): String =
+	this.joinToString { it.text!!.content!! }
+
 val Page.title: String?
 	get() {
-		val prop = this.properties.values.singleOrNull { it.id == "title" && it.type == PropertyType.Title }
-			?: error("Missing property of type 'title', available properties: ${this.properties.keys}")
-		val title = prop.title ?: error("Missing title structure")
+		val title = this.titleProperty.title ?: error("Missing title structure")
 		return title.singleOrNull()?.plainText
+	}
+
+val Page.titleProperty: PageProperty
+	get() = this.properties.values.singleOrNull { it.type == PropertyType.Title }
+		?: error("Missing property of type 'title', available properties: ${this.properties.mapValues { it.value.type }}")
+
+val PageProperty.propertyFromType: KProperty1<PageProperty, Any?>
+	get() = when (this.type) {
+		null -> error("Don't know the type of ${this}")
+		PropertyType.RichText -> PageProperty::richText
+		PropertyType.Number -> PageProperty::number
+		PropertyType.Select -> PageProperty::select
+		PropertyType.MultiSelect -> PageProperty::multiSelect
+		PropertyType.Date -> PageProperty::date
+		PropertyType.Formula -> PageProperty::formula
+		PropertyType.Relation -> PageProperty::relation
+		PropertyType.Rollup -> PageProperty::rollup
+		PropertyType.Title -> PageProperty::title
+		PropertyType.People -> PageProperty::people
+		PropertyType.Files -> PageProperty::files
+		PropertyType.Checkbox -> PageProperty::checkbox
+		PropertyType.Url -> PageProperty::url
+		PropertyType.Email -> PageProperty::email
+		PropertyType.PhoneNumber -> PageProperty::phoneNumber
+		PropertyType.CreatedTime -> PageProperty::createdTime
+		PropertyType.CreatedBy -> PageProperty::createdBy
+		PropertyType.LastEditedTime -> PageProperty::lastEditedTime
+		PropertyType.LastEditedBy -> PageProperty::lastEditedBy
+		PropertyType.PropertyItem -> error("Who dis? ${this}")
 	}
 
 fun Database.property(name: String): DatabaseProperty? {
@@ -163,19 +283,77 @@ fun Database.property(name: String): DatabaseProperty? {
 		prop == null && special -> {
 			null
 		}
-
 		prop == null && !special -> {
 			error(
 				"No property named '${name}' in database, pick one of ${properties.keys}.\n" +
-						"If the column you're missing is a Relation, make sure the referenced Database also has the Connection.")
+						"If the column you're missing is a Relation, make sure the referenced Database also has the Connection."
+			)
 		}
-
 		prop != null && special -> {
 			error("Property name '${name}' is reserved for special use.")
 		}
 
 		else -> {
 			prop
+		}
+	}
+}
+
+/**
+ * Filters the [new] list into lists, where
+ * 1. is good, the values that are fresh and new in [new].
+ * 2. is sketchy, the values that are redundant between [old] and [new], if `PATCH`'d the value might lose formatting.
+ * 3. is bad, the values here are different between [old] and [new], can't resolve the conflict.
+ * @return `Triple<good, sketchy, bad>`
+ */
+fun classify(
+	old: Map<String, PageProperty>,
+	new: Map<String, PageProperty>,
+): Triple<Map<String, PageProperty>, Map<String, PageProperty>, Map<String, Pair<PageProperty, PageProperty>>> {
+	val (good, conflicting) = old
+		// Property that is not updated can be ignored.
+		.mapNotNull { (name, prop) -> new[name]?.let { Triple(name, prop, it) } }
+		.partition { (_, old, new) -> isSimilar(old, new) }
+	val (fresh, redundant) = good
+		.partition { (_, old, _) ->
+			val oldValue = old.propertyFromType.get(old)
+			oldValue == null || (old.isRichText && oldValue == emptyList<PageProperty.RichText>())
+		}
+	return Triple(
+		fresh.associateBy({ it.first }, { it.third }),
+		redundant.associateBy({ it.first }, { it.third }),
+		conflicting.associateBy({ it.first }, { it.second to it.third }),
+	)
+}
+
+fun isSimilar(old: PageProperty, new: PageProperty): Boolean {
+	val oldValue = old.propertyFromType.get(old)
+	val newValue = old.propertyFromType.get(new) // new.type is always null, so can't infer.
+	return when {
+		oldValue == null -> {
+			// If the old value was missing, any new value is fine.
+			true
+		}
+		old.isRichText -> {
+			@Suppress("UNCHECKED_CAST")
+			val oldText = (oldValue as List<PageProperty.RichText>).asString().lowercase()
+
+			@Suppress("UNCHECKED_CAST")
+			val newText = (newValue as List<PageProperty.RichText>).asString().lowercase()
+			oldText.isEmpty() || oldText == newText
+		}
+		// YouTube specific exception - these are all the same:
+		// https://www.youtube.com/watch?v=yKfuq3luNVM
+		// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=24
+		// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=25
+		old.type == PropertyType.Url -> {
+			val oldUrl = oldValue.toString().toHttpUrl()
+			val newUrl = newValue.toString().toHttpUrl()
+			oldUrl.queryParameter("v") == newUrl.queryParameter("v")
+		}
+		else -> {
+			// Fall back to data class equals.
+			oldValue == newValue
 		}
 	}
 }
