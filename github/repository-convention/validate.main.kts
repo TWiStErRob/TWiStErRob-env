@@ -74,7 +74,13 @@ suspend fun main(vararg args: String) {
 		Json.createWriter(File("response.repos.json").writer()).use { it.write(response) }
 		val repos = response.asJsonObject()
 			.getValue("/data/user/repositories/nodes").asJsonArray()
-		val reference = Json.createReader(File("reference.repo.json").reader()).use { it.readValue() }
+		val reference = Json.createReader(File("reference.repo.json5")
+			.readLines()
+			.filterNot { it.matches("""^\s*//.*$""".toRegex()) }
+			.joinToString(separator = "\n")
+			.also { println(it) }
+			.reader()
+		).use { it.readValue() }
 		val result = repos.map {
 			val repo = it.asJsonObject()!!
 			val diff = JsonX.createDiff(repo, reference).clean().adorn(repo)
