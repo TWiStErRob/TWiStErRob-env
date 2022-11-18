@@ -74,7 +74,7 @@ suspend fun main(vararg args: String) {
 		val repos = response.asJsonObject()
 			.getValue("/data/user/repositories/nodes").asJsonArray()
 		val reference = Json.createReader(File("reference.repo.json").reader()).use { it.readValue() }
-		repos.map {
+		val result = repos.map {
 			val repo = it.asJsonObject()!!
 			val diff = JsonX.createDiff(repo, reference).clean().adorn(repo)
 			val mergeDiff = JsonX.createMergeDiff(repo, reference).clean()
@@ -85,7 +85,7 @@ suspend fun main(vararg args: String) {
 				.add("mergeDiff", mergeDiff)
 				.build()
 		}
-		println(Json.createArrayBuilder().apply { repos.forEach(::add) }.build().format())
+		println(Json.createArrayBuilder().apply { result.forEach(::add) }.build().format())
 	}
 }
 
