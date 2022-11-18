@@ -18,6 +18,8 @@ import notion.api.v1.model.databases.DatabaseProperty
 import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import kotlin.reflect.KProperty1
 
 @Suppress("SpreadOperator")
 main(*args)
@@ -91,12 +93,30 @@ fun main(vararg args: String) {
 					properties = propertyValues
 				)
 			} else {
-				System.err.println("Page ${existing.title} already exists: ${existing.url}")
-				client.updatePage(
-					pageId = existing.id,
-					icon = iconValue,
-					properties = propertyValues
-				)
+				val (filtered, ignored, conflicting) =
+					classify(existing.properties, propertyValues)
+				if (conflicting.isNotEmpty()) {
+					val conflictDetails = conflicting.entries.joinToString(separator = "\n\n") { (name, props) ->
+						"${name} (old):\n${props.first}\n${name} (new):\n${props.second}"
+					}
+					error(
+						"Existing page '${existing.title}' (${existing.url}) has conflicting values:\n" +
+								conflictDetails +
+								"\nPlease update the CSV data or the target Database in Notion to resolve this."
+					)
+				}
+				if (filtered.isNotEmpty()) {
+					if (ignored.isNotEmpty()) {
+						println("Ignoring redundant properties: ${ignored.keys}")
+					}
+					client.updatePage(
+						pageId = existing.id,
+						icon = iconValue,
+						properties = filtered
+					)
+				} else {
+					println("All properties (${ignored.keys}) were up to date in '${existing.title}' (${existing.url})")
+				}
 			}
 		}
 	}
@@ -191,17 +211,48 @@ fun NotionClient.allPages(databaseId: String): List<Page> =
 		results.nextCursor?.let { queryDatabase(databaseId, startCursor = it) }
 	}.flatMap { it.results }.toList()
 
+val PageProperty.isRichText: Boolean
+	get() = this.type == PropertyType.RichText || this.type == PropertyType.Title
+
 fun String.asRichText(): List<PageProperty.RichText> =
 	listOf(PageProperty.RichText(text = PageProperty.RichText.Text(content = this)))
 
-val Page.titleProperty: PageProperty
-	get() = this.properties.values.singleOrNull { it.type == PropertyType.Title }
-		?: error("Missing property of type 'title', available properties: ${this.properties.mapValues { it.value.type }}")
+fun List<PageProperty.RichText>.asString(): String =
+	this.joinToString { it.text!!.content!! }
 
 val Page.title: String?
 	get() {
 		val title = this.titleProperty.title ?: error("Missing title structure")
 		return title.singleOrNull()?.plainText
+	}
+
+val Page.titleProperty: PageProperty
+	get() = this.properties.values.singleOrNull { it.type == PropertyType.Title }
+		?: error("Missing property of type 'title', available properties: ${this.properties.mapValues { it.value.type }}")
+
+val PageProperty.propertyFromType: KProperty1<PageProperty, Any?>
+	get() = when (this.type) {
+		null -> error("Don't know the type of ${this}")
+		PropertyType.RichText -> PageProperty::richText
+		PropertyType.Number -> PageProperty::number
+		PropertyType.Select -> PageProperty::select
+		PropertyType.MultiSelect -> PageProperty::multiSelect
+		PropertyType.Date -> PageProperty::date
+		PropertyType.Formula -> PageProperty::formula
+		PropertyType.Relation -> PageProperty::relation
+		PropertyType.Rollup -> PageProperty::rollup
+		PropertyType.Title -> PageProperty::title
+		PropertyType.People -> PageProperty::people
+		PropertyType.Files -> PageProperty::files
+		PropertyType.Checkbox -> PageProperty::checkbox
+		PropertyType.Url -> PageProperty::url
+		PropertyType.Email -> PageProperty::email
+		PropertyType.PhoneNumber -> PageProperty::phoneNumber
+		PropertyType.CreatedTime -> PageProperty::createdTime
+		PropertyType.CreatedBy -> PageProperty::createdBy
+		PropertyType.LastEditedTime -> PageProperty::lastEditedTime
+		PropertyType.LastEditedBy -> PageProperty::lastEditedBy
+		PropertyType.PropertyItem -> error("Who dis? ${this}")
 	}
 
 fun Database.property(name: String): DatabaseProperty? {
@@ -224,6 +275,65 @@ fun Database.property(name: String): DatabaseProperty? {
 
 		else -> {
 			prop
+		}
+	}
+}
+
+/**
+ * Filters the [new] list into lists, where
+ * 1. is good, the values that are fresh and new in [new].
+ * 2. is sketchy, the values that are redundant between [old] and [new], if `PATCH`'d the value might lose formatting.
+ * 3. is bad, the values here are different between [old] and [new], can't resolve the conflict.
+ * @return `Triple<good, sketchy, bad>`
+ */
+fun classify(
+	old: Map<String, PageProperty>,
+	new: Map<String, PageProperty>,
+): Triple<Map<String, PageProperty>, Map<String, PageProperty>, Map<String, Pair<PageProperty, PageProperty>>> {
+	val (good, conflicting) = old
+		// Property that is not updated can be ignored.
+		.mapNotNull { (name, prop) -> new[name]?.let { Triple(name, prop, it) } }
+		.partition { (_, old, new) -> isSimilar(old, new) }
+	val (fresh, redundant) = good
+		.partition { (_, old, _) ->
+			val oldValue = old.propertyFromType.get(old)
+			oldValue == null || (old.isRichText && oldValue == emptyList<PageProperty.RichText>())
+		}
+	return Triple(
+		fresh.associateBy({ it.first }, { it.second }),
+		redundant.associateBy({ it.first }, { it.second }),
+		conflicting.associateBy({ it.first }, { it.second to it.third }),
+	)
+}
+
+fun isSimilar(old: PageProperty, new: PageProperty): Boolean {
+	val oldValue = old.propertyFromType.get(old)
+	val newValue = old.propertyFromType.get(new) // new.type is always null, so can't infer.
+	return when {
+		oldValue == null -> {
+			// If the old value was missing, any new value is fine.
+			true
+		}
+		old.isRichText -> {
+			@Suppress("UNCHECKED_CAST")
+			val oldText = (oldValue as List<PageProperty.RichText>).asString().lowercase()
+
+			@Suppress("UNCHECKED_CAST")
+			val newText = (newValue as List<PageProperty.RichText>).asString().lowercase()
+			oldText.isEmpty() || oldText == newText
+		}
+		// YouTube specific exception - these are all the same:
+		// https://www.youtube.com/watch?v=yKfuq3luNVM
+		// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=24
+		// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=25
+		old.type == PropertyType.Url -> {
+			val oldUrl = oldValue.toString().toHttpUrl()
+			val newUrl = newValue.toString().toHttpUrl()
+			oldUrl.queryParameter("v") == newUrl.queryParameter("v")
+		}
+		else -> {
+			// Fall back to data class equals.
+			oldValue == newValue
 		}
 	}
 }
