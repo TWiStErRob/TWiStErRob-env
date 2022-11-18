@@ -103,14 +103,9 @@ fun main(vararg args: String) {
 							"Workshop" -> "Workshop"
 							else -> error("Unknown format: ${session.format}")
 						}
-					})
+					}),
+					"Abstract" to PageProperty(richText = session.description.asRichText()),
 				).filterValues { it != null }.mapValues { it.value!! },
-				children = @Suppress("SpreadOperator") listOf(
-					HeadingOneBlock(heading1 = HeadingOneBlock.Element("Abstract".asRichText())),
-					*session.description.split("\r\n\r\n")
-						.map { ParagraphBlock(ParagraphBlock.Element(it.asRichText())) }
-						.toTypedArray(),
-				),
 			)
 		}
 	}
