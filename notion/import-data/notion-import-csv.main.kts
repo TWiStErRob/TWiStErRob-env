@@ -50,21 +50,7 @@ fun main(vararg args: String) {
 				emptyList()
 		}
 		val titleProperty = properties.filterNotNull().single { it.type == PropertyType.Title }
-		val existingPages = client.allPages(database.id)
-			// TODO ability to key by multiple properties
-			// example: What’s new with Amazon Appstore for Developers (Meet at devLounge):
-			// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-1587d2a54f1845a1850653895d4aa1cd
-			// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-6ed906121f514addb58cf039b1cd13a2
-			.groupBy { it.title?.lowercase() ?: error("Page without title: ${it.url}") }
-			.also { entry ->
-				val duplicates = entry.filterValues { it.size > 1 }
-				check(duplicates.isEmpty()) {
-					val duplicateDescription = duplicates.entries
-						.joinToString(separator = "\n") { (title, pages) -> "${title}: ${pages.map { it.url }}" }
-					"Duplicate pages:\n$duplicateDescription"
-				}
-			}
-			.mapValues { (_, pages) -> pages.single() }
+		val existingPages = client.getAllPagesByUniqueTitle(database.id)
 		data.forEach { row ->
 			check(row.size == headers.size) {
 				"Row has ${row.size} columns, expected ${headers.size}.\n{${headers.contentToString()}\n${row.contentToString()}"
@@ -87,38 +73,62 @@ fun main(vararg args: String) {
 				}
 			}.toMap()
 			if (existing == null) {
-				client.createPage(
-					parent = PageParent.database(database.id),
-					icon = iconValue,
-					properties = propertyValues
-				)
+				client.createPage(database, iconValue, propertyValues)
 			} else {
-				val (filtered, ignored, conflicting) =
-					classify(existing.properties, propertyValues)
-				if (conflicting.isNotEmpty()) {
-					val conflictDetails = conflicting.entries.joinToString(separator = "\n\n") { (name, props) ->
-						"${name} (old):\n${props.first}\n${name} (new):\n${props.second}"
-					}
-					error(
-						"Existing page '${existing.title}' (${existing.url}) has conflicting values:\n" +
-								conflictDetails +
-								"\nPlease update the CSV data or the target Database in Notion to resolve this."
-					)
-				}
-				if (filtered.isNotEmpty()) {
-					if (ignored.isNotEmpty()) {
-						println("Ignoring redundant properties: ${ignored.keys}")
-					}
-					client.updatePage(
-						pageId = existing.id,
-						icon = iconValue,
-						properties = filtered
-					)
-				} else {
-					println("All properties (${ignored.keys}) were up to date in '${existing.title}' (${existing.url})")
-				}
+				client.updatePage(existing, iconValue, propertyValues)
 			}
 		}
+	}
+}
+
+fun NotionClient.getAllPagesByUniqueTitle(database: String): Map<String, Page> =
+	this.allPages(database)
+		// TODO ability to key by multiple properties
+		// example: What’s new with Amazon Appstore for Developers (Meet at devLounge):
+		// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-1587d2a54f1845a1850653895d4aa1cd
+		// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-6ed906121f514addb58cf039b1cd13a2
+		.groupBy { it.title?.lowercase() ?: error("Page without title: ${it.url}") }
+		.also { entry ->
+			val duplicates = entry.filterValues { it.size > 1 }
+			check(duplicates.isEmpty()) {
+				val duplicateDescription = duplicates.entries
+					.joinToString(separator = "\n") { (title, pages) -> "${title}: ${pages.map { it.url }}" }
+				"Duplicate pages:\n$duplicateDescription"
+			}
+		}
+		.mapValues { (_, pages) -> pages.single() }
+
+fun NotionClient.createPage(database: Database, icon: File?, properties: Map<String, PageProperty>) {
+	this.createPage(
+		parent = PageParent.database(database.id),
+		icon = icon,
+		properties = properties
+	)
+}
+
+fun NotionClient.updatePage(page: Page, icon: File?, properties: Map<String, PageProperty>) {
+	val (filtered, ignored, conflicting) = classify(page.properties, properties)
+	if (conflicting.isNotEmpty()) {
+		val conflictDetails = conflicting.entries.joinToString(separator = "\n\n") { (name, props) ->
+			"${name} (old):\n${props.first}\n${name} (new):\n${props.second}"
+		}
+		error(
+			"Existing page '${page.title}' (${page.url}) has conflicting values:\n" +
+					conflictDetails +
+					"\nPlease update the CSV data or the target Database in Notion to resolve this."
+		)
+	}
+	if (filtered.isNotEmpty()) {
+		if (ignored.isNotEmpty()) {
+			println("Ignoring redundant properties: ${ignored.keys}")
+		}
+		this.updatePage(
+			pageId = page.id,
+			icon = icon,
+			properties = filtered
+		)
+	} else {
+		println("All properties (${ignored.keys}) were up to date in '${page.title}' (${page.url})")
 	}
 }
 
@@ -149,38 +159,17 @@ fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Pa
 			}
 		)
 		PropertyType.Date -> {
-			val match = """^(?<start>.*?)(?:->|→)(?<end>.*?)$""".toRegex().matchEntire(value)
-			val (start, end) = 
-				if (match != null) {
-					match.groupValues[1].trim() to match.groupValues[2].trim()
-				} else {
-					value to null
-				}
-			fun String.fixDate(): String =
-				if (this.matches("""^\d{4}/\d{2}/\d{2}$""".toRegex()))
-					this.replace('/', '-')
-				else
-					this
+			val (start, end) = parseDateRange(value)
 			PageProperty(
 				date = PageProperty.Date(
-					start = start.fixDate(),
-					end = end?.fixDate(),
+					start = start,
+					end = end,
 				)
 			)
 		}
 		PropertyType.Formula -> TODO()
 		PropertyType.Relation -> PageProperty(
-			relation = when {
-				// 0123456789abcdef0123456789abcdef
-				// 0123456789abcdef0123456789abcdef,0123456789abcdef0123456789abcdef
-				// https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef,https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef
-				value.matches("""^((https://www.notion.so/([^,]*)-)?[0-9a-f]{32},?)+$""".toRegex()) -> {
-					value.split(",").map { PageProperty.PageReference(it.trim().takeLast(32)) }
-				}
-				else -> {
-					listOf(PageProperty.PageReference(pages.single { it.title == value }.id))
-				}
-			}
+			relation = value.parseReferencedIds(pages).map { PageProperty.PageReference(it) }
 		)
 		PropertyType.Rollup -> null
 		PropertyType.Title -> PageProperty(title = value.asRichText())
@@ -205,6 +194,38 @@ fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Pa
 		PropertyType.PropertyItem -> TODO()
 	}
 }
+
+fun parseDateRange(value: String): Pair<String, String?> {
+	val match = """^(?<start>.*?)(?:->|→)(?<end>.*?)$""".toRegex().matchEntire(value)
+	val (start, end) =
+		if (match != null) {
+			match.groupValues[1].trim() to match.groupValues[2].trim()
+		} else {
+			value to null
+		}
+	fun String.fixDate(): String =
+		if (this.matches("""^\d{4}/\d{2}/\d{2}$""".toRegex()))
+			this.replace('/', '-')
+		else
+			this
+
+	val start1 = start.fixDate()
+	val end1 = end?.fixDate()
+	return Pair(start1, end1)
+}
+
+fun String.parseReferencedIds(pages: List<Page>): List<String> =
+	when {
+		// 0123456789abcdef0123456789abcdef
+		// 0123456789abcdef0123456789abcdef,0123456789abcdef0123456789abcdef
+		// https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef,https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef
+		this.matches("""^((https://www.notion.so/([^,]*)-)?[0-9a-f]{32},?)+$""".toRegex()) -> {
+			this.split(",").map { it.trim().takeLast(32) }
+		}
+		else -> {
+			listOf(pages.single { it.title == this }.id)
+		}
+	}
 
 fun NotionClient.allPages(databaseId: String): List<Page> =
 	generateSequence(queryDatabase(databaseId)) { results ->
