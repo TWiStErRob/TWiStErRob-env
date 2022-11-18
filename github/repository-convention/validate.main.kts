@@ -120,6 +120,9 @@ fun JsonArray.clean(): JsonArray =
 					// But if the original value is null, then that means the specific value is missing,
 					// so we should keep it.
 					&& !value.asJsonObject().isNull("original")
+					// Also if the original value is "", then that means the specific value is missing,
+					// so we should keep it.
+					&& !value.asJsonObject().getSafeString("original").isNullOrBlank()
 		}
 		.filterNot { value ->
 			// The reference only contains a topic so that it's flagged for addition,
