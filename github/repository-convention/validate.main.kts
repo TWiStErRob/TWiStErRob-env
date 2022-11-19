@@ -12,6 +12,7 @@
 @file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.1.2")
 @file:DependsOn("tech.tablesaw:tablesaw-core:0.43.1")
 
+import Validate_main.JsonX.asSafeString
 import Validate_main.JsonX.filterNot
 import Validate_main.JsonX.format
 import Validate_main.JsonX.getSafeString
@@ -97,27 +98,44 @@ suspend fun main(vararg args: String) {
 	}
 }
 
-fun JsonObject.cleanMergeDiff(): JsonObject? =
-	Json.createObjectBuilder(this)
-		.apply {
-			keys
-				.filter { getValue("/$it").valueType == JsonValue.ValueType.OBJECT }
-				.forEach {
-					val clean = getJsonObject(it).cleanMergeDiff()
-					if (clean != null) {
-						// This replaces the value from the builder constructor.
-						add(it, clean)
-					} else {
-						remove(it)
+fun JsonValue.cleanMergeDiff(): JsonValue? =
+	when (this.valueType!!) {
+		JsonValue.ValueType.ARRAY ->
+			this.asJsonArray().let { arr ->
+				Json.createArrayBuilder()
+					.apply {
+						arr.mapNotNull { it.cleanMergeDiff() }.forEach(::add)
 					}
-				}
-			keys
-				.filter { getSafeString(it) == "<REPOSITORY_SPECIFIC>" }
-				.forEach { remove(it) }
-			remove("repositoryTopics")
-		}
-		.build()
-		.takeIf { it.isNotEmpty() }
+					.build()
+					.takeIf { it.isNotEmpty() }
+			}
+		JsonValue.ValueType.OBJECT ->
+			this.asJsonObject().let { obj ->
+				Json.createObjectBuilder()
+					.apply {
+						obj.forEach { key, value ->
+							if (key == "repositoryTopics") return@forEach
+							val clean = value.cleanMergeDiff()
+							if (clean != null) {
+								add(key, clean)
+							}
+						}
+					}
+					.build()
+					.takeIf { it.isNotEmpty() }
+			}
+		JsonValue.ValueType.STRING ->
+			if (this.asSafeString() == "<REPOSITORY_SPECIFIC>") {
+				null
+			} else {
+				this
+			}
+		JsonValue.ValueType.NUMBER,
+		JsonValue.ValueType.TRUE,
+		JsonValue.ValueType.FALSE,
+		JsonValue.ValueType.NULL,
+			-> this
+	}
 
 fun JsonArray.cleanDiff(): JsonArray =
 	this
@@ -180,8 +198,8 @@ object JsonX {
 			.apply { forEach { add(transform(it)) } }
 			.build()
 
-	fun createMergeDiff(source: JsonValue, target: JsonValue): JsonObject =
-		Json.createMergeDiff(source, target).toJsonValue().asJsonObject()
+	fun createMergeDiff(source: JsonValue, target: JsonValue): JsonValue =
+		Json.createMergeDiff(source, target).toJsonValue()
 
 	fun createDiff(source: JsonValue, target: JsonValue): JsonArray =
 		Json.createDiff(source.asJsonObject(), target.asJsonObject()).toJsonArray()
