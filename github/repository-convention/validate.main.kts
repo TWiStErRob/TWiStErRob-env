@@ -78,7 +78,7 @@ suspend fun main(vararg args: String) {
 			.readLines()
 			.filterNot { it.matches("""^\s*//.*$""".toRegex()) }
 			.joinToString(separator = "\n")
-			.also { println(it) }
+			//.also { println(it) }
 			.reader()
 		).use { it.readValue() }
 		val result = repos.map {
