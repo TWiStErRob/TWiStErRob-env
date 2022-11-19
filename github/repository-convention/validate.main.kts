@@ -97,18 +97,27 @@ suspend fun main(vararg args: String) {
 	}
 }
 
-fun JsonObject.clean(): JsonObject =
+fun JsonObject.clean(): JsonObject? =
 	Json.createObjectBuilder(this)
 		.apply {
 			keys
 				.filter { getValue("/$it").valueType == JsonValue.ValueType.OBJECT }
-				.forEach { add(it, getJsonObject(it).clean()) }
+				.forEach {
+					val clean = getJsonObject(it).clean()
+					if (clean != null) {
+						// This replaces the value from the builder constructor.
+						add(it, clean)
+					} else {
+						remove(it)
+					}
+				}
 			keys
 				.filter { getSafeString(it) == "<REPOSITORY_SPECIFIC>" }
 				.forEach { remove(it) }
 			remove("repositoryTopics")
 		}
 		.build()
+		.takeIf { it.isNotEmpty() }
 
 fun JsonArray.clean(): JsonArray =
 	this
