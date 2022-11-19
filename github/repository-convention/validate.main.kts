@@ -15,7 +15,7 @@
 import Validate_main.JsonX.filterNot
 import Validate_main.JsonX.format
 import Validate_main.JsonX.getSafeString
-import Validate_main.JsonX.map
+import Validate_main.JsonX.mapJsonArray
 import Validate_main.JsonX.prettyPrint
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -81,10 +81,10 @@ suspend fun main(vararg args: String) {
 			//.also { println(it) }
 			.reader()
 		).use { it.readValue() }
-		val result = repos.map {
+		val result = repos.mapJsonArray {
 			val repo = it.asJsonObject()!!
-			val diff = JsonX.createDiff(repo, reference).adorn(repo).clean()
-			val mergeDiff = JsonX.createMergeDiff(repo, reference).clean()
+			val diff = JsonX.createDiff(repo, reference).adorn(repo).cleanDiff()
+			val mergeDiff = JsonX.createMergeDiff(repo, reference).cleanMergeDiff()
 			Json.createObjectBuilder()
 				.add("name", repo.getString("name"))
 				.add("url", repo.getString("url"))
@@ -97,13 +97,13 @@ suspend fun main(vararg args: String) {
 	}
 }
 
-fun JsonObject.clean(): JsonObject? =
+fun JsonObject.cleanMergeDiff(): JsonObject? =
 	Json.createObjectBuilder(this)
 		.apply {
 			keys
 				.filter { getValue("/$it").valueType == JsonValue.ValueType.OBJECT }
 				.forEach {
-					val clean = getJsonObject(it).clean()
+					val clean = getJsonObject(it).cleanMergeDiff()
 					if (clean != null) {
 						// This replaces the value from the builder constructor.
 						add(it, clean)
@@ -119,7 +119,7 @@ fun JsonObject.clean(): JsonObject? =
 		.build()
 		.takeIf { it.isNotEmpty() }
 
-fun JsonArray.clean(): JsonArray =
+fun JsonArray.cleanDiff(): JsonArray =
 	this
 		.filterNot { value ->
 			// Only in case we're changing a value from "a" to "b".
@@ -149,7 +149,7 @@ fun JsonArray.clean(): JsonArray =
 
 fun JsonArray.adorn(source: JsonObject): JsonArray =
 	this
-		.map { value ->
+		.mapJsonArray { value ->
 			val target = value.asJsonObject()
 			when (target.getString("op")) {
 				JsonPatch.Operation.REPLACE.operationName(),
@@ -175,7 +175,7 @@ object JsonX {
 			.apply { forEach { if (!predicate(it)) add(it) } }
 			.build()
 
-	fun JsonArray.map(transform: (JsonValue) -> JsonValue): JsonArray =
+	fun JsonArray.mapJsonArray(transform: (JsonValue) -> JsonValue): JsonArray =
 		Json.createArrayBuilder()
 			.apply { forEach { add(transform(it)) } }
 			.build()
@@ -187,12 +187,13 @@ object JsonX {
 		Json.createDiff(source.asJsonObject(), target.asJsonObject()).toJsonArray()
 
 	fun JsonObject.getSafeString(key: String): String? =
-		this[key]?.let { value ->
-			if (value.valueType == JsonValue.ValueType.STRING) {
-				(value as JsonString).string
-			} else {
-				null
-			}
+		this[key]?.asSafeString()
+
+	fun JsonValue.asSafeString(): String? =
+		if (valueType == JsonValue.ValueType.STRING) {
+			(this as JsonString).string
+		} else {
+			null
 		}
 
 	fun List<JsonValue>.asJsonArray(): JsonArray =
