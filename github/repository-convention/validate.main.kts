@@ -98,6 +98,7 @@ suspend fun main(vararg args: String) {
 	}
 }
 
+@Suppress("NestedBlockDepth")
 fun JsonValue.cleanMergeDiff(): JsonValue? =
 	when (this.valueType!!) {
 		JsonValue.ValueType.ARRAY ->
@@ -114,7 +115,6 @@ fun JsonValue.cleanMergeDiff(): JsonValue? =
 				Json.createObjectBuilder()
 					.apply {
 						obj.forEach { key, value ->
-							if (key == "repositoryTopics") return@forEach
 							val clean = value.cleanMergeDiff()
 							if (clean != null) {
 								add(key, clean)
@@ -134,7 +134,7 @@ fun JsonValue.cleanMergeDiff(): JsonValue? =
 		JsonValue.ValueType.TRUE,
 		JsonValue.ValueType.FALSE,
 		JsonValue.ValueType.NULL,
-			-> this
+		-> this
 	}
 
 fun JsonArray.cleanDiff(): JsonArray =
@@ -314,7 +314,7 @@ fun String.checkGraphQLError() {
 	if (response.errors != null) {
 		if (response.errors.all {
 				it.message.matches("""^Could not resolve to an Environment with the name github-pages\.$""".toRegex())
-		}) {
+			}) {
 			return
 		}
 		fun ErrorResponse.Error.asString(): String =
