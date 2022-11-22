@@ -1,0 +1,7 @@
+/data/urls.txt
+/data/company-child*.json
+/data/jobs*.json
+/data/social*.json
+/companies-attending_event_id=*.json
+/companies-attending*.csv
+/companies-attending.json
