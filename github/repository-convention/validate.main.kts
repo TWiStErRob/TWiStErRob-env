@@ -12,10 +12,12 @@
 @file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.1.2")
 @file:DependsOn("tech.tablesaw:tablesaw-core:0.43.1")
 
+import Validate_main.JsonX.asSafeString
 import Validate_main.JsonX.filterNot
 import Validate_main.JsonX.format
 import Validate_main.JsonX.getSafeString
-import Validate_main.JsonX.map
+import Validate_main.JsonX.mapJsonArray
+import Validate_main.JsonX.prettyPrint
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -73,11 +75,17 @@ suspend fun main(vararg args: String) {
 		Json.createWriter(File("response.repos.json").writer()).use { it.write(response) }
 		val repos = response.asJsonObject()
 			.getValue("/data/user/repositories/nodes").asJsonArray()
-		val reference = Json.createReader(File("reference.repo.json").reader()).use { it.readValue() }
-		repos.map {
+		val reference = Json.createReader(File("reference.repo.json5")
+			.readLines()
+			.filterNot { it.matches("""^\s*//.*$""".toRegex()) }
+			.joinToString(separator = "\n")
+			//.also { println(it) }
+			.reader()
+		).use { it.readValue() }
+		val result = repos.mapJsonArray {
 			val repo = it.asJsonObject()!!
-			val diff = JsonX.createDiff(repo, reference).clean().adorn(repo)
-			val mergeDiff = JsonX.createMergeDiff(repo, reference).clean()
+			val diff = JsonX.createDiff(repo, reference).adorn(repo).cleanDiff()
+			val mergeDiff = JsonX.createMergeDiff(repo, reference).cleanMergeDiff()
 			Json.createObjectBuilder()
 				.add("name", repo.getString("name"))
 				.add("url", repo.getString("url"))
@@ -85,42 +93,81 @@ suspend fun main(vararg args: String) {
 				.add("mergeDiff", mergeDiff)
 				.build()
 		}
-		println(Json.createArrayBuilder().apply { repos.forEach(::add) }.build().format())
+		File("result.repos.json").writer().use { it.prettyPrint(result) }
+		println(Json.createArrayBuilder().apply { result.forEach(::add) }.build().format())
 	}
 }
 
-fun JsonObject.clean(): JsonObject =
-	Json.createObjectBuilder(this)
-		.apply {
-			keys
-				.filter { getValue("/$it").valueType == JsonValue.ValueType.OBJECT }
-				.forEach { add(it, getJsonObject(it).clean()) }
-			keys
-				.filter { getSafeString(it) == "<REPOSITORY_SPECIFIC>" }
-				.forEach { remove(it) }
-			remove("repositoryTopics")
-		}
-		.build()
+@Suppress("NestedBlockDepth")
+fun JsonValue.cleanMergeDiff(): JsonValue? =
+	when (this.valueType!!) {
+		JsonValue.ValueType.ARRAY ->
+			this.asJsonArray().let { arr ->
+				Json.createArrayBuilder()
+					.apply {
+						arr.mapNotNull { it.cleanMergeDiff() }.forEach(::add)
+					}
+					.build()
+					.takeIf { it.isNotEmpty() }
+			}
+		JsonValue.ValueType.OBJECT ->
+			this.asJsonObject().let { obj ->
+				Json.createObjectBuilder()
+					.apply {
+						obj.forEach { key, value ->
+							val clean = value.cleanMergeDiff()
+							if (clean != null) {
+								add(key, clean)
+							}
+						}
+					}
+					.build()
+					.takeIf { it.isNotEmpty() }
+			}
+		JsonValue.ValueType.STRING ->
+			if (this.asSafeString() == "<REPOSITORY_SPECIFIC>") {
+				null
+			} else {
+				this
+			}
+		JsonValue.ValueType.NUMBER,
+		JsonValue.ValueType.TRUE,
+		JsonValue.ValueType.FALSE,
+		JsonValue.ValueType.NULL,
+		-> this
+	}
 
-fun JsonArray.clean(): JsonArray =
+fun JsonArray.cleanDiff(): JsonArray =
 	this
 		.filterNot { value ->
-			value.asJsonObject().getSafeString("value") == "<REPOSITORY_SPECIFIC>"
-					&& value.asJsonObject().getString("op") == JsonPatch.Operation.REPLACE.operationName()
+			// Only in case we're changing a value from "a" to "b".
+			value.asJsonObject().getString("op") == JsonPatch.Operation.REPLACE.operationName()
+					// If the value we should change to is <REPOSITORY_SPECIFIC>, then those are ignored.
+					&& value.asJsonObject().getSafeString("value") == "<REPOSITORY_SPECIFIC>"
+					// But if the original value is null, then that means the specific value is missing,
+					// so we should keep it.
+					&& !value.asJsonObject().isNull("original")
+					// Also if the original value is "", then that means the specific value is missing,
+					// so we should keep it.
+					&& !value.asJsonObject().getSafeString("original").isNullOrBlank()
 		}
 		.filterNot { value ->
-			value.asJsonObject().getString("path").matches("""^/repositoryTopics/nodes/\d+$""".toRegex())
-					&& value.asJsonObject().getString("op") == JsonPatch.Operation.REMOVE.operationName()
+			// The reference only contains a topic so that it's flagged for addition,
+			// it doesn't mean that the extra topics must be removed.
+			value.asJsonObject().getString("op") == JsonPatch.Operation.REMOVE.operationName()
+					&& value.asJsonObject().getString("path").matches("""^/repositoryTopics/nodes/\d+$""".toRegex())
 		}
 		.filterNot { value ->
-			value.asJsonObject().getString("path")
+			// The reference only contains a required status check so that it's flagged for addition,
+			// it doesn't mean that the extra checks must be removed.
+			value.asJsonObject().getString("op") == JsonPatch.Operation.REMOVE.operationName()
+					&& value.asJsonObject().getString("path")
 				.matches("""^/branchProtectionRules/nodes/\d+/requiredStatusChecks/\d+$""".toRegex())
-					&& value.asJsonObject().getString("op") == JsonPatch.Operation.REMOVE.operationName()
 		}
 
 fun JsonArray.adorn(source: JsonObject): JsonArray =
 	this
-		.map { value ->
+		.mapJsonArray { value ->
 			val target = value.asJsonObject()
 			when (target.getString("op")) {
 				JsonPatch.Operation.REPLACE.operationName(),
@@ -146,24 +193,25 @@ object JsonX {
 			.apply { forEach { if (!predicate(it)) add(it) } }
 			.build()
 
-	fun JsonArray.map(transform: (JsonValue) -> JsonValue): JsonArray =
+	fun JsonArray.mapJsonArray(transform: (JsonValue) -> JsonValue): JsonArray =
 		Json.createArrayBuilder()
 			.apply { forEach { add(transform(it)) } }
 			.build()
 
-	fun createMergeDiff(source: JsonValue, target: JsonValue): JsonObject =
-		Json.createMergeDiff(source, target).toJsonValue().asJsonObject()
+	fun createMergeDiff(source: JsonValue, target: JsonValue): JsonValue =
+		Json.createMergeDiff(source, target).toJsonValue()
 
 	fun createDiff(source: JsonValue, target: JsonValue): JsonArray =
 		Json.createDiff(source.asJsonObject(), target.asJsonObject()).toJsonArray()
 
 	fun JsonObject.getSafeString(key: String): String? =
-		this[key]?.let { value ->
-			if (value.valueType == JsonValue.ValueType.STRING) {
-				(value as JsonString).string
-			} else {
-				null
-			}
+		this[key]?.asSafeString()
+
+	fun JsonValue.asSafeString(): String? =
+		if (valueType == JsonValue.ValueType.STRING) {
+			(this as JsonString).string
+		} else {
+			null
 		}
 
 	fun List<JsonValue>.asJsonArray(): JsonArray =
@@ -177,7 +225,7 @@ object JsonX {
 			.toString()
 			.trim()
 
-	private fun Writer.prettyPrint(value: JsonValue) {
+	fun Writer.prettyPrint(value: JsonValue) {
 		Json
 			.createWriterFactory(
 				mapOf(
@@ -252,6 +300,7 @@ suspend fun GitHub.repositoriesDetails(owner: String): String {
 		query = File("repositoriesWithDetails.graphql").readText(),
 		variables = mapOf(
 			"login" to owner,
+			"production" to true,
 		),
 	)
 	return response.bodyAsText().also { it.checkGraphQLError() }
@@ -265,7 +314,7 @@ fun String.checkGraphQLError() {
 	if (response.errors != null) {
 		if (response.errors.all {
 				it.message.matches("""^Could not resolve to an Environment with the name github-pages\.$""".toRegex())
-		}) {
+			}) {
 			return
 		}
 		fun ErrorResponse.Error.asString(): String =

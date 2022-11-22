@@ -1,4 +1,4 @@
-query($login: String!) {
+query($login: String!, $production: Boolean!) {
     user(login: $login) {
         repositories(first: 100, isFork: false, affiliations: OWNER) {
             __typename
@@ -288,7 +288,7 @@ fragment codeAndAutomationWebhooks on Repository {
 }
 # Code and automation > Environments
 fragment codeAndAutomationEnvironments on Repository {
-    environment(name: "github-pages") {
+    environment(name: "github-pages")@skip(if: $production) {
         name
         #- Environment protection rules
         protectionRules(first: 100) {
