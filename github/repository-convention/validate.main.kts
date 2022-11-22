@@ -86,11 +86,13 @@ suspend fun main(vararg args: String) {
 			val repo = it.asJsonObject()!!
 			val diff = JsonX.createDiff(repo, reference).adorn(repo).cleanDiff()
 			val mergeDiff = JsonX.createMergeDiff(repo, reference).cleanMergeDiff()
+			val files = gitHub.validateFiles(repo)
 			Json.createObjectBuilder()
 				.add("name", repo.getString("name"))
 				.add("url", repo.getString("url"))
 				.add("diff", diff)
 				.add("mergeDiff", mergeDiff)
+				.add("files", files)
 				.build()
 		}
 		File("result.repos.json").writer().use { it.prettyPrint(result) }
@@ -186,14 +188,24 @@ fun JsonArray.adorn(source: JsonObject): JsonArray =
 			}
 		}
 
+suspend fun GitHub.validateFiles(repo: JsonObject): JsonArray {
+	val tree = this.tree(
+		owner = repo.getValue("/owner.name").asSafeString()!!,
+		repo = repo.getSafeString("name")!!,
+		ref = repo.getValue("/defaultBranchRef.name").asSafeString()!!
+	)
+	println(tree)
+	return Json.createArrayBuilder().build()
+}
+
 object JsonX {
 
-	fun JsonArray.filterNot(predicate: (JsonValue) -> Boolean): JsonArray =
+	inline fun JsonArray.filterNot(predicate: (JsonValue) -> Boolean): JsonArray =
 		Json.createArrayBuilder()
 			.apply { forEach { if (!predicate(it)) add(it) } }
 			.build()
 
-	fun JsonArray.mapJsonArray(transform: (JsonValue) -> JsonValue): JsonArray =
+	inline fun JsonArray.mapJsonArray(transform: (JsonValue) -> JsonValue): JsonArray =
 		Json.createArrayBuilder()
 			.apply { forEach { add(transform(it)) } }
 			.build()
