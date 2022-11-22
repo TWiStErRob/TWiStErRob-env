@@ -148,5 +148,49 @@
 	},
 	"isUserConfigurationRepository": false,
 	"isBlankIssuesEnabled": true,
-	"isSecurityPolicyEnabled": false
+	"isSecurityPolicyEnabled": false,
+
+	// Not available in GraphQL API, but I want to keep it here for reference.
+	//"security_and_analysis": {
+	//	"advanced_security": {
+	//		// Generally enabled.
+	//		"status": "enabled"
+	//	},
+	//	"private_vulnerability_reporting": {
+	//		// As is the default, because it's beta right now.
+	//		"status": "disabled"
+	//	},
+	//	"dependency_graph": {
+	//		// Cannot be disabled.
+	//		"status": "enabled"
+	//	},
+	//	"dependabot": {
+	//		"alerts": {
+	//			// Want to get notified of vulnerability alerts.
+	//			"status": "enabled",
+	//		},
+	//		"security_updates": {
+	//			// Want to get notified of security alerts, and want automatic PRs too.
+	//			"status": "enabled",
+	//		},
+	//		"version_updates": {
+	//			// Do not want any version related updates.
+	//			// I'm using Renovate, because https://github.com/dependabot/dependabot-core/issues/1164
+	//			"status": "disabled",
+	//		},
+	//	},
+	//	"code_scanning": {
+	//		// Cannot be disabled, if there are checks reported.
+	//		"status": "enabled",
+	//		"failure": {
+	//			// If anything goes wrong, fail the PR, trying to keep it clean.
+	//			"security": "any",
+	//			"other": "any",
+	//		}
+	//	},
+	//	"secret_scanning": {
+	//		// Cannot be disabled.
+	//		"status": "enabled"
+	//	},
+	//},
 }
