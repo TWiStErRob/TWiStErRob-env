@@ -33,6 +33,7 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
@@ -189,13 +190,80 @@ fun JsonArray.adorn(source: JsonObject): JsonArray =
 		}
 
 suspend fun GitHub.validateFiles(repo: JsonObject): JsonArray {
-	val tree = this.tree(
-		owner = repo.getValue("/owner.name").asSafeString()!!,
-		repo = repo.getSafeString("name")!!,
-		ref = repo.getValue("/defaultBranchRef.name").asSafeString()!!
+	val owner = repo.getValue("/owner/login").asSafeString()!!
+	val name = repo.getSafeString("name")!!
+	val defaultBranch = repo.getValue("/defaultBranchRef/name").asSafeString()!!
+	val response = this.tree(
+		owner = owner,
+		repo = name,
+		ref = defaultBranch
 	)
-	println(tree)
-	return Json.createArrayBuilder().build()
+	val builder = Json.createArrayBuilder()
+	if (response.truncated) {
+		builder.add("Results might be inconclusive because the GitHub tree listing was truncated.")
+	}
+	validateRenovate(response, owner, name, defaultBranch)?.let { problem -> builder.add(problem) }
+	return builder.build()
+}
+
+suspend fun GitHub.validateRenovate(
+	response: TreeResponse,
+	owner: String,
+	name: String,
+	defaultBranch: String
+): String? {
+	val configs: List<TreeResponse.TreeEntry> = response.tree.filter { it.path in Renovate.CONFIGS_LOCATIONS }
+	return when (configs.size) {
+		0 -> "Missing Renovate configuration file, add it at ${Renovate.PREFERRED_CONFIG}."
+		1 -> {
+			val configFile = configs.single()
+			val actualUrl = "https://github.com/${owner}/${name}/blob/${defaultBranch}/${configFile.path}"
+			if (configFile.path != Renovate.PREFERRED_CONFIG) {
+				"Renovate configuration file should be at ${Renovate.PREFERRED_CONFIG}, not ${configFile.path}."
+			} else {
+				val contents = blob(configFile.url).decodeToString()
+				if (!contents.startsWith(Renovate.CONFIG_PREFIX)) {
+					"Renovate configuration file ${actualUrl} doesn't have valid contents," +
+							" should start with:\n```\n${Renovate.CONFIG_PREFIX}\n```"
+				} else {
+					null // AOK
+				}
+			}
+		}
+		else -> "Multiple Renovate configuration files found: ${configs}, keep only ${Renovate.PREFERRED_CONFIG}."
+	}
+}
+
+object Renovate {
+
+	// TODO change to json5 to allow for comments and trailing commas.
+	const val PREFERRED_CONFIG = ".github/renovate.json"
+
+	val CONFIG_PREFIX = """
+		{
+			"${'$'}schema": "https://docs.renovatebot.com/renovate-schema.json",
+			"extends": [
+				"local>TWiStErRob/renovate-config"
+			]
+	""".trimIndent()
+
+	/**
+	 * https://docs.renovatebot.com/configuration-options
+	 */
+	val CONFIGS_LOCATIONS = setOf(
+		"renovate.json",
+		"renovate.json5",
+		".github/renovate.json",
+		".github/renovate.json5",
+		".gitlab/renovate.json",
+		".gitlab/renovate.json5",
+		".renovaterc",
+		".renovaterc.json",
+	)
+
+	init {
+		check(PREFERRED_CONFIG in CONFIGS_LOCATIONS)
+	}
 }
 
 object JsonX {
@@ -350,8 +418,19 @@ data class ErrorResponse(
 	}
 }
 
+/**
+ * https://docs.github.com/en/rest/git/trees#get-a-tree
+ */
 suspend fun GitHub.tree(owner: String, repo: String, ref: String): TreeResponse {
 	val response = client.get("https://api.github.com/repos/${owner}/${repo}/git/trees/${ref}?recursive=true")
+	return response.body()
+}
+
+suspend fun GitHub.blob(url: URI): ByteArray {
+	require(url.toString().matches("^https://api.github.com/repos/([^/]+?)/([^/]+?)/git/blobs/([0-9a-f]+)$".toRegex()))
+	val response = client.get(url.toString()) {
+		header("Accept", "application/vnd.github.raw")
+	}
 	return response.body()
 }
 
@@ -359,6 +438,9 @@ data class TreeResponse(
 	val sha: String,
 	val url: URI,
 	val tree: List<TreeEntry>,
+	/**
+	 * > The limit for the tree array is 100,000 entries with a maximum size of 7 MB when using the recursive parameter.
+	 */
 	val truncated: Boolean,
 ) {
 	data class TreeEntry(
