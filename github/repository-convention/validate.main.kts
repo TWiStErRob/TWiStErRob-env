@@ -316,8 +316,9 @@ suspend fun GitHub.validateGitHubActions(
 		if (workflows.isEmpty()) {
 			listOf("Missing GitHub Actions workflow for CI, add it at `${ciYml}`.")
 		} else {
-			listOf("Missing GitHub Actions workflow for CI, add it at `${ciYml}`, " +
-					"or rename one of ${workflows.map { it.path.substringAfter(".github/workflows/") }}."
+			listOf(
+				"Missing GitHub Actions workflow for CI, add it at `${ciYml}`, " +
+						"or rename one of ${workflows.map { it.path.substringAfter(".github/workflows/") }}."
 			)
 		}
 	} else {
