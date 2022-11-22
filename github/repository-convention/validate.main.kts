@@ -201,39 +201,42 @@ suspend fun GitHub.validateFiles(repo: JsonObject): JsonArray {
 		repo = name,
 		ref = defaultBranch
 	)
+	fun webUrl(entry: TreeResponse.TreeEntry): URI =
+		URI.create("https://github.com/${owner}/${name}/blob/${defaultBranch}/${entry.path}")
+
 	val builder = Json.createArrayBuilder()
 	if (response.truncated) {
 		builder.add("Results might be inconclusive because the GitHub tree listing was truncated.")
 	}
-	validateRenovate(response, owner, name, defaultBranch).forEach(builder::add)
-	validateGradleWrapper(response, owner, name, defaultBranch).forEach(builder::add)
+	validateRenovate(response, ::webUrl).forEach(builder::add)
+	validateGitHubActions(response, ::webUrl).forEach(builder::add)
 	return builder.build()
 }
 
 suspend fun GitHub.validateRenovate(
 	response: TreeResponse,
-	owner: String,
-	name: String,
-	defaultBranch: String
+	webUrl: TreeResponse.TreeEntry.() -> URI,
 ): List<String> {
 	val configs: List<TreeResponse.TreeEntry> = response.tree.filter { it.path in Renovate.CONFIGS_LOCATIONS }
 	return if (configs.isEmpty()) {
-		listOf("Missing Renovate configuration file, add it at ${Renovate.PREFERRED_CONFIG}.")
+		listOf("Missing Renovate configuration file, add it at `${Renovate.PREFERRED_CONFIG}`.")
 	} else {
 		val multipleProblems = if (configs.size > 1) {
-			listOf("Multiple Renovate configuration files found: ${configs}, keep only ${Renovate.PREFERRED_CONFIG}.")
+			listOf("Multiple Renovate configuration files found: ${configs}, keep only `${Renovate.PREFERRED_CONFIG}`.")
 		} else {
 			emptyList()
 		}
 		val contentProblems = configs.mapNotNull { configFile ->
-			val actualUrl = "https://github.com/${owner}/${name}/blob/${defaultBranch}/${configFile.path}"
 			if (configFile.path != Renovate.PREFERRED_CONFIG) {
-				"Renovate configuration file should be at ${Renovate.PREFERRED_CONFIG}, not ${configFile.path}."
+				"Renovate configuration file should be at `${Renovate.PREFERRED_CONFIG}`, not `${configFile.path}`."
 			} else {
 				val contents = blob(configFile.url).decodeToString()
 				if (!contents.startsWith(Renovate.CONFIG_PREFIX)) {
-					"Renovate configuration file ${actualUrl} doesn't have valid contents," +
-							" should start with:\n```json\n${Renovate.CONFIG_PREFIX}\n```"
+					"Renovate configuration file ${configFile.webUrl()} doesn't have valid contents," +
+							" should start with:" +
+							"\n```json\n" +
+							Renovate.CONFIG_PREFIX +
+							"\n```"
 				} else {
 					null // AOK
 				}
@@ -275,28 +278,56 @@ object Renovate {
 	}
 }
 
-suspend fun GitHub.validateGradleWrapper(
+suspend fun GitHub.validateGitHubActions(
 	response: TreeResponse,
-	owner: String,
-	name: String,
-	defaultBranch: String
+	webUrl: TreeResponse.TreeEntry.() -> URI,
 ): List<String> {
-	val configs: List<TreeResponse.TreeEntry> = response.tree.filter {
+	val workflows: List<TreeResponse.TreeEntry> = response.tree.filter {
 		it.path.startsWith(".github/workflows/") && it.path.endsWith(".yml")
 	}
+	return validateGitHubCI(workflows) + validateGradleWrapper(workflows, webUrl)
+}
+
+suspend fun GitHub.validateGradleWrapper(
+	workflows: List<TreeResponse.TreeEntry>,
+	webUrl: TreeResponse.TreeEntry.() -> URI,
+): List<String> {
 	val validation = """
 	|      - name: Validate Gradle Wrapper JARs.
 	|        uses: gradle/wrapper-validation-action@v1
 	""".trimMargin()
-	return configs.mapNotNull { workflowFile ->
+	return workflows.mapNotNull { workflowFile ->
 		val contents = blob(workflowFile.url).decodeToString()
-		val actualUrl = "https://github.com/${owner}/${name}/blob/${defaultBranch}/${workflowFile.path}"
 		if ("gradlew" in contents && validation !in contents) {
-			"GitHub Actions workflow ${actualUrl} should validate Gradle Wrapper JARs before executing them:\n```yml\n" +
+			"GitHub Actions workflow ${workflowFile.webUrl()} should validate Gradle Wrapper JARs before executing them:" +
+					"\n```yml\n" +
 					validation +
-					"\n```\nCreate a PR with title: \"Validate Gradle Wrappers before Gradle invocations\""
+					"\n```" +
+					"\nCreate a PR with title: \"Validate Gradle Wrappers before Gradle invocations\""
 		} else {
 			null // AOK
+		}
+	}
+}
+
+suspend fun GitHub.validateGitHubCI(workflows: List<TreeResponse.TreeEntry>): List<String> {
+	val ciYml = ".github/workflows/CI.yml"
+	val ci = workflows.singleOrNull { it.path == ciYml }
+	return if (ci == null) {
+		if (workflows.isEmpty()) {
+			listOf("Missing GitHub Actions workflow for CI, add it at `${ciYml}`.")
+		} else {
+			listOf(
+				"Missing GitHub Actions workflow for CI, add it at `${ciYml}`, " +
+						"or rename one of ${workflows.map { it.path.substringAfter(".github/workflows/") }}."
+			)
+		}
+	} else {
+		val contents = blob(ci.url).decodeToString()
+		if (contents.lines().first { !it.startsWith('#') }.substringBefore('#').trim() != "name: CI") {
+			listOf("GitHub Actions workflow for CI in CI.yml should be named `CI`.")
+		} else {
+			emptyList()
 		}
 	}
 }
