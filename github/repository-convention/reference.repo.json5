@@ -1,8 +1,15 @@
 {
+	// Exists only to match the output from the GitHub GraphQL API.
 	"__typename": "Repository",
+	// Exists only to match the output from the GitHub GraphQL API and listed for easy identification.
+	"name": "<REPOSITORY_SPECIFIC>",
+	// The URL of the repository on GitHub, it's specific, but listed for easy navigation.
 	"url": "<REPOSITORY_SPECIFIC>",
+	// The URL of the repository on a third party site, it's specific, but listed because it's mandatory.
 	"homepageUrl": "<REPOSITORY_SPECIFIC>",
+	// The description of the repository on GitHub, it's specific, but listed because it's mandatory.
 	"description": "<REPOSITORY_SPECIFIC>",
+	// The topics (tags) listed on GitHub repository, it's specific, but listed because it's mandatory.
 	"repositoryTopics": {
 		"nodes": [
 			{
@@ -12,31 +19,46 @@
 			}
 		]
 	},
-	"name": "<REPOSITORY_SPECIFIC>",
 	"isTemplate": false,
 	"webCommitSignoffRequired": false,
 	"usesCustomOpenGraphImage": false,
 	"openGraphImageUrl": "<REPOSITORY_SPECIFIC>",
+	// I don't use Wikis anymore, they're hard to edit, and ugly.
+	// GitHub health-files and gh-pages is the way to go if documentation is needed.
 	"hasWikiEnabled": false,
+	// Issue tracking is right next to the code.
 	"hasIssuesEnabled": true,
+	// Discussions are disabled for now everywhere, because there are no contributors. They can open issues, if necessary.
 	"hasDiscussionsEnabled": false,
+	// I don't use Projects, milestones and epics give enough planning capabilities.
 	"hasProjectsEnabled": false,
+	// Squash everything, it's cleaner.
 	"mergeCommitAllowed": false,
+	// Set to default, but not used because merge commit is disabled.
 	"mergeCommitMessage": "PR_TITLE",
+	// Set to default, but not used because merge commit is disabled.
 	"mergeCommitTitle": "MERGE_MESSAGE",
+	// Only enable squash merging and throw away commits.
 	"squashMergeAllowed": true,
+	// Title should be clear enough, and custom description is encouraged.
 	"squashMergeCommitTitle": "PR_TITLE",
 	"squashMergeCommitMessage": "BLANK",
+	// Squash everything, it's cleaner.
 	"rebaseMergeAllowed": false,
+	// Always allow merge-updating a branch, in case I need files from newer commits.
 	"allowUpdateBranch": true,
+	// Why would it be disabled by default, it's a conundrum. Because CI exists everywhere, it's easy to "fire and forget".
 	"autoMergeAllowed": true,
+	// Clean up automatically, it's always undoable, if necessary.
 	"deleteBranchOnMerge": true,
-	"visibility": "PUBLIC",
-	"isPrivate": false,
+	// For now, I only manage my owned, non-forked, public repos this way.
 	"owner": {
 		"login": "TWiStErRob"
 	},
 	"isArchived": false,
+	"isPrivate": false,
+	"visibility": "PUBLIC",
+	// I don't collaborate with anyone actively yet, hopefully one day!
 	"collaborators": {
 		"edges": [
 			{
@@ -47,14 +69,17 @@
 			}
 		]
 	},
+	// Since there are no heated discussions, there's no need to lock the repos.
 	"interactionAbility": {
 		"expiresAt": null,
 		"limit": "NO_LIMIT",
 		"origin": "REPOSITORY"
 	},
+	// TODO For now, both `master` and `main` are in use, slowly inching towards `main`.
 	"defaultBranchRef": {
 		"name": "<REPOSITORY_SPECIFIC>"
 	},
+	// All repos must protect the default branch, and for now, it's the only branch to be protected.
 	"branchProtectionRules": {
 		"totalCount": 1,
 		"nodes": [
@@ -68,13 +93,20 @@
 						}
 					]
 				},
+				// This is a misnomer, it actually "requires 0 reviews", so it's not mandatory.
 				"requiresApprovingReviews": true,
+				// 0 for now, because I don't have a pair to review all my PRs.
 				"requiredApprovingReviewCount": 0,
+				// If there was a reviewer, I would want to dismiss their reviews on every change.
 				"dismissesStaleReviews": true,
+				// I don't have CODEOWNERs set up yet.
 				"requiresCodeOwnerReviews": false,
+				// TODO Ideally this would be true, but it requires a reviewer.
 				"requireLastPushApproval": false,
+				// All CI must always pass.
 				"requiresStatusChecks": true,
 				"requiresStrictStatusChecks": true,
+				// This is a placeholder in case the list of checks is empty, the tool will flag it as missing.
 				"requiredStatusChecks": [
 					{
 						"context": "<REPOSITORY_SPECIFIC>",
@@ -84,16 +116,22 @@
 						}
 					}
 				],
+				// Comments I leave are usually TODOs, they should be resolved before merge,
+				// even if that means punting to a separate new issue, or consciously choosing ignoring them.
 				"requiresConversationResolution": true,
 				"requiresCommitSignatures": false,
+				// Don't want merges on default branches.
 				"requiresLinearHistory": true,
 				"lockBranch": false,
+				// TODO this should probably be true.
 				"isAdminEnforced": false,
+				// I want to protect against accidental force-push to default branch.
 				"allowsForcePushes": false,
 				"bypassForcePushAllowances": {
 					"totalCount": 0,
 					"nodes": []
 				},
+				// Default branch should be deletable.
 				"allowsDeletions": false
 			}
 		]
