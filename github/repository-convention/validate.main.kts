@@ -219,17 +219,17 @@ suspend fun GitHub.validateRenovate(
 ): List<String> {
 	val configs: List<TreeResponse.TreeEntry> = response.tree.filter { it.path in Renovate.CONFIGS_LOCATIONS }
 	return if (configs.isEmpty()) {
-		listOf("Missing Renovate configuration file, add it at ${Renovate.PREFERRED_CONFIG}.")
+		listOf("Missing Renovate configuration file, add it at `${Renovate.PREFERRED_CONFIG}`.")
 	} else {
 		val multipleProblems = if (configs.size > 1) {
-			listOf("Multiple Renovate configuration files found: ${configs}, keep only ${Renovate.PREFERRED_CONFIG}.")
+			listOf("Multiple Renovate configuration files found: ${configs}, keep only `${Renovate.PREFERRED_CONFIG}`.")
 		} else {
 			emptyList()
 		}
 		val contentProblems = configs.mapNotNull { configFile ->
 			val actualUrl = "https://github.com/${owner}/${name}/blob/${defaultBranch}/${configFile.path}"
 			if (configFile.path != Renovate.PREFERRED_CONFIG) {
-				"Renovate configuration file should be at ${Renovate.PREFERRED_CONFIG}, not ${configFile.path}."
+				"Renovate configuration file should be at `${Renovate.PREFERRED_CONFIG}`, not `${configFile.path}`."
 			} else {
 				val contents = blob(configFile.url).decodeToString()
 				if (!contents.startsWith(Renovate.CONFIG_PREFIX)) {
@@ -320,7 +320,7 @@ suspend fun GitHub.validateGitHubActions(
 		}
 	} else {
 		val contents = blob(ci.url).decodeToString()
-		if (contents.lines().first { !it.startsWith('#') }.substringBefore('#') != "name: CI") {
+		if (contents.lines().first { !it.startsWith('#') }.substringBefore('#').trim() != "name: CI") {
 			listOf("GitHub Actions workflow for CI in CI.yml should be named `CI`.")
 		} else {
 			emptyList()
