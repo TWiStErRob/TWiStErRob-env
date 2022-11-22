@@ -343,16 +343,26 @@ fragment security on Repository {
 # Security > Code security and analysis
 fragment securityAnalysis on Repository {
     __typename # placeholder
+    # Most of these are only available in REST API: https://docs.github.com/en/rest/repos/repos#get-a-repository
+    # security_and_analysis.advanced_security.status=enabled|disabled
+
     #- Private vulnerability reporting
     # MISSING
+
     #- Dependency graph
     # MISSING
+
     #- Dependabot
     # ...MISSING
+
     #- Code scanning
     # MISSING
+
     #- Secret scanning
     # MISSING
+    # security_and_analysis.secret_scanning.status=enabled|disabled
+    # ENTERPRISE ONLY
+    # security_and_analysis.secret_scanning_push_protection.status=enabled|disabled
 }
 # Security > Deploy keys
 fragment securityDeployKeys on Repository {

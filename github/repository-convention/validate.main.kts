@@ -33,6 +33,7 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
@@ -67,6 +68,16 @@ suspend fun main(vararg args: String) {
 		usage()
 	}
 	GitHub().use { gitHub ->
+		val reference = Json.createReader(File("reference.repo.json5")
+			.readLines()
+			// Only full-line comments are supported, trailing comments will fail.
+			.filterNot { it.matches("""^\s*//.*$""".toRegex()) }
+			.joinToString(separator = "\n")
+			// Trailing commas at the end of arrays and objects, but only when pretty printed.
+			.replace(""",(\n\s*[\}\]])""".toRegex(), "$1")
+			//.also { println(it) }
+			.reader()
+		).use { it.readValue() }
 		val response = if (@Suppress("ConstantConditionIf", "RedundantSuppression") true) {
 			Json.createReader(StringReader(gitHub.repositoriesDetails(args[0]))).use { it.readValue() }.asJsonObject()
 		} else {
@@ -75,22 +86,17 @@ suspend fun main(vararg args: String) {
 		Json.createWriter(File("response.repos.json").writer()).use { it.write(response) }
 		val repos = response.asJsonObject()
 			.getValue("/data/user/repositories/nodes").asJsonArray()
-		val reference = Json.createReader(File("reference.repo.json5")
-			.readLines()
-			.filterNot { it.matches("""^\s*//.*$""".toRegex()) }
-			.joinToString(separator = "\n")
-			//.also { println(it) }
-			.reader()
-		).use { it.readValue() }
 		val result = repos.mapJsonArray {
 			val repo = it.asJsonObject()!!
 			val diff = JsonX.createDiff(repo, reference).adorn(repo).cleanDiff()
 			val mergeDiff = JsonX.createMergeDiff(repo, reference).cleanMergeDiff()
+			val files = gitHub.validateFiles(repo)
 			Json.createObjectBuilder()
 				.add("name", repo.getString("name"))
 				.add("url", repo.getString("url"))
 				.add("diff", diff)
 				.add("mergeDiff", mergeDiff)
+				.add("files", files)
 				.build()
 		}
 		File("result.repos.json").writer().use { it.prettyPrint(result) }
@@ -186,14 +192,123 @@ fun JsonArray.adorn(source: JsonObject): JsonArray =
 			}
 		}
 
+suspend fun GitHub.validateFiles(repo: JsonObject): JsonArray {
+	val owner = repo.getValue("/owner/login").asSafeString()!!
+	val name = repo.getSafeString("name")!!
+	val defaultBranch = repo.getValue("/defaultBranchRef/name").asSafeString()!!
+	val response = this.tree(
+		owner = owner,
+		repo = name,
+		ref = defaultBranch
+	)
+	val builder = Json.createArrayBuilder()
+	if (response.truncated) {
+		builder.add("Results might be inconclusive because the GitHub tree listing was truncated.")
+	}
+	validateRenovate(response, owner, name, defaultBranch).forEach(builder::add)
+	validateGradleWrapper(response, owner, name, defaultBranch).forEach(builder::add)
+	return builder.build()
+}
+
+suspend fun GitHub.validateRenovate(
+	response: TreeResponse,
+	owner: String,
+	name: String,
+	defaultBranch: String
+): List<String> {
+	val configs: List<TreeResponse.TreeEntry> = response.tree.filter { it.path in Renovate.CONFIGS_LOCATIONS }
+	return if (configs.isEmpty()) {
+		listOf("Missing Renovate configuration file, add it at ${Renovate.PREFERRED_CONFIG}.")
+	} else {
+		val multipleProblems = if (configs.size > 1) {
+			listOf("Multiple Renovate configuration files found: ${configs}, keep only ${Renovate.PREFERRED_CONFIG}.")
+		} else {
+			emptyList()
+		}
+		val contentProblems = configs.mapNotNull { configFile ->
+			val actualUrl = "https://github.com/${owner}/${name}/blob/${defaultBranch}/${configFile.path}"
+			if (configFile.path != Renovate.PREFERRED_CONFIG) {
+				"Renovate configuration file should be at ${Renovate.PREFERRED_CONFIG}, not ${configFile.path}."
+			} else {
+				val contents = blob(configFile.url).decodeToString()
+				if (!contents.startsWith(Renovate.CONFIG_PREFIX)) {
+					"Renovate configuration file ${actualUrl} doesn't have valid contents," +
+							" should start with:\n```json\n${Renovate.CONFIG_PREFIX}\n```"
+				} else {
+					null // AOK
+				}
+			}
+		}
+		multipleProblems + contentProblems
+	}
+}
+
+object Renovate {
+
+	// TODO change to json5 to allow for comments and trailing commas.
+	const val PREFERRED_CONFIG = ".github/renovate.json"
+
+	val CONFIG_PREFIX = """
+		{
+			"${'$'}schema": "https://docs.renovatebot.com/renovate-schema.json",
+			"extends": [
+				"local>TWiStErRob/renovate-config"
+			]
+	""".trimIndent()
+
+	/**
+	 * https://docs.renovatebot.com/configuration-options
+	 */
+	val CONFIGS_LOCATIONS = setOf(
+		"renovate.json",
+		"renovate.json5",
+		".github/renovate.json",
+		".github/renovate.json5",
+		".gitlab/renovate.json",
+		".gitlab/renovate.json5",
+		".renovaterc",
+		".renovaterc.json",
+	)
+
+	init {
+		check(PREFERRED_CONFIG in CONFIGS_LOCATIONS)
+	}
+}
+
+suspend fun GitHub.validateGradleWrapper(
+	response: TreeResponse,
+	owner: String,
+	name: String,
+	defaultBranch: String
+): List<String> {
+	val configs: List<TreeResponse.TreeEntry> = response.tree.filter {
+		it.path.startsWith(".github/workflows/") && it.path.endsWith(".yml")
+	}
+	val validation = """
+	|      - name: Validate Gradle Wrapper JARs.
+	|        uses: gradle/wrapper-validation-action@v1
+	""".trimMargin()
+	return configs.mapNotNull { workflowFile ->
+		val contents = blob(workflowFile.url).decodeToString()
+		val actualUrl = "https://github.com/${owner}/${name}/blob/${defaultBranch}/${workflowFile.path}"
+		if ("gradlew" in contents && validation !in contents) {
+			"GitHub Actions workflow ${actualUrl} should validate Gradle Wrapper JARs before executing them:\n```yml\n" +
+					validation +
+					"\n```\nCreate a PR with title: \"Validate Gradle Wrappers before Gradle invocations\""
+		} else {
+			null // AOK
+		}
+	}
+}
+
 object JsonX {
 
-	fun JsonArray.filterNot(predicate: (JsonValue) -> Boolean): JsonArray =
+	inline fun JsonArray.filterNot(predicate: (JsonValue) -> Boolean): JsonArray =
 		Json.createArrayBuilder()
 			.apply { forEach { if (!predicate(it)) add(it) } }
 			.build()
 
-	fun JsonArray.mapJsonArray(transform: (JsonValue) -> JsonValue): JsonArray =
+	inline fun JsonArray.mapJsonArray(transform: (JsonValue) -> JsonValue): JsonArray =
 		Json.createArrayBuilder()
 			.apply { forEach { add(transform(it)) } }
 			.build()
@@ -338,8 +453,19 @@ data class ErrorResponse(
 	}
 }
 
+/**
+ * https://docs.github.com/en/rest/git/trees#get-a-tree
+ */
 suspend fun GitHub.tree(owner: String, repo: String, ref: String): TreeResponse {
 	val response = client.get("https://api.github.com/repos/${owner}/${repo}/git/trees/${ref}?recursive=true")
+	return response.body()
+}
+
+suspend fun GitHub.blob(url: URI): ByteArray {
+	require(url.toString().matches("^https://api.github.com/repos/([^/]+?)/([^/]+?)/git/blobs/([0-9a-f]+)$".toRegex()))
+	val response = client.get(url.toString()) {
+		header("Accept", "application/vnd.github.raw")
+	}
 	return response.body()
 }
 
@@ -347,6 +473,9 @@ data class TreeResponse(
 	val sha: String,
 	val url: URI,
 	val tree: List<TreeEntry>,
+	/**
+	 * > The limit for the tree array is 100,000 entries with a maximum size of 7 MB when using the recursive parameter.
+	 */
 	val truncated: Boolean,
 ) {
 	data class TreeEntry(
