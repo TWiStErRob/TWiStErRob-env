@@ -132,7 +132,7 @@ fun NotionClient.updatePage(page: Page, icon: File?, properties: Map<String, Pag
 	}
 }
 
-@Suppress("ComplexMethod")
+@Suppress("ComplexMethod", "LongMethod")
 fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Page>): PageProperty? {
 	if (value.isBlank()) return null
 	return when (type) {
@@ -148,13 +148,15 @@ fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Pa
 					}
 		)
 		PropertyType.MultiSelect -> PageProperty(
-			multiSelect = value.split(",").map {
-				multiSelect!!.options!!.singleOrNull { it.name == value }
+			multiSelect = value.split(",").map { option ->
+				multiSelect!!.options!!.singleOrNull { it.name == option }
 //					?: error("Cannot find option '${value}' in ${this.multiSelect!!.options!!.map { it.name!! }}")
-					?: DatabaseProperty.MultiSelect.Option(name = value)
+					?: DatabaseProperty.MultiSelect.Option(name = option)
 						.also {
 							val existingOptions = this.multiSelect!!.options!!.map { it.name!! }
-							System.err.println("WARNING: Multi-select option ${value} not found in ${existingOptions}, creating it.")
+							System.err.println(
+								"WARNING: Multi-select option ${option} from ${value} not found in ${existingOptions}, creating it."
+							)
 						}
 			}
 		)
@@ -177,7 +179,7 @@ fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Pa
 		PropertyType.Files -> PageProperty(
 			files = value.split(",").map { url ->
 				PageProperty.File(
-					name = url,
+					name = "file",
 					type = FileType.External,
 					external = ExternalFileDetails(url = url)
 				)
