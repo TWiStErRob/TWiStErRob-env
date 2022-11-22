@@ -209,8 +209,7 @@ suspend fun GitHub.validateFiles(repo: JsonObject): JsonArray {
 		builder.add("Results might be inconclusive because the GitHub tree listing was truncated.")
 	}
 	validateRenovate(response, ::webUrl).forEach(builder::add)
-	validateGradleWrapper(response, ::webUrl).forEach(builder::add)
-	validateGitHubActions(response).forEach(builder::add)
+	validateGitHubActions(response, ::webUrl).forEach(builder::add)
 	return builder.build()
 }
 
@@ -279,18 +278,25 @@ object Renovate {
 	}
 }
 
-suspend fun GitHub.validateGradleWrapper(
+suspend fun GitHub.validateGitHubActions(
 	response: TreeResponse,
 	webUrl: TreeResponse.TreeEntry.() -> URI,
 ): List<String> {
-	val configs: List<TreeResponse.TreeEntry> = response.tree.filter {
+	val workflows: List<TreeResponse.TreeEntry> = response.tree.filter {
 		it.path.startsWith(".github/workflows/") && it.path.endsWith(".yml")
 	}
+	return validateGitHubCI(workflows) + validateGradleWrapper(workflows, webUrl)
+}
+
+suspend fun GitHub.validateGradleWrapper(
+	workflows: List<TreeResponse.TreeEntry>,
+	webUrl: TreeResponse.TreeEntry.() -> URI
+): List<String> {
 	val validation = """
 	|      - name: Validate Gradle Wrapper JARs.
 	|        uses: gradle/wrapper-validation-action@v1
 	""".trimMargin()
-	return configs.mapNotNull { workflowFile ->
+	return workflows.mapNotNull { workflowFile ->
 		val contents = blob(workflowFile.url).decodeToString()
 		if ("gradlew" in contents && validation !in contents) {
 			"GitHub Actions workflow ${workflowFile.webUrl()} should validate Gradle Wrapper JARs before executing them:" +
@@ -304,12 +310,7 @@ suspend fun GitHub.validateGradleWrapper(
 	}
 }
 
-suspend fun GitHub.validateGitHubActions(
-	response: TreeResponse,
-): List<String> {
-	val workflows: List<TreeResponse.TreeEntry> = response.tree.filter {
-		it.path.startsWith(".github/workflows/") && it.path.endsWith(".yml")
-	}
+suspend fun GitHub.validateGitHubCI(workflows: List<TreeResponse.TreeEntry>): List<String> {
 	val ciYml = ".github/workflows/CI.yml"
 	val ci = workflows.singleOrNull { it.path == ciYml }
 	return if (ci == null) {
