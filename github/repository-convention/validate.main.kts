@@ -205,7 +205,7 @@ suspend fun GitHub.validateFiles(repo: JsonObject): JsonArray {
 	if (response.truncated) {
 		builder.add("Results might be inconclusive because the GitHub tree listing was truncated.")
 	}
-	validateRenovate(response, owner, name, defaultBranch)?.let { problem -> builder.add(problem) }
+	validateRenovate(response, owner, name, defaultBranch).forEach(builder::add)
 	validateGradleWrapper(response, owner, name, defaultBranch).forEach(builder::add)
 	return builder.build()
 }
@@ -215,12 +215,17 @@ suspend fun GitHub.validateRenovate(
 	owner: String,
 	name: String,
 	defaultBranch: String
-): String? {
+): List<String> {
 	val configs: List<TreeResponse.TreeEntry> = response.tree.filter { it.path in Renovate.CONFIGS_LOCATIONS }
-	return when (configs.size) {
-		0 -> "Missing Renovate configuration file, add it at ${Renovate.PREFERRED_CONFIG}."
-		1 -> {
-			val configFile = configs.single()
+	return if (configs.isEmpty()) {
+		listOf("Missing Renovate configuration file, add it at ${Renovate.PREFERRED_CONFIG}.")
+	} else {
+		val multipleProblems = if (configs.size > 1) {
+			listOf("Multiple Renovate configuration files found: ${configs}, keep only ${Renovate.PREFERRED_CONFIG}.")
+		} else {
+			emptyList()
+		}
+		val contentProblems = configs.mapNotNull { configFile ->
 			val actualUrl = "https://github.com/${owner}/${name}/blob/${defaultBranch}/${configFile.path}"
 			if (configFile.path != Renovate.PREFERRED_CONFIG) {
 				"Renovate configuration file should be at ${Renovate.PREFERRED_CONFIG}, not ${configFile.path}."
@@ -234,7 +239,7 @@ suspend fun GitHub.validateRenovate(
 				}
 			}
 		}
-		else -> "Multiple Renovate configuration files found: ${configs}, keep only ${Renovate.PREFERRED_CONFIG}."
+		multipleProblems + contentProblems
 	}
 }
 
@@ -291,7 +296,7 @@ suspend fun GitHub.validateGradleWrapper(
 					validation +
 					"\n```\nCreate a PR with title: \"Validate Gradle Wrappers before Gradle invocations\""
 		} else {
-			null
+			null // AOK
 		}
 	}
 }
