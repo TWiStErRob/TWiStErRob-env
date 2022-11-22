@@ -207,6 +207,7 @@ suspend fun GitHub.validateFiles(repo: JsonObject): JsonArray {
 	}
 	validateRenovate(response, owner, name, defaultBranch).forEach(builder::add)
 	validateGradleWrapper(response, owner, name, defaultBranch).forEach(builder::add)
+	validateGitHubActions(response).forEach(builder::add)
 	return builder.build()
 }
 
@@ -297,6 +298,32 @@ suspend fun GitHub.validateGradleWrapper(
 					"\n```\nCreate a PR with title: \"Validate Gradle Wrappers before Gradle invocations\""
 		} else {
 			null // AOK
+		}
+	}
+}
+
+suspend fun GitHub.validateGitHubActions(
+	response: TreeResponse,
+): List<String> {
+	val workflows: List<TreeResponse.TreeEntry> = response.tree.filter {
+		it.path.startsWith(".github/workflows/") && it.path.endsWith(".yml")
+	}
+	val ciYml = ".github/workflows/CI.yml"
+	val ci = workflows.singleOrNull { it.path == ciYml }
+	return if (ci == null) {
+		if (workflows.isEmpty()) {
+			listOf("Missing GitHub Actions workflow for CI, add it at `${ciYml}`.")
+		} else {
+			listOf("Missing GitHub Actions workflow for CI, add it at `${ciYml}`, " +
+					"or rename one of ${workflows.map { it.path.substringAfter(".github/workflows/") }}."
+			)
+		}
+	} else {
+		val contents = blob(ci.url).decodeToString()
+		if (contents.lines().first { !it.startsWith('#') }.substringBefore('#') != "name: CI") {
+			listOf("GitHub Actions workflow for CI in CI.yml should be named `CI`.")
+		} else {
+			emptyList()
 		}
 	}
 }
