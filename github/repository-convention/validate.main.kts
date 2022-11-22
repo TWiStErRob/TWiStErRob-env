@@ -290,7 +290,7 @@ suspend fun GitHub.validateGitHubActions(
 
 suspend fun GitHub.validateGradleWrapper(
 	workflows: List<TreeResponse.TreeEntry>,
-	webUrl: TreeResponse.TreeEntry.() -> URI
+	webUrl: TreeResponse.TreeEntry.() -> URI,
 ): List<String> {
 	val validation = """
 	|      - name: Validate Gradle Wrapper JARs.
