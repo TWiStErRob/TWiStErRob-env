@@ -68,6 +68,16 @@ suspend fun main(vararg args: String) {
 		usage()
 	}
 	GitHub().use { gitHub ->
+		val reference = Json.createReader(File("reference.repo.json5")
+			.readLines()
+			// Only full-line comments are supported, trailing comments will fail.
+			.filterNot { it.matches("""^\s*//.*$""".toRegex()) }
+			.joinToString(separator = "\n")
+			// Trailing commas at the end of arrays and objects, but only when pretty printed.
+			.replace(""",(\n\s*[\}\]])""".toRegex(), "$1")
+			//.also { println(it) }
+			.reader()
+		).use { it.readValue() }
 		val response = if (@Suppress("ConstantConditionIf", "RedundantSuppression") true) {
 			Json.createReader(StringReader(gitHub.repositoriesDetails(args[0]))).use { it.readValue() }.asJsonObject()
 		} else {
@@ -76,13 +86,6 @@ suspend fun main(vararg args: String) {
 		Json.createWriter(File("response.repos.json").writer()).use { it.write(response) }
 		val repos = response.asJsonObject()
 			.getValue("/data/user/repositories/nodes").asJsonArray()
-		val reference = Json.createReader(File("reference.repo.json5")
-			.readLines()
-			.filterNot { it.matches("""^\s*//.*$""".toRegex()) }
-			.joinToString(separator = "\n")
-			//.also { println(it) }
-			.reader()
-		).use { it.readValue() }
 		val result = repos.mapJsonArray {
 			val repo = it.asJsonObject()!!
 			val diff = JsonX.createDiff(repo, reference).adorn(repo).cleanDiff()

@@ -14,10 +14,10 @@
 		"nodes": [
 			{
 				"topic": {
-					"name": "<REPOSITORY_SPECIFIC>"
-				}
-			}
-		]
+					"name": "<REPOSITORY_SPECIFIC>",
+				},
+			},
+		],
 	},
 	"isTemplate": false,
 	"webCommitSignoffRequired": false,
@@ -53,7 +53,7 @@
 	"deleteBranchOnMerge": true,
 	// For now, I only manage my owned, non-forked, public repos this way.
 	"owner": {
-		"login": "TWiStErRob"
+		"login": "TWiStErRob",
 	},
 	"isArchived": false,
 	"isPrivate": false,
@@ -63,21 +63,21 @@
 		"edges": [
 			{
 				"node": {
-					"login": "TWiStErRob"
+					"login": "TWiStErRob",
 				},
-				"permission": "ADMIN"
-			}
-		]
+				"permission": "ADMIN",
+			},
+		],
 	},
 	// Since there are no heated discussions, there's no need to lock the repos.
 	"interactionAbility": {
 		"expiresAt": null,
 		"limit": "NO_LIMIT",
-		"origin": "REPOSITORY"
+		"origin": "REPOSITORY",
 	},
 	// TODO For now, both `master` and `main` are in use, slowly inching towards `main`.
 	"defaultBranchRef": {
-		"name": "<REPOSITORY_SPECIFIC>"
+		"name": "<REPOSITORY_SPECIFIC>",
 	},
 	// All repos must protect the default branch, and for now, it's the only branch to be protected.
 	"branchProtectionRules": {
@@ -89,7 +89,7 @@
 					"totalCount": 1,
 					"nodes": [
 						{
-							"name": "<REPOSITORY_SPECIFIC>"
+							"name": "<REPOSITORY_SPECIFIC>",
 						}
 					]
 				},
@@ -112,9 +112,9 @@
 						"context": "<REPOSITORY_SPECIFIC>",
 						"app": {
 							"id": "MDM6QXBwMTUzNjg=",
-							"name": "GitHub Actions"
-						}
-					}
+							"name": "GitHub Actions",
+						},
+					},
 				],
 				// Comments I leave are usually TODOs, they should be resolved before merge,
 				// even if that means punting to a separate new issue, or consciously choosing ignoring them.
@@ -129,12 +129,12 @@
 				"allowsForcePushes": false,
 				"bypassForcePushAllowances": {
 					"totalCount": 0,
-					"nodes": []
+					"nodes": [],
 				},
 				// Default branch should be deletable.
-				"allowsDeletions": false
-			}
-		]
+				"allowsDeletions": false,
+			},
+		],
 	},
 	//"environment": {
 	//	"name": "github-pages",
@@ -144,7 +144,7 @@
 	//},
 	"deployKeys": {
 		"totalCount": 0,
-		"nodes": []
+		"nodes": [],
 	},
 	"isUserConfigurationRepository": false,
 	"isBlankIssuesEnabled": true,
@@ -154,15 +154,15 @@
 	//"security_and_analysis": {
 	//	"advanced_security": {
 	//		// Generally enabled.
-	//		"status": "enabled"
+	//		"status": "enabled",
 	//	},
 	//	"private_vulnerability_reporting": {
 	//		// As is the default, because it's beta right now.
-	//		"status": "disabled"
+	//		"status": "disabled",
 	//	},
 	//	"dependency_graph": {
 	//		// Cannot be disabled.
-	//		"status": "enabled"
+	//		"status": "enabled",
 	//	},
 	//	"dependabot": {
 	//		"alerts": {
@@ -186,11 +186,11 @@
 	//			// If anything goes wrong, fail the PR, trying to keep it clean.
 	//			"security": "any",
 	//			"other": "any",
-	//		}
+	//		},
 	//	},
 	//	"secret_scanning": {
 	//		// Cannot be disabled.
-	//		"status": "enabled"
+	//		"status": "enabled",
 	//	},
 	//},
 }
