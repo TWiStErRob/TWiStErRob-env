@@ -19,6 +19,8 @@ import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.reflect.KProperty1
 
 @Suppress("SpreadOperator")
@@ -353,9 +355,18 @@ fun isSimilar(old: PageProperty, new: PageProperty): Boolean {
 			val newUrl = newValue.toString().toHttpUrl()
 			oldUrl.queryParameter("v") == newUrl.queryParameter("v")
 		}
+		old.type == PropertyType.Date -> {
+			oldValue as PageProperty.Date
+			newValue as PageProperty.Date
+			oldValue.start?.let(::parseDateTime) == newValue.start?.let(::parseDateTime) &&
+					oldValue.end?.let(::parseDateTime) == newValue.end?.let(::parseDateTime)
+		}
 		else -> {
 			// Fall back to data class equals.
 			oldValue == newValue
 		}
 	}
 }
+
+fun parseDateTime(value: String): LocalDateTime =
+	LocalDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(value))
