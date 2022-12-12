@@ -218,18 +218,26 @@ fun parseDateRange(value: String): Pair<String, String?> {
 	return Pair(start1, end1)
 }
 
-fun String.parseReferencedIds(pages: List<Page>): List<String> =
-	when {
+fun String.parseReferencedIds(pages: List<Page>): List<String> {
+	fun findPage(title: String): Page =
+		pages.singleOrNull { it.title == title }
+			?: error("Cannot find ${title} in ${pages.map { it.title }}")
+
+	return when {
 		// 0123456789abcdef0123456789abcdef
 		// 0123456789abcdef0123456789abcdef,0123456789abcdef0123456789abcdef
 		// https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef,https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef
 		this.matches("""^((https://www.notion.so/([^,]*)-)?[0-9a-f]{32},?)+$""".toRegex()) -> {
 			this.split(",").map { it.trim().takeLast(32) }
 		}
+		pages.any { it.title == this } -> {
+			listOf(findPage(this).id)
+		}
 		else -> {
-			listOf(pages.single { it.title == this }.id)
+			this.split(",").map { findPage(it).id }
 		}
 	}
+}
 
 fun NotionClient.allPages(databaseId: String): List<Page> =
 	generateSequence(queryDatabase(databaseId)) { results ->
