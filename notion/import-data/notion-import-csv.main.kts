@@ -355,6 +355,9 @@ fun isSimilar(old: PageProperty, new: PageProperty): Boolean {
 			val newUrl = newValue.toString().toHttpUrl()
 			oldUrl.queryParameter("v") == newUrl.queryParameter("v")
 		}
+		old.type == PropertyType.Number -> {
+			(oldValue as Number?)?.toDouble() == (newValue as Number?)?.toDouble()
+		}
 		old.type == PropertyType.Date -> {
 			oldValue as PageProperty.Date
 			newValue as PageProperty.Date
