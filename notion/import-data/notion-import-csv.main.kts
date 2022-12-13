@@ -372,6 +372,14 @@ fun isSimilar(old: PageProperty, new: PageProperty): Boolean {
 			oldValue.start?.let(::parseDateTime) == newValue.start?.let(::parseDateTime) &&
 					oldValue.end?.let(::parseDateTime) == newValue.end?.let(::parseDateTime)
 		}
+		// TODEL https://github.com/seratch/notion-sdk-jvm/issues/82
+		old.type == PropertyType.MultiSelect -> {
+			@Suppress("UNCHECKED_CAST")
+			val oldOptions = (oldValue as List<DatabaseProperty.MultiSelect.Option>)
+			@Suppress("UNCHECKED_CAST")
+			val newOptions = (newValue as List<DatabaseProperty.MultiSelect.Option>)
+			oldOptions.map { it.name } == newOptions.map { it.name }
+		}
 		else -> {
 			// Fall back to data class equals.
 			oldValue == newValue
