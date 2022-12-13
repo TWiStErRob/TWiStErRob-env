@@ -1,0 +1,153 @@
+# variables: { "login": "TWiStErRob", "project": 1, "cursor": null }
+
+# noinspection GraphQLSchemaValidation
+query GetAllProjectV2Items($login: String!, $project: Int!, $cursor: String = null) {
+    user(login: $login) {
+        projectV2(number: $project) {
+            title
+            items(first: 100, after: $cursor) {
+                pageInfo {
+                    hasNextPage
+                    endCursor
+                }
+                nodes {
+                    fieldValues(first: 20) {
+                        nodes { # ProjectV2ItemFieldValue
+                            ... on ProjectV2ItemFieldTextValue {
+                                field { ...fieldName }
+                                value: text
+                            }
+                            ... on ProjectV2ItemFieldNumberValue {
+                                field { ...fieldName }
+                                value: number
+                            }
+                            ... on ProjectV2ItemFieldSingleSelectValue {
+                                field { ...fieldName }
+                                value: name
+                            }
+                            ... on ProjectV2ItemFieldIterationValue {
+                                field { ...fieldName }
+                                value: title
+                            }
+                            ... on ProjectV2ItemFieldRepositoryValue {
+                                field { ...fieldName }
+                                value: repository {
+                                    nameWithOwner
+                                }
+                            }
+                            ... on ProjectV2ItemFieldLabelValue {
+                                field { ...fieldName }
+                                value: labels(first: 100) {
+                                    nodes {
+                                        name
+                                    }
+                                }
+                            }
+                            ... on ProjectV2ItemFieldDateValue {
+                                field { ...fieldName }
+                                value: date
+                            }
+                            ... on ProjectV2ItemFieldMilestoneValue {
+                                field { ...fieldName }
+                                value: milestone {
+                                    title
+                                }
+                            }
+                            ... on ProjectV2ItemFieldPullRequestValue {
+                                field { ...fieldName }
+                                value: pullRequests(first: 100) {
+                                    nodes {
+                                        title
+                                    }
+                                }
+                            }
+                            ... on ProjectV2ItemFieldReviewerValue {
+                                field { ...fieldName }
+                                value: reviewers(first: 100) {
+                                    nodes {
+                                        ... on User {
+                                            login
+                                        }
+                                    }
+                                }
+                            }
+                            ... on ProjectV2ItemFieldUserValue {
+                                field { ...fieldName }
+                                value: users(first: 100) {
+                                    nodes {
+                                        login
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    content {
+                        ... on ProjectV2ItemContent {
+                            __typename
+                        }
+                        ... on DraftIssue {
+                            title
+                            createdAt
+                            updatedAt
+                            body
+                        }
+                        ... on Issue {
+                            title
+                            createdAt
+                            updatedAt
+                            body
+                            url
+                        }
+                        ... on PullRequest {
+                            title
+                            createdAt
+                            updatedAt
+                            body
+                            url
+                        }
+                    }
+                }
+            }
+            ...on ProjectV2 {
+                fields(first: 20) {
+                    nodes {
+                        ... on ProjectV2Field {
+                            id
+                            name
+                        }
+                        ... on ProjectV2IterationField {
+                            id
+                            name
+                            configuration {
+                                iterations {
+                                    startDate
+                                    id
+                                }
+                            }
+                        }
+                        ... on ProjectV2SingleSelectField {
+                            id
+                            name
+                            options {
+                                id
+                                name
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+fragment fieldName on ProjectV2FieldConfiguration {
+    ... on ProjectV2Field {
+        name
+    }
+    ... on ProjectV2IterationField {
+        name
+    }
+    ... on ProjectV2SingleSelectField {
+        name
+    }
+}
