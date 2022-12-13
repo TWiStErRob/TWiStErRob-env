@@ -248,7 +248,14 @@ val PageProperty.isRichText: Boolean
 	get() = this.type == PropertyType.RichText || this.type == PropertyType.Title
 
 fun String.asRichText(): List<PageProperty.RichText> =
-	listOf(PageProperty.RichText(text = PageProperty.RichText.Text(content = this)))
+	// As best effort to try to get over the validation errors:
+	// > body failed validation: body.properties.body.rich_text[0].text.content.length should be ≤ `2000`
+	// > body failed validation: body.properties.body.rich_text.length should be ≤ `100`
+	// Tried splitting on new-lines, but then it easily becomes too many RichText objects.
+	this
+		.windowed(2000, 2000, true) {
+			PageProperty.RichText(text = PageProperty.RichText.Text(content = it.toString()))
+		}
 
 fun List<PageProperty.RichText>.asString(): String =
 	this.joinToString { it.text!!.content!! }
