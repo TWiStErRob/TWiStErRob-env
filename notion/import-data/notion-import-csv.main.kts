@@ -137,7 +137,15 @@ fun NotionClient.updatePage(page: Page, icon: File?, properties: Map<String, Pag
 @Suppress("ComplexMethod", "LongMethod")
 fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Page>): PageProperty? {
 	if (value.isBlank()) return null
-	return when (type) {
+	// Cast to nullable to prevent GSON-null problems.
+	// https://github.com/seratch/notion-sdk-jvm/issues/81
+	@Suppress("MoveVariableDeclarationIntoWhen", "RemoveRedundantQualifierName")
+	val propertyType = type as notion.api.v1.model.common.PropertyType?
+	return when (propertyType) {
+		null -> {
+			System.err.println("Ignoring unknown property type: ${this.name}")
+			null
+		}
 		PropertyType.RichText -> PageProperty(richText = value.asRichText())
 		PropertyType.Number -> PageProperty(number = value.toDouble())
 		PropertyType.Select -> PageProperty(
