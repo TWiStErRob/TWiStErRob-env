@@ -16,10 +16,11 @@ import "./tocsv" as tocsv;
 		.
 		* {
 			# Optional Labels property, fall back to no labels and pluck out names.
-			"Labels": [(.Labels.nodes // [])[].name] | join(","),
+			"Labels": [ (.Labels.nodes // [])[].name ] | join(","),
 			"Repository": .Repository.nameWithOwner,
+			"Linked pull requests": [ (."Linked pull requests".nodes // [])[].url ] | join("\n"),
 			"Milestone": .Milestone.title,
-			"Assignees": [(.Assignees.nodes // [])[].login] | join(","),
+			"Assignees": [ (.Assignees.nodes // [])[].login ] | join(","),
 			"body": (.body | gsub("\r\n"; "\n")),
 		}
 	)
