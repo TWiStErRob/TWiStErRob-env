@@ -19,6 +19,8 @@ import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import java.time.DateTimeException
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KProperty1
@@ -357,53 +359,46 @@ fun isSimilar(old: PageProperty, new: PageProperty): Boolean {
 	// new.type is always null, so can't infer; use old.type instead for both.
 	val oldValue = type.associatedProperty.get(old)
 	val newValue = type.associatedProperty.get(new)
-	return when {
-		oldValue == null -> {
-			// If the old value was missing, any new value is fine.
-			true
+	fun comparable(value: Any?): Any? =
+		when {
+			value == null ->
+				null
+			old.type == PropertyType.Title ||
+			old.type == PropertyType.RichText ->
+				@Suppress("UNCHECKED_CAST")
+				(value as List<PageProperty.RichText>).asString().lowercase()
+			old.type == PropertyType.Url ->
+				if (value.toString().toHttpUrl().host == "www.youtube.com") {
+					// YouTube specific exception - these are all the same:
+					// https://www.youtube.com/watch?v=yKfuq3luNVM
+					// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=24
+					// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=25
+					value.toString().toHttpUrl().queryParameter("v")
+				} else {
+					value
+				}
+			old.type == PropertyType.Number ->
+				(value as Number).toDouble()
+			old.type == PropertyType.Date -> {
+				fun parseDateTime(value: String): LocalDateTime =
+					try {
+						LocalDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(value))
+					} catch (@Suppress("SwallowedException") ex: DateTimeException) {
+						LocalDate.from(DateTimeFormatter.ISO_DATE.parse(value)).atStartOfDay()
+					}
+				value as PageProperty.Date
+				Pair(value.start?.let(::parseDateTime), value.end?.let(::parseDateTime))
+			}
+			// TODEL https://github.com/seratch/notion-sdk-jvm/issues/82
+			old.type == PropertyType.MultiSelect ->
+				@Suppress("UNCHECKED_CAST")
+				(value as List<DatabaseProperty.MultiSelect.Option>).map { it.name }
+			else ->
+				// Fall back to data class equals 🤞.
+				value
 		}
-		old.isRichText -> {
-			@Suppress("UNCHECKED_CAST")
-			val oldText = (oldValue as List<PageProperty.RichText>).asString().lowercase()
 
-			@Suppress("UNCHECKED_CAST")
-			val newText = (newValue as List<PageProperty.RichText>).asString().lowercase()
-			oldText.isEmpty() || oldText == newText
-		}
-		// YouTube specific exception - these are all the same:
-		// https://www.youtube.com/watch?v=yKfuq3luNVM
-		// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=24
-		// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=25
-		old.type == PropertyType.Url -> {
-			val oldUrl = oldValue.toString().toHttpUrl()
-			val newUrl = newValue.toString().toHttpUrl()
-			oldUrl.queryParameter("v") == newUrl.queryParameter("v")
-		}
-		old.type == PropertyType.Number -> {
-			oldValue as Number
-			newValue as Number
-			oldValue.toDouble() == newValue.toDouble()
-		}
-		old.type == PropertyType.Date -> {
-			oldValue as PageProperty.Date
-			newValue as PageProperty.Date
-			oldValue.start?.let(::parseDateTime) == newValue.start?.let(::parseDateTime) &&
-					oldValue.end?.let(::parseDateTime) == newValue.end?.let(::parseDateTime)
-		}
-		// TODEL https://github.com/seratch/notion-sdk-jvm/issues/82
-		old.type == PropertyType.MultiSelect -> {
-			@Suppress("UNCHECKED_CAST")
-			val oldOptions = (oldValue as List<DatabaseProperty.MultiSelect.Option>)
-			@Suppress("UNCHECKED_CAST")
-			val newOptions = (newValue as List<DatabaseProperty.MultiSelect.Option>)
-			oldOptions.map { it.name } == newOptions.map { it.name }
-		}
-		else -> {
-			// Fall back to data class equals.
-			oldValue == newValue
-		}
-	}
+	val oldComparable = comparable(oldValue)
+	val newComparable = comparable(newValue)
+	return oldComparable == newComparable
 }
-
-fun parseDateTime(value: String): LocalDateTime =
-	LocalDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(value))
