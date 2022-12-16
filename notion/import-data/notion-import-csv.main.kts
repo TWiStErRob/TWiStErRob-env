@@ -273,7 +273,7 @@ fun List<PageProperty.RichText>.asString(): String =
 val Page.title: String?
 	get() {
 		val title = this.titleProperty.title ?: error("Missing title structure in ${this.url}")
-		return title.joinToString(separator = "") { it.plainText!! }.takeIf { it.isNotBlank() }
+		return title.asString().takeIf { it.isNotBlank() }
 	}
 
 val Page.titleProperty: PageProperty
