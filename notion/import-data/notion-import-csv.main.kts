@@ -19,6 +19,10 @@ import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import java.time.DateTimeException
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.reflect.KProperty1
 
 @Suppress("SpreadOperator")
@@ -135,7 +139,15 @@ fun NotionClient.updatePage(page: Page, icon: File?, properties: Map<String, Pag
 @Suppress("ComplexMethod", "LongMethod")
 fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Page>): PageProperty? {
 	if (value.isBlank()) return null
-	return when (type) {
+	// Cast to nullable to prevent GSON-null problems.
+	// https://github.com/seratch/notion-sdk-jvm/issues/81
+	@Suppress("MoveVariableDeclarationIntoWhen", "RemoveRedundantQualifierName")
+	val propertyType = type as notion.api.v1.model.common.PropertyType?
+	return when (propertyType) {
+		null -> {
+			System.err.println("Ignoring unknown property type: ${this.name}")
+			null
+		}
 		PropertyType.RichText -> PageProperty(richText = value.asRichText())
 		PropertyType.Number -> PageProperty(number = value.toDouble())
 		PropertyType.Select -> PageProperty(
@@ -216,18 +228,26 @@ fun parseDateRange(value: String): Pair<String, String?> {
 	return Pair(start1, end1)
 }
 
-fun String.parseReferencedIds(pages: List<Page>): List<String> =
-	when {
+fun String.parseReferencedIds(pages: List<Page>): List<String> {
+	fun findPage(title: String): Page =
+		pages.singleOrNull { it.title == title }
+			?: error("Cannot find ${title} in ${pages.map { it.title }}")
+
+	return when {
 		// 0123456789abcdef0123456789abcdef
 		// 0123456789abcdef0123456789abcdef,0123456789abcdef0123456789abcdef
 		// https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef,https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef
 		this.matches("""^((https://www.notion.so/([^,]*)-)?[0-9a-f]{32},?)+$""".toRegex()) -> {
 			this.split(",").map { it.trim().takeLast(32) }
 		}
+		pages.any { it.title == this } -> {
+			listOf(findPage(this).id)
+		}
 		else -> {
-			listOf(pages.single { it.title == this }.id)
+			this.split(",").map { findPage(it).id }
 		}
 	}
+}
 
 fun NotionClient.allPages(databaseId: String): List<Page> =
 	generateSequence(queryDatabase(databaseId)) { results ->
@@ -238,24 +258,30 @@ val PageProperty.isRichText: Boolean
 	get() = this.type == PropertyType.RichText || this.type == PropertyType.Title
 
 fun String.asRichText(): List<PageProperty.RichText> =
-	listOf(PageProperty.RichText(text = PageProperty.RichText.Text(content = this)))
+	// As best effort to try to get over the validation errors:
+	// > body failed validation: body.properties.body.rich_text[0].text.content.length should be ≤ `2000`
+	// > body failed validation: body.properties.body.rich_text.length should be ≤ `100`
+	// Tried splitting on new-lines, but then it easily becomes too many RichText objects.
+	this
+		.windowed(2000, 2000, true) {
+			PageProperty.RichText(text = PageProperty.RichText.Text(content = it.toString()))
+		}
 
 fun List<PageProperty.RichText>.asString(): String =
-	this.joinToString { it.text!!.content!! }
+	this.joinToString(separator = "") { it.text!!.content!! }
 
 val Page.title: String?
 	get() {
-		val title = this.titleProperty.title ?: error("Missing title structure")
-		return title.singleOrNull()?.plainText
+		val title = this.titleProperty.title ?: error("Missing title structure in ${this.url}")
+		return title.asString().takeIf { it.isNotBlank() }
 	}
 
 val Page.titleProperty: PageProperty
 	get() = this.properties.values.singleOrNull { it.type == PropertyType.Title }
 		?: error("Missing property of type 'title', available properties: ${this.properties.mapValues { it.value.type }}")
 
-val PageProperty.propertyFromType: KProperty1<PageProperty, Any?>
-	get() = when (this.type) {
-		null -> error("Don't know the type of ${this}")
+val PropertyType.associatedProperty: KProperty1<PageProperty, Any?>
+	get() = when (this) {
 		PropertyType.RichText -> PageProperty::richText
 		PropertyType.Number -> PageProperty::number
 		PropertyType.Select -> PageProperty::select
@@ -318,7 +344,7 @@ fun classify(
 		.partition { (_, old, new) -> isSimilar(old, new) }
 	val (fresh, redundant) = good
 		.partition { (_, old, _) ->
-			val oldValue = old.propertyFromType.get(old)
+			val oldValue = old.type!!.associatedProperty.get(old)
 			oldValue == null || (old.isRichText && oldValue == emptyList<PageProperty.RichText>())
 		}
 	return Triple(
@@ -329,33 +355,50 @@ fun classify(
 }
 
 fun isSimilar(old: PageProperty, new: PageProperty): Boolean {
-	val oldValue = old.propertyFromType.get(old)
-	val newValue = old.propertyFromType.get(new) // new.type is always null, so can't infer.
-	return when {
-		oldValue == null -> {
-			// If the old value was missing, any new value is fine.
-			true
+	val type = old.type!!
+	// new.type is always null, so can't infer; use old.type instead for both.
+	val oldValue = type.associatedProperty.get(old)
+	val newValue = type.associatedProperty.get(new)
+	fun comparable(value: Any?): Any? =
+		when {
+			value == null ->
+				null
+			old.type == PropertyType.Title ||
+			old.type == PropertyType.RichText ->
+				@Suppress("UNCHECKED_CAST")
+				(value as List<PageProperty.RichText>).asString().lowercase()
+			old.type == PropertyType.Url ->
+				if (value.toString().toHttpUrl().host == "www.youtube.com") {
+					// YouTube specific exception - these are all the same:
+					// https://www.youtube.com/watch?v=yKfuq3luNVM
+					// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=24
+					// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=25
+					value.toString().toHttpUrl().queryParameter("v")
+				} else {
+					value
+				}
+			old.type == PropertyType.Number ->
+				(value as Number).toDouble()
+			old.type == PropertyType.Date -> {
+				fun parseDateTime(value: String): LocalDateTime =
+					try {
+						LocalDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(value))
+					} catch (@Suppress("SwallowedException") ex: DateTimeException) {
+						LocalDate.from(DateTimeFormatter.ISO_DATE.parse(value)).atStartOfDay()
+					}
+				value as PageProperty.Date
+				Pair(value.start?.let(::parseDateTime), value.end?.let(::parseDateTime))
+			}
+			// TODEL https://github.com/seratch/notion-sdk-jvm/issues/82
+			old.type == PropertyType.MultiSelect ->
+				@Suppress("UNCHECKED_CAST")
+				(value as List<DatabaseProperty.MultiSelect.Option>).map { it.name }
+			else ->
+				// Fall back to data class equals 🤞.
+				value
 		}
-		old.isRichText -> {
-			@Suppress("UNCHECKED_CAST")
-			val oldText = (oldValue as List<PageProperty.RichText>).asString().lowercase()
 
-			@Suppress("UNCHECKED_CAST")
-			val newText = (newValue as List<PageProperty.RichText>).asString().lowercase()
-			oldText.isEmpty() || oldText == newText
-		}
-		// YouTube specific exception - these are all the same:
-		// https://www.youtube.com/watch?v=yKfuq3luNVM
-		// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=24
-		// https://www.youtube.com/watch?v=yKfuq3luNVM&list=PLWz5rJ2EKKc_L3n1j4ajHjJ6QccFUvW1u&index=25
-		old.type == PropertyType.Url -> {
-			val oldUrl = oldValue.toString().toHttpUrl()
-			val newUrl = newValue.toString().toHttpUrl()
-			oldUrl.queryParameter("v") == newUrl.queryParameter("v")
-		}
-		else -> {
-			// Fall back to data class equals.
-			oldValue == newValue
-		}
-	}
+	val oldComparable = comparable(oldValue)
+	val newComparable = comparable(newValue)
+	return oldComparable == newComparable
 }

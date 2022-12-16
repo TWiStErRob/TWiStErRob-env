@@ -76,18 +76,18 @@ class GitHubDAO : Closeable {
 				configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 			}
 		}
-    install(Auth) {
-        basic {
-            sendWithoutRequest { true }
-            credentials {
-                BasicAuthCredentials(
-                    username = System.getenv("GITHUB_USER") ?: error("GITHUB_USER must be set"),
-                    password = System.getenv("GITHUB_TOKEN") ?: error("GITHUB_TOKEN must be set"),
-                )
-            }
-        }
-    }
-        install(Logging) {
+		install(Auth) {
+			basic {
+				sendWithoutRequest { true }
+				credentials {
+					BasicAuthCredentials(
+						username = System.getenv("GITHUB_USER") ?: error("GITHUB_USER must be set"),
+						password = System.getenv("GITHUB_TOKEN") ?: error("GITHUB_TOKEN must be set"),
+					)
+				}
+			}
+		}
+		install(Logging) {
 			logger = object : Logger {
 				override fun log(message: String) {
 					println(message)
