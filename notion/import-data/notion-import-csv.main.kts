@@ -278,9 +278,8 @@ val Page.titleProperty: PageProperty
 	get() = this.properties.values.singleOrNull { it.type == PropertyType.Title }
 		?: error("Missing property of type 'title', available properties: ${this.properties.mapValues { it.value.type }}")
 
-val PageProperty.propertyFromType: KProperty1<PageProperty, Any?>
-	get() = when (this.type) {
-		null -> error("Don't know the type of ${this}")
+val PropertyType.associatedProperty: KProperty1<PageProperty, Any?>
+	get() = when (this) {
 		PropertyType.RichText -> PageProperty::richText
 		PropertyType.Number -> PageProperty::number
 		PropertyType.Select -> PageProperty::select
@@ -343,7 +342,7 @@ fun classify(
 		.partition { (_, old, new) -> isSimilar(old, new) }
 	val (fresh, redundant) = good
 		.partition { (_, old, _) ->
-			val oldValue = old.propertyFromType.get(old)
+			val oldValue = old.type!!.associatedProperty.get(old)
 			oldValue == null || (old.isRichText && oldValue == emptyList<PageProperty.RichText>())
 		}
 	return Triple(
@@ -354,8 +353,10 @@ fun classify(
 }
 
 fun isSimilar(old: PageProperty, new: PageProperty): Boolean {
-	val oldValue = old.propertyFromType.get(old)
-	val newValue = old.propertyFromType.get(new) // new.type is always null, so can't infer.
+	val type = old.type!!
+	// new.type is always null, so can't infer; use old.type instead for both.
+	val oldValue = type.associatedProperty.get(old)
+	val newValue = type.associatedProperty.get(new)
 	return when {
 		oldValue == null -> {
 			// If the old value was missing, any new value is fine.
