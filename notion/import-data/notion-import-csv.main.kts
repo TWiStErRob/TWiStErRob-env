@@ -266,7 +266,7 @@ fun String.asRichText(): List<PageProperty.RichText> =
 		}
 
 fun List<PageProperty.RichText>.asString(): String =
-	this.joinToString { it.text!!.content!! }
+	this.joinToString(separator = "") { it.text!!.content!! }
 
 val Page.title: String?
 	get() {
