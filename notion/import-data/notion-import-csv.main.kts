@@ -379,7 +379,9 @@ fun isSimilar(old: PageProperty, new: PageProperty): Boolean {
 			oldUrl.queryParameter("v") == newUrl.queryParameter("v")
 		}
 		old.type == PropertyType.Number -> {
-			(oldValue as Number?)?.toDouble() == (newValue as Number?)?.toDouble()
+			oldValue as Number
+			newValue as Number
+			oldValue.toDouble() == newValue.toDouble()
 		}
 		old.type == PropertyType.Date -> {
 			oldValue as PageProperty.Date
