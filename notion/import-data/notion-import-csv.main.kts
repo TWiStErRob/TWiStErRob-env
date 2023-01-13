@@ -61,7 +61,7 @@ fun main(vararg args: String) {
 			}
 			val title = row[headers.indexOf(titleProperty.name)]
 			val icon = if ("icon" in headers) row[headers.indexOf("icon")].takeIf { it.isNotBlank() } else null
-			val existing = existingPages[title.lowercase()]
+			val existing = existingPages[title.lowercase()].orEmpty()
 			val iconValue = icon?.let { File(type = FileType.External, external = ExternalFileDetails(url = it)) }
 			val propertyValues = row.mapIndexedNotNull { index, value ->
 				when (headers[index]) {
@@ -76,31 +76,27 @@ fun main(vararg args: String) {
 					}
 				}
 			}.toMap()
-			if (existing == null) {
+			if (existing.isEmpty()) {
 				client.createPage(database, iconValue, propertyValues)
 			} else {
-				client.updatePage(existing, iconValue, propertyValues)
+				check(existing.size == 1) {
+					val duplicateDescription = existing
+						.joinToString(separator = "\n") { "${title}: ${existing.map { it.url }}" }
+					"Cannot update duplicate pages:\n$duplicateDescription"
+				}
+				client.updatePage(existing.single(), iconValue, propertyValues)
 			}
 		}
 	}
 }
 
-fun NotionClient.getAllPagesByUniqueTitle(database: String): Map<String, Page> =
+fun NotionClient.getAllPagesByUniqueTitle(database: String): Map<String, List<Page>> =
 	this.allPages(database)
 		// TODO ability to key by multiple properties
 		// example: What’s new with Amazon Appstore for Developers (Meet at devLounge):
 		// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-1587d2a54f1845a1850653895d4aa1cd
 		// https://www.notion.so/What-s-new-with-Amazon-Appstore-for-Developers-Meet-at-devLounge-6ed906121f514addb58cf039b1cd13a2
 		.groupBy { it.title?.lowercase() ?: error("Page without title: ${it.url}") }
-		.also { entry ->
-			val duplicates = entry.filterValues { it.size > 1 }
-			check(duplicates.isEmpty()) {
-				val duplicateDescription = duplicates.entries
-					.joinToString(separator = "\n") { (title, pages) -> "${title}: ${pages.map { it.url }}" }
-				"Duplicate pages:\n$duplicateDescription"
-			}
-		}
-		.mapValues { (_, pages) -> pages.single() }
 
 fun NotionClient.createPage(database: Database, icon: File?, properties: Map<String, PageProperty>) {
 	this.createPage(
@@ -229,9 +225,14 @@ fun parseDateRange(value: String): Pair<String, String?> {
 }
 
 fun String.parseReferencedIds(pages: List<Page>): List<String> {
-	fun findPage(title: String): Page =
-		pages.singleOrNull { it.title == title }
-			?: error("Cannot find ${title} in ${pages.map { it.title }}")
+	fun findPage(title: String): Page {
+		val found = pages.filter { it.title == title }
+		when {
+			found.isEmpty() -> error("Cannot find ${title} in ${pages.map { it.title }}")
+			found.size == 1 -> return found.single()
+			else -> error("Found multiple pages with title ${title}: ${found.map { it.url }}")
+		}
+	}
 
 	return when {
 		// 0123456789abcdef0123456789abcdef
