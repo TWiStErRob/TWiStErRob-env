@@ -225,9 +225,14 @@ fun parseDateRange(value: String): Pair<String, String?> {
 }
 
 fun String.parseReferencedIds(pages: List<Page>): List<String> {
-	fun findPage(title: String): Page =
-		pages.singleOrNull { it.title == title }
-			?: error("Cannot find ${title} in ${pages.map { it.title }}")
+	fun findPage(title: String): Page {
+		val found = pages.filter { it.title == title }
+		when {
+			found.isEmpty() -> error("Cannot find ${title} in ${pages.map { it.title }}")
+			found.size == 1 -> return found.single()
+			else -> error("Found multiple pages with title ${title}: ${found.map { it.url }}")
+		}
+	}
 
 	return when {
 		// 0123456789abcdef0123456789abcdef
