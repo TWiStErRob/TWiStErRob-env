@@ -1,16 +1,34 @@
-This script assumes Windows host. Syntax may vary slighly on Unix/Mac for setting and using evronment variables.
+This script assumes Windows host. Syntax may vary slightly on Unix/Mac for setting and using environment variables. `.` is the folder where this README.md file is located.
 
 ## Build
-Create the svn2git docker image from sources.
+Create the `svn2git` docker image from sources.
 
 Run on host in `.`:
 ```bash
 git clone https://github.com/svn-all-fast-export/svn2git.git
+# or if the repo is already cloned:
+git fetch -p
+git pull -r
+
 cd svn2git
 docker build -t svn2git . # 2-4 minutes, ~200 MB download, 641MB space
+
 cd ..
 docker build -t svn2git-work . # 1-2 minutes, ~30 MB download, 715MB space
 ```
+
+<details><summary>GPG error: KEYEXPIRED</summary>
+
+If `svn2git` image building fails with:
+```
+W: GPG error: http://deb.debian.org jessie-updates InRelease: The following signatures were invalid: KEYEXPIRED 1668891673
+W: GPG error: http://deb.debian.org jessie Release: The following signatures were invalid: KEYEXPIRED 1668891673
+WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts.
+E: There are problems and -y was used without --force-yes
+```
+Edit `Dockerfile`: replace `-y` or `--yes` with `--yes --force-yes`.
+
+</details>
 
 ## Run bash inside Docker
 Run on host in `.`:
@@ -88,7 +106,7 @@ Run in docker in `workdir`:
 svn relocate file:///tmp/svn . # migrate from host to docker
 ```
 
-## List all of the authors in an SVN repo
+## List all authors in an SVN repo
 
 Run in docker in `workdir`:
 ```bash
@@ -102,6 +120,9 @@ TWiStEr = Róbert Papp (TWiStErRob) <papp.robert.s@gmail.com>
 ```
 
 ## Execute
+The files in `/tmp/conf` are mapped from the conf folder into the Docker container, so they're live editable without rebuild.
+Change the rules file name (`--rules`) as necessary.
+
 Run in docker in `workdir`:
 ```bash
 /usr/local/svn2git/svn-all-fast-export \
