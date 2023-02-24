@@ -120,7 +120,7 @@ TWiStEr = Róbert Papp (TWiStErRob) <papp.robert.s@gmail.com>
 ```
 
 ## Execute
-The files in `/tmp/conf` are mapped from the conf folder into the Docker container, so they're live editable without rebuild.
+The files in `/tmp/conf` are mapped from the conf folder into the Docker container, so they're live editable without rebuild. `workdir` is also mapped so the output is available on the host.
 Change the rules file name (`--rules`) as necessary.
 
 Run in docker in `workdir`:

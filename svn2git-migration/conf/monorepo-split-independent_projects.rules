@@ -16,28 +16,12 @@
 #end repository
 
 
-create repository net.twisterrob.android.git
-end repository
-
-match /Libraries/twister-lib-android/
-	# r686 is the initial import of twister-lib-android.
-	min revision 686
-	repository net.twisterrob.android.git
-	branch master
-	prefix /
-end match
-
-
-create repository net.twisterrob.java.git
-end repository
-
-match /Libraries/twister-lib-java/
-	# r685 is the initial import of twister-lib-java.
-	min revision 685
-	repository net.twisterrob.java.git
-	branch master
-	prefix /
-end match
+#create repository net.twisterrob.android.git
+#create repository net.twisterrob.java.git
+# -> create repository net.twisterrob.libraries.git
+# In separate monorepo-split-net.twisterrob.libraries.rules,
+# because it's merging twister-lib-android and twister-lib-java.
+#end repository
 
 
 create repository net.twisterrob.sun.git
