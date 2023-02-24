@@ -1,6 +1,20 @@
 create repository net.twisterrob.inventory.git
 end repository
 
+# Considered, but in the end I left the history intact. The difference was only 4MB.
+#create repository net.twisterrob.inventory.art.git
+#end repository
+#
+## Remove large blobs from the history during migration.
+#match /Projects/Inventory(/android)?/src/main/art/
+#	# r1296 First art resources (launcher icon) was added.
+#	# r2095 /src/ was moved to /android/src/.
+#	min revision 1296
+#	repository net.twisterrob.inventory.art.git
+#	branch master
+#    prefix /
+#end match
+
 match /Projects/Inventory/
 	# r1127 is the initial import of Inventory.
 	# r1934 is the first public release on Google Play Store.

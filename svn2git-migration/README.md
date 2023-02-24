@@ -1,16 +1,34 @@
-This script assumes Windows host. Syntax may vary slighly on Unix/Mac for setting and using evronment variables.
+This script assumes Windows host. Syntax may vary slightly on Unix/Mac for setting and using environment variables. `.` is the folder where this README.md file is located.
 
 ## Build
-Create the svn2git docker image from sources.
+Create the `svn2git` docker image from sources.
 
 Run on host in `.`:
 ```bash
 git clone https://github.com/svn-all-fast-export/svn2git.git
+# or if the repo is already cloned:
+git fetch -p
+git pull -r
+
 cd svn2git
 docker build -t svn2git . # 2-4 minutes, ~200 MB download, 641MB space
+
 cd ..
 docker build -t svn2git-work . # 1-2 minutes, ~30 MB download, 715MB space
 ```
+
+<details><summary>GPG error: KEYEXPIRED</summary>
+
+If `svn2git` image building fails with:
+```
+W: GPG error: http://deb.debian.org jessie-updates InRelease: The following signatures were invalid: KEYEXPIRED 1668891673
+W: GPG error: http://deb.debian.org jessie Release: The following signatures were invalid: KEYEXPIRED 1668891673
+WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts.
+E: There are problems and -y was used without --force-yes
+```
+Edit `Dockerfile`: replace `-y` or `--yes` with `--yes --force-yes`.
+
+</details>
 
 ## Run bash inside Docker
 Run on host in `.`:
@@ -20,58 +38,9 @@ docker run --rm -it -v %CD%\conf:/tmp/conf -v %CD%\workdir:/workdir -v %SVN_REPO
 ```
 
 ## Repo content cleanup
-There may be some secrets or words you want to hide from the GIT repositories.
-Even if a secret was removed in the past, in SVN history it still exists and that'll be in GIT too.
-It is possible to a full-text processing on a dump file of SVN described below.
+See [repo-cleanup.md](repo-cleanup.md).
 
-Run on host in .:
-```bash
-set SVN_REPO=C:\personal\repos\svn
-mkdir workdir\dump
-%SVN_REPO%\svn\svnadmin dump %SVN_REPO% >workdir\dump\original.dump
-```
-
-Beware: this may corrupt the files, so really make sure that the only bytes changed in the dump files are the ones you intended.
-Editing with a simple text editor is not an option as the dump file contains binary files
-and line endings will be corrupted by even the smartest of text editors, except maybe hex editors.
-`sed` scripting is the easiest to be safe.
-
-Run in docker in `workdir\dump`:
-```bash
-sed -rf secrets.sed <original.dump >fixed.dump
-```
-
-The format of `secrets.sed` file:
-```sed
-# <Line 1 that needs fixing>
-s/original pattern 1/replacement pattern 1/g
-
-# <Line 2 that needs fixing>
-s/original pattern 2/replacement pattern 2/g
-
-# <Line 3 that needs fixing>
-s/original pattern 3/replacement pattern 3/g
-```
-Make sure the result doesn't change the length of the strings being replaced,
-otherwise it's necessary to re-calculate lots of content-length properties.
-
-Even when the contents change the dump file contains MD5 and SHA-1 checksums of each file in the repo.
-To fix these one could re-hash the file contents after `sed` replaced it,
-but it's way faster to just remove this security check:
-```bash
-sed -re '/^(Text-content-md5|Text-content-sha1|Text-copy-source-md5|Text-copy-source-sha1): /d' <fixed.dump >fixed_nohash.dump
-```
-
-After transforming the dump file we can re-import the commits.
-```bash
-svnadmin create repo
-svnadmin load repo <fixed_nohash.dump
-```
-
-After this replace SVN_REPO with `repo` folder.
-
-Warning: Mind the `conf` and `hooks` folders and files in the repository root. They're not part of the dump.
-
+If there was a change in the repo, set `%SVN_REPO%` to the `repo` folder.
 
 ## Checkout SVN repo
 There are several ways of checking out the repository, some of them are faster/slower.
@@ -137,7 +106,7 @@ Run in docker in `workdir`:
 svn relocate file:///tmp/svn . # migrate from host to docker
 ```
 
-## List all of the authors in an SVN repo
+## List all authors in an SVN repo
 
 Run in docker in `workdir`:
 ```bash
@@ -151,6 +120,9 @@ TWiStEr = Róbert Papp (TWiStErRob) <papp.robert.s@gmail.com>
 ```
 
 ## Execute
+The files in `/tmp/conf` are mapped from the conf folder into the Docker container, so they're live editable without rebuild. `workdir` is also mapped so the output is available on the host.
+Change the rules file name (`--rules`) as necessary.
+
 Run in docker in `workdir`:
 ```bash
 /usr/local/svn2git/svn-all-fast-export \

@@ -1,0 +1,27 @@
+create repository net.twisterrob.libraries.git
+end repository
+
+match /Libraries/twister-lib-android/
+	# r686 is the initial import of twister-lib-android.
+	# It was first used in Better London Travel in r690.
+	# It was first used in Inventory in r1127, when it was initially imported.
+	min revision 686
+	repository net.twisterrob.libraries.git
+	branch master
+	# svn:externals
+	prefix /twister-lib-android/
+end match
+
+match /Libraries/twister-lib-java/
+	# r685 is the initial import of twister-lib-java.
+	# It was first used in Better London Travel in r691.
+	# It was first used in Inventory in r1127, when it was initially imported.
+	min revision 685
+	repository net.twisterrob.libraries.git
+	branch master
+	# svn:externals
+	prefix /twister-lib-java/
+end match
+
+
+include ignore.rules
