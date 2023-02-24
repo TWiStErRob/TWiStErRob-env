@@ -1,0 +1,44 @@
+Event,Date,Length (minutes),Name,Speaker(s),Type,Topics
+GDG DevFest 2022,2022-12-10T09:15,60,Registration,,Break,
+GDG DevFest 2022,2022-12-10T10:00,15,Welcome and kickoff,,Keynote,
+GDG DevFest 2022,2022-12-10T10:15,30,Fast track your idea with Flutter,Tiya Chowdhury,Lightning Talk,Flutter
+GDG DevFest 2022,2022-12-10T10:15,60,I Promise to Give You a Callback if You’ll Just Await: Working with Asynchronous JavaScript,James Bender,Workshop,Web
+GDG DevFest 2022,2022-12-10T10:15,30,Revolutionise your data cleaning pipelines with GPT3,Lisa Carpenter,Lightning Talk,ML/AI
+GDG DevFest 2022,2022-12-10T10:15,60,Adding offline support to Flutter apps,Ben Butterworth,Workshop,Flutter
+GDG DevFest 2022,2022-12-10T10:45,30,Pixel Perfect but the text doesn’t look righṭ..,Raouf Rahiche,Lightning Talk,Flutter
+GDG DevFest 2022,2022-12-10T10:45,30,How to make ML for your structured data Simple 👀🔥,Luiz GUStavo Martins,Lightning Talk,"ML/AI,TensorFlow"
+GDG DevFest 2022,2022-12-10T11:15,15,Coffee Break morning,,Break,
+GDG DevFest 2022,2022-12-10T11:30,30,Firebase Performance Monitoring,Emma Tresanszki,Lightning Talk,"Firebase,Android"
+GDG DevFest 2022,2022-12-10T11:30,60,How to run a performance audit on websites,Barry Pollard,Workshop,Web
+GDG DevFest 2022,2022-12-10T11:30,30,Serverless computing with Cloud Run,Santosh Kumar Perumal,Lightning Talk,Cloud
+GDG DevFest 2022,2022-12-10T11:30,30,Among Us: Identifying & Managing Imposter Syndrome,Anisha Malde,Lightning Talk,
+GDG DevFest 2022,2022-12-10T12:00,30,Is 64-bit enough?,Simon Lightfoot,Lightning Talk,Flutter
+GDG DevFest 2022,2022-12-10T12:00,30,Google Workspace automation with Eventarc and Cloud Run,Jasper Duizendstra,Lightning Talk,Cloud
+GDG DevFest 2022,2022-12-10T12:00,30,Games in Flutter,Shourya Kelkar,Lightning Talk,Flutter
+GDG DevFest 2022,2022-12-10T12:00,60,Listen and Learn with Eddie - Content Creation for Socials,Eddie Jaoude,Workshop,
+GDG DevFest 2022,2022-12-10T12:30,30,Extending Firebase,Majid Hajian,Lightning Talk,Firebase
+GDG DevFest 2022,2022-12-10T12:30,30,Implement Zero Trust Security Model Using Google IAP.,Revana Siddesh Bathi,Lightning Talk,Cloud
+GDG DevFest 2022,2022-12-10T12:30,30,How to succeed in technical interviews,Teresa wu,Lightning Talk,
+GDG DevFest 2022,2022-12-10T13:00,45,Lunch,,Break,
+GDG DevFest 2022,2022-12-10T13:45,90,Supercharge Firebase with Extensions,"Majid Hajian,Darren Ackers",Workshop,Firebase
+GDG DevFest 2022,2022-12-10T13:45,90,Web UI Generators using React JS with RoadMap to learn React!,Praveen Kumar Purushothaman,Workshop,Web
+GDG DevFest 2022,2022-12-10T13:45,30,A comparison of Serverless infrastructure providers,Vagish Vela,Lightning Talk,"Cloud,Web"
+GDG DevFest 2022,2022-12-10T13:45,30,DATA & AI,Mariam Yakub,Lightning Talk,ML/AI
+GDG DevFest 2022,2022-12-10T13:45,60,Listen and Learn with Eddie - Accelerate your career with Opensource,Eddie Jaoude,Workshop,
+GDG DevFest 2022,2022-12-10T14:15,30,Design System - the bridge to increased productivity,Sandra Jurek,Lightning Talk,Web
+GDG DevFest 2022,2022-12-10T14:15,30,Getting started with deploying apps on GKE,Vasudev Maduri,Lightning Talk,Cloud
+GDG DevFest 2022,2022-12-10T14:45,30,Buildings apps to last - To change or not to change,Genc Tasbasi,Lightning Talk,Android
+GDG DevFest 2022,2022-12-10T14:45,30,From developer bootcamp to your first £10000 in revenue: how to build your SAAS platform and make e,Nageela Yusuf,Lightning Talk,
+GDG DevFest 2022,2022-12-10T15:15,15,Coffee break afternoon,,Break,
+GDG DevFest 2022,2022-12-10T15:30,30,Golden Tests: The underrated superpowers of Flutter snapshot testing,Julien Le Pocher,Lightning Talk,Flutter
+GDG DevFest 2022,2022-12-10T15:30,60,Fast Flutter UI development,Yogita Kumar,Workshop,Flutter
+GDG DevFest 2022,2022-12-10T15:30,30,Scaling Firebase apps for enterprise,Jason Berryman,Lightning Talk,"Cloud,Firebase"
+GDG DevFest 2022,2022-12-10T15:30,30,Understanding JavaScript Memory Usage,Nishu Goel,Lightning Talk,Web
+GDG DevFest 2022,2022-12-10T16:00,30,From Feature Flags to Personalisation with Firebase Remote Config,Somjintana (Nui) Korbut,Lightning Talk,Firebase
+GDG DevFest 2022,2022-12-10T16:00,30,The most exciting decade yet in frontend engineering!,Vinci Rufus,Lightning Talk,Web
+GDG DevFest 2022,2022-12-10T16:00,60,Let's create an emotion recognition bot! 🤖,Patty O'Callaghan,Workshop,ML/AI
+GDG DevFest 2022,2022-12-10T16:30,30,Microinteractions in Flutter,Karthik Nooli,Lightning Talk,Flutter
+GDG DevFest 2022,2022-12-10T16:30,30,Smash The Stereotype: How Next Tech Girls aims to get more women in tech,Emily Hall-Strutt,Lightning Talk,Diversity and Inclusion
+GDG DevFest 2022,2022-12-10T17:00,20,Flutter Devcamp Graduation,Sumith Damodaran,Lightning Talk,"Flutter,Firebase"
+GDG DevFest 2022,2022-12-10T17:15,30,Thank you and goodbye,,Keynote,
+GDG DevFest 2022,2022-12-10T17:35,60,After Party and Networking,,Break,

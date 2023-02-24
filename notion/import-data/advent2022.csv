@@ -1,0 +1,26 @@
+Date,Event,Name,Speaker(s),Online Content
+2022-12-25,Java Advent 2022,"Acrumen: what is ""software quality"" anyway?!",Dave Aronson,https://www.javaadvent.com/2022/12/acrumen-what-is-software-quality-anyway.html
+2022-12-24,Java Advent 2022,Using Postgres as a message queue,Rafael Winterhalter,https://www.javaadvent.com/2022/12/using-postgres-as-a-message-queue.html
+2022-12-23,Java Advent 2022,WebAssembly for the Java geek,Edoardo Vacchi,https://www.javaadvent.com/2022/12/webassembly-for-the-java-geek.html
+2022-12-22,Java Advent 2022,JVM hello world,James Hamilton,https://www.javaadvent.com/2022/12/jvm-hello-world.html
+2022-12-21,Java Advent 2022,ElasticSearch internals,Martin Toshev,https://www.javaadvent.com/2022/12/elasticsearch-internals.html
+2022-12-20,Java Advent 2022,How to tackle the pyramid of quality in the real world,Vladimir Dejanovic,https://www.javaadvent.com/2022/12/how-to-tackle-the-pyramid-of-quality-in-the-real-world.html
+2022-12-19,Java Advent 2022,Securing Java for the community,Shelley Lambert,https://www.javaadvent.com/2022/12/securing-java-for-the-community.html
+2022-12-18,Java Advent 2022,Asynchronous functional web server in Kotlin,Uberto Barbini,https://www.javaadvent.com/2022/12/asynchronous-functional-web-server-in-kotlin.html
+2022-12-17,Java Advent 2022,Groovy and Data Science,Paul King,https://www.javaadvent.com/2022/12/groovy-and-data-science.html
+2022-12-16,Java Advent 2022,The power of two rings - another view onto developer productivity,Markus Eisele,https://www.javaadvent.com/2022/12/the-power-of-two-rings-another-view-onto-developer-productivity.html
+2022-12-15,Java Advent 2022,Components of cloud native Java,Alexander Gruev,https://www.javaadvent.com/2022/12/components-of-cloud-native-java.html
+2022-12-14,Java Advent 2022,ElasticSearch 8x latest and greatest,Martin Toshev,https://www.javaadvent.com/2022/12/elasticsearch-8x-latest-and-greatest.html
+2022-12-13,Java Advent 2022,How I got rid of YAML in GitHub's CI,Piotr Krzemiński,https://www.javaadvent.com/2022/12/how-i-got-rid-of-yaml-in-githubs-ci.html
+2022-12-12,Java Advent 2022,6 actions to take your developer career beyond senior level,Bruno Souza,https://www.javaadvent.com/2022/12/beyond-senior-level.html
+2022-12-11,Java Advent 2022,"Actors and virtual threads, a match made in heaven?",Andrea Peruffo,https://www.javaadvent.com/2022/12/actors-and-virtual-threads-a-match-made-in-heaven.html
+2022-12-10,Java Advent 2022,Property-based testing with Kotlin and Kotest,Bjorn van der Laan,https://www.javaadvent.com/2022/12/property-based-testing-with-kotlin-and-kotest.html
+2022-12-09,Java Advent 2022,The art and benefits of computing eventfully,Mary Grygleski,https://www.javaadvent.com/2022/12/the-art-and-benefits-of-computing-eventfully.html
+2022-12-08,Java Advent 2022,JavaDoc code snippets and friends,Cay Horstmann,https://www.javaadvent.com/2022/12/javadoc-code-snippets-and-friends.html
+2022-12-07,Java Advent 2022,A sneak peek at the Java performance toolbox,Ana-Maria Mihalceanu,https://www.javaadvent.com/2022/12/a-sneak-peek-at-the-java-performance-toolbox.html
+2022-12-06,Java Advent 2022,Exceptions in Java lambdas,Nicolas Fränkel,https://www.javaadvent.com/2022/12/exceptions-lambdas.html
+2022-12-05,Java Advent 2022,A new Spring Security authorization server,Laurenţiu Spilcă,https://www.javaadvent.com/2022/12/a-new-spring-security-authorization-server.html
+2022-12-04,Java Advent 2022,Don't remove the API,Andres Sacco,https://www.javaadvent.com/2022/12/dont-remove-the-api.html
+2022-12-03,Java Advent 2022,Hidden treasures of Eclipse collections 2022 edition,Nikhil Nanivadekar,https://www.javaadvent.com/2022/12/hidden-treasures-of-eclipse-collections-2022-edition.html
+2022-12-02,Java Advent 2022,A tale of two cities: How blocking calls are treated?,A N M Bazlur Rahman,https://www.javaadvent.com/2022/12/a-tale-of-two-cities-how-blocking-calls-are-treated.html
+2022-12-01,Java Advent 2022,How a service virtualization approach can save your and others' time playing with mocks,Elias Nogueira,https://www.javaadvent.com/2022/12/how-a-service-virtualization-approach-can-save-your-and-others-time-playing-with-mocks.html
