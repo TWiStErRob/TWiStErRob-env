@@ -128,6 +128,8 @@ jobs:
         working-directory: pst-maildir-imap/test
         run: |
           head Inbox.mbox
+          sudo find .
+          find .
           sudo ls -la Inbox/cur/*.mbox*
           find Inbox/cur/ -type f -exec head "{}" \;
 
