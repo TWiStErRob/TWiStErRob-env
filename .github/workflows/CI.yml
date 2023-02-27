@@ -57,7 +57,7 @@ jobs:
 
       - name: "Compile .main.kts."
         working-directory: github/user-contribs
-        run: |
+        run: >
           kotlinc
           get.main.kts
           summarize.main.kts
