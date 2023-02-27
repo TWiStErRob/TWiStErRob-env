@@ -123,6 +123,7 @@ jobs:
           echo "SVN_REPO=$(pwd)" >> $GITHUB_ENV
 
       - name: "Set up migration configuration."
+        working-directory: svn2git-migration
         run: |
           echo "$(whoami) = Test User <test@test.test>" > conf/migrate.authors
           cat conf/migrate.authors
