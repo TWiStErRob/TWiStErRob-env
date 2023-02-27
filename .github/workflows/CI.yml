@@ -119,7 +119,7 @@ jobs:
           
           # `shellcheck **.{sh}`, but without globbing.
           find ${{ github.workspace }} -type f \( -name '*.sh' \) \
-              -exec "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --severity=style --format=json --shell=sh {} + \
+              -exec "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --enable=all --severity=style --shell=sh --check-sourced --external-sources --format=json {} + \
               > shellcheck.json
 
       - name: "Convert shellcheck JSON output to SARIF."
