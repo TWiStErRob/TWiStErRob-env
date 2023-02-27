@@ -118,7 +118,7 @@ jobs:
             --rm
             --volume ${{ github.workspace }}/pst-maildir-imap:/workdir
           run: |
-            #set -e #Disabled for now, because the files created by GHA are not accessible in Docker.
+            set -e
             cd /workdir
             readpst -o test/ test/test.pst
             mkdir -p test/Inbox/
@@ -128,15 +128,16 @@ jobs:
 
       - name: "Validate migrated maildir output."
         working-directory: pst-maildir-imap/test
-        if: false # Disabled for now, because the files created by Docker are not accessible in GHA.
         run: |
+          ls -la .
+          ls -la Inbox
+          ls -la Inbox/cur
           ls -la Inbox/cur/*.mbox*
           head Inbox.mbox
           find Inbox/cur/ -type f -exec head "{}" \;
 
       - name: "Upload 'pst2maildir test' artifact."
-        if: false # Disabled for now, because the files created by Docker are not accessible in GHA.
-        #if: success() || failure()
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: 'pst2maildir test'
