@@ -52,7 +52,7 @@ Note: Windows Explorer / Total Commander can see WSL Home in: `\\wsl$\Ubuntu\hom
     ```
  1. Split up the bix .mbox file into smaller ones:
     ```bash
-    perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/ 504 504
+    perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/
     ```
  1. Fix the timestamps with:
     ```bash

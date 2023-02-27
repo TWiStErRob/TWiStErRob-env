@@ -122,7 +122,7 @@ jobs:
             cd /workdir
             readpst -o test/ test/test.pst
             mkdir -p test/Inbox/
-            perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/ 504 504
+            perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/
             find test/Inbox/ -type f -exec python3 fix_maildir_mail_mtime.py "{}" \;
             find test/ -type f -exec chmod +r "{}" \;
 
