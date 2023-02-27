@@ -106,7 +106,7 @@ jobs:
         working-directory: pst-maildir-imap
         run: unzip test.zip -d test/
 
-      - name: "Build svn2git image."
+      - name: "Build pst2maildir image."
         working-directory: pst-maildir-imap
         run: docker build --tag pst2maildir .
 
@@ -136,7 +136,7 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: 'svn2git test'
+          name: 'pst2maildir test'
           path: ${{ github.workspace }}/pst-maildir-imap/test/
 
 
