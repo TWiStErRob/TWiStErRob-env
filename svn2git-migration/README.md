@@ -26,7 +26,8 @@ W: GPG error: http://deb.debian.org jessie Release: The following signatures wer
 WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts.
 E: There are problems and -y was used without --force-yes
 ```
-Edit `Dockerfile`: replace `-y` or `--yes` with `--yes --force-yes`.
+Edit `Dockerfile`: replace `debian:8.11` with `debian:buster`.
+(Buster is a newer version of Debian, and the last one that has `libqt4-dev` package.)
 
 </details>
 

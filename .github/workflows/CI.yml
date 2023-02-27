@@ -1,0 +1,289 @@
+name: CI
+on:
+  push:
+    branches:
+      - '**'
+concurrency:
+  group: ${{ github.ref == 'refs/heads/master' && format('ci-map-master-{0}', github.sha) || format('ci-map-{0}', github.ref) }}
+  cancel-in-progress: true
+jobs:
+
+  git-merged-branches:
+    name: "🔨 Build / GIT / Merged Branches"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: git/merged-branches
+        run: kotlinc find-merged-branches.main.kts
+
+
+  github-draft-issues:
+    name: "🔨 Build / GitHub / Draft Issues"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: github/project-manage-draft-issues
+        run: kotlinc manage-draft-issues.main.kts
+
+
+  github-repository-convention:
+    name: "🔨 Build / GitHub / Repository Convention"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: github/repository-convention
+        run: kotlinc validate.main.kts
+
+
+  github-user-contribs:
+    name: "🔨 Build / GitHub / User Contributions"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: github/user-contribs
+        run: >
+          kotlinc
+          get.main.kts
+          summarize.main.kts
+
+
+  notion-import-data:
+    name: "🔨 Build / Notion / Import Data"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: notion/import-data
+        run: >
+          kotlinc
+          notion-import-csv.main.kts
+          notion-import-dev-summit.main.kts
+          notion-import-droidcon.main.kts
+          siliconmilkroundabout-2022-november/companies-attending.main.kts
+
+
+  notion-move-to-property:
+    name: "🔨 Build / Notion / Move to Property"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: notion/page-section-move-to-property
+        run: kotlinc notion-move-to-property.main.kts
+
+
+  svn2git-migration:
+    name:  "🔨 Build & Check / SVN to GIT migration"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Create test repository."
+        working-directory: svn2git-migration
+        run: |
+          mkdir workdir
+          cd workdir
+          
+          svnadmin create test-repository
+          echo "SVN_REPO=$(pwd)/test-repository" >> $GITHUB_ENV
+          
+          svn co file://$(pwd)/test-repository test-checkout
+          cd test-checkout
+          
+          echo "test" > test.txt
+          svn add test.txt
+          echo -e "Test Project\n[IMP] Initial import" > commit.message
+          svn commit --file commit.message test.txt
+          svn update
+          svn info
+          svn log
+
+      - name: "Set up migration configuration."
+        working-directory: svn2git-migration
+        run: |
+          echo "$(whoami) = Test User <test@test.test>" > conf/migrate.authors
+          cat conf/migrate.authors
+
+      - name: "Build svn2git image."
+        working-directory: svn2git-migration
+        run: |
+          git clone https://github.com/svn-all-fast-export/svn2git.git -b 1.0.18
+          
+          cd svn2git
+          sed --in-place 's/debian:8.11/debian:buster/' Dockerfile
+          docker build --tag svn2git . # 2-4 minutes, ~200 MB download, 641MB space
+          cd ..
+          
+          docker build --tag svn2git-work .
+
+      - name: "Run test migration in container."
+        uses: addnab/docker-run-action@v3
+        with:
+          image: svn2git-work
+          options: |
+            --rm
+            --volume ${{ github.workspace }}/svn2git-migration/conf:/tmp/conf
+            --volume ${{ github.workspace }}/svn2git-migration/workdir:/workdir
+            --volume ${{ env.SVN_REPO }}:/tmp/svn
+          run: |
+            #!/usr/bin/env sh
+            svn relocate file:///tmp/svn test-checkout
+            /usr/local/svn2git/svn-all-fast-export \
+            --identity-map /tmp/conf/migrate.authors \
+            --rules /tmp/conf/monorepo-all.rules \
+            --debug-rules \
+            --stats \
+            --svn-ignore \
+            --propcheck \
+            --empty-dirs \
+            --add-metadata \
+            --add-metadata-notes \
+            --msg-filter 'sed -z -r -f /tmp/conf/svn-msg-filter.sed' \
+            /tmp/svn \
+            >svn2git.log 2>&1
+
+      - name: "Validate migrated git output."
+        working-directory: svn2git-migration/workdir
+        run: |
+          git clone svn.git
+          cd svn
+          git log --no-decorate | grep -v -E 'Date:|commit' > actual-git-log.txt
+          cat > expected-git-log.txt <<- EOF
+          	Author: Test User <test@test.test>
+          	
+          	    [SVN] r1 Test Project in /
+          	    [IMP] Initial import
+          EOF
+          diff expected-git-log.txt actual-git-log.txt
+
+      - name: "Upload 'svn2git test' artifact."
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'svn2git test'
+          path: ${{ github.workspace }}/svn2git-migration/workdir/
+
+
+  detekt:
+    name: "🔍 Static Checks / Detekt"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Run detekt."
+        env:
+          DETEKT_VERSION: '1.22.0'
+        run: |
+          curl --silent --show-error --location --remote-name \
+              https://github.com/detekt/detekt/releases/download/v${DETEKT_VERSION?}/detekt-cli-${DETEKT_VERSION?}.zip
+          unzip "detekt-cli-*.zip"
+          ./detekt-cli-*/bin/detekt-cli --version
+          ./detekt-cli-*/bin/detekt-cli \
+              --all-rules \
+              --max-issues 0 \
+              --base-path ${{ github.workspace }} \
+              --report sarif:detekt.sarif \
+              --report txt:detekt.txt \
+              --report html:detekt.html \
+              --report xml:detekt.xml \
+              --report md:detekt.md \
+
+      - name: "Upload 'Detekt Results' artifact."
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'Detekt Results'
+          path: ${{ github.workspace }}/detekt.*
+
+      - name: "Publish 'Code scanning results / detekt'."
+        uses: github/codeql-action/upload-sarif@v2
+        if: success() || failure()
+        with:
+          sarif_file: ${{ github.workspace }}/detekt.sarif
+
+
+  shellcheck:
+    name: "🔍 Static Checks / ShellCheck"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Run shellcheck."
+        env:
+          # Use https://github.com/koalaman/shellcheck
+          SHELLCHECK_VERSION: '0.9.0'
+        run: |
+          curl --silent --show-error --location --remote-name \
+              "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION?}/shellcheck-v${SHELLCHECK_VERSION?}.linux.x86_64.tar.xz"
+          tar --extract --xz --verbose --file="shellcheck-v${SHELLCHECK_VERSION?}.linux.x86_64.tar.xz"
+          "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --version
+          
+          # `shellcheck **.{sh}`, but without globbing.
+          find ${{ github.workspace }} -type f \( -name '*.sh' \) \
+              -exec "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --enable=all --severity=style --shell=sh --check-sourced --external-sources --format=json {} + \
+              > shellcheck.json
+
+      - name: "Convert shellcheck JSON output to SARIF."
+        if: success() || failure()
+        env:
+          # Use https://github.com/psastras/sarif-rs
+          SHELLCHECK_SARIF_VERSION: '0.3.5'
+        run: |
+          curl --silent --show-error --location --remote-name \
+              "https://github.com/psastras/sarif-rs/releases/download/shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}/shellcheck-sarif-x86_64-unknown-linux-gnu"
+          chmod +x shellcheck-sarif-x86_64-unknown-linux-gnu
+          
+          ./shellcheck-sarif-x86_64-unknown-linux-gnu < shellcheck.json > shellcheck.sarif
+
+      - name: "Pretty-print SARIF output."
+        if: success() || failure()
+        env:
+          # Use https://github.com/psastras/sarif-rs
+          SARIF_FMT_VERSION: '0.3.5'
+        run: |
+          curl --silent --show-error --location --remote-name \
+              "https://github.com/psastras/sarif-rs/releases/download/sarif-fmt-v${SARIF_FMT_VERSION?}/sarif-fmt-x86_64-unknown-linux-gnu"
+          chmod +x sarif-fmt-x86_64-unknown-linux-gnu
+          
+          ./sarif-fmt-x86_64-unknown-linux-gnu < shellcheck.sarif | tee shellcheck.sarif.txt
+
+      - name: "Upload 'ShellCheck Results' artifact."
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'ShellCheck Results'
+          path: ${{ github.workspace }}/shellcheck.*
+
+      - name: "Publish 'Code scanning results / shellcheck'."
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ github.workspace }}/shellcheck.sarif
