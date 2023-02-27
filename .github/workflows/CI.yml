@@ -125,8 +125,8 @@ jobs:
           
           echo "test" > test.txt
           svn add test.txt
-          svn commit -m "Test Project\
-          [IMP] Initial import"
+          echo -e "Test Project\n[IMP] Initial import" > commit.message
+          svn commit --file commit.message test.txt
           svn update
           svn info
           svn log
