@@ -52,13 +52,6 @@ fun main(vararg args: String) {
 	summaryFile.writeJson(result)
 }
 
-class MyIterator : Iterator<String> {
-
-	override fun hasNext(): Boolean {
-		return next() != null
-	}
-}
-
 /**
  * https://docs.github.com/en/rest/metrics/statistics#get-all-contributor-commit-activity
  */
