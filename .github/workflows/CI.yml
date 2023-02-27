@@ -250,7 +250,8 @@ jobs:
           find ${{ github.workspace }} -type f \( -name '*.sh' \) \
               -exec "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --enable=all --severity=style --shell=sh --check-sourced --external-sources --format=json {} + \
               > shellcheck.json
-          sed --in-place --expression='s!"file":"${{ github.workspace }}/!"file":"!g' shellcheck.json
+          
+          # The previous command will fail if violations are found, careful putting more commands here.
 
       - name: "Convert shellcheck JSON output to SARIF."
         if: success() || failure()
@@ -261,6 +262,9 @@ jobs:
           curl --silent --show-error --location --remote-name \
               "https://github.com/psastras/sarif-rs/releases/download/shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}/shellcheck-sarif-x86_64-unknown-linux-gnu"
           chmod +x shellcheck-sarif-x86_64-unknown-linux-gnu
+          
+          # Relativize paths in the shellcheck JSON output, so in turn the SARIF output is relative too.
+          sed --in-place --expression='s!"file":"${{ github.workspace }}/!"file":"!g' shellcheck.json
           
           ./shellcheck-sarif-x86_64-unknown-linux-gnu < shellcheck.json > shellcheck.sarif
 
