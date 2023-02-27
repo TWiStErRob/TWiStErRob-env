@@ -68,6 +68,7 @@ suspend fun main(vararg args: String) {
 	if (args.isEmpty()) {
 		usage()
 	}
+	val x = 1234
 	GitHub().use { gitHub ->
 		val reference = Json.createReader(File("reference.repo.json5")
 			.readLines()

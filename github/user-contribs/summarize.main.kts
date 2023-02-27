@@ -32,6 +32,7 @@ main(*args)
 /** Hack to expose this to the lowest level [unique] function. */
 lateinit var params: Params
 fun main(vararg args: String) {
+	println(5678)
 	check(args.size == 2) {
 		"""
 			Usage: kotlinc -script summarize.main.kts <params.summarize.yml> <output.json>
