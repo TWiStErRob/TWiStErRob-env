@@ -127,8 +127,10 @@ jobs:
       - name: "Validate migrated maildir output."
         working-directory: pst-maildir-imap/test
         run: |
-          chown -R runner .
           head Inbox.mbox
+          ls -la .
+          ls -la Inbox
+          ls -la Inbox/cur
           ls -la Inbox/cur/*.mbox*
           find Inbox/cur/ -type f -exec head "{}" \;
 
