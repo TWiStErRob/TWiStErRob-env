@@ -1,0 +1,116 @@
+name: CI
+on:
+  push:
+    branches:
+      - '**'
+concurrency:
+  group: ${{ github.ref == 'refs/heads/master' && format('ci-map-master-{0}', github.sha) || format('ci-map-{0}', github.ref) }}
+  cancel-in-progress: true
+jobs:
+
+  git-merged-branches:
+    name: "🔨 Build / GIT / Merged Branches"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: git/merged-branches
+        run: kotlinc find-merged-branches.main.kts
+
+
+  detekt:
+    name: "🔍 Static Checks / Detekt"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Run detekt."
+        run: |
+          DETEKT_VERSION=1.22.0
+          curl --silent --show-error --location --remote-name \
+              https://github.com/detekt/detekt/releases/download/v${DETEKT_VERSION?}/detekt-cli-${DETEKT_VERSION?}.zip
+          unzip "detekt-cli-*.zip"
+          ./detekt-cli-*/bin/detekt-cli --version
+          ./detekt-cli-*/bin/detekt-cli \
+              --all-rules \
+              --max-issues 0 \
+              --base-path ${{ github.workspace }} \
+              --report sarif:detekt.sarif \
+              --report txt:detekt.txt \
+              --report html:detekt.html \
+              --report xml:detekt.xml \
+              --report md:detekt.md \
+
+      - name: "Upload 'Detekt Results' artifact."
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'Detekt Results'
+          path: ${{ github.workspace }}/detekt.*
+
+      - name: "Publish 'Code scanning results / detekt'."
+        uses: github/codeql-action/upload-sarif@v2
+        if: success() || failure()
+        with:
+          sarif_file: ${{ github.workspace }}/detekt.sarif
+
+
+  shellcheck:
+    name: "🔍 Static Checks / ShellCheck"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Run shellcheck."
+        # Use https://github.com/koalaman/shellcheck
+        run: |
+          SHELLCHECK_VERSION=stable
+          curl --silent --show-error --location --remote-name \
+              "https://github.com/koalaman/shellcheck/releases/download/${SHELLCHECK_VERSION?}/shellcheck-${SHELLCHECK_VERSION?}.linux.x86_64.tar.xz"
+          tar --extract --xz --verbose "shellcheck-*.tar.xz"
+          "./shellcheck-${SHELLCHECK_VERSION}/shellcheck" --version
+          
+          # `shellcheck **.{sh}`, but without globbing.
+          find ${{ github.workspace }} -type f \( -name '*.sh' \) \
+              -exec "./shellcheck-${SHELLCHECK_VERSION}/shellcheck" --severity=style --format=json --shell=sh {} + \
+              > shellcheck.json
+
+      - name: "Convert shellcheck JSON output to SARIF."
+        if: success() || failure()
+        # Use https://github.com/psastras/sarif-rs
+        run: |
+          SHELLCHECK_SARIF_VERSION=0.3.5
+          SARIF_FMT_VERSION=0.3.5
+          
+          curl --silent --show-error --location --remote-name \
+              "https://github.com/psastras/sarif-rs/releases/download/shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}/shellcheck-sarif-x86_64-unknown-linux-gnu"
+          chmod +x shellcheck-sarif-x86_64-unknown-linux-gnu
+          
+          curl --silent --show-error --location --remote-name \
+              "https://github.com/psastras/sarif-rs/releases/download/sarif-fmt-v${SARIF_FMT_VERSION?}/sarif-fmt-x86_64-unknown-linux-gnu"
+          chmod +x sarif-fmt-x86_64-unknown-linux-gnu
+          
+          cat shellcheck.json \
+              | ./shellcheck-sarif-x86_64-unknown-linux-gnu \
+              | tee shellcheck.sarif \ 
+              | ./sarif-fmt-x86_64-unknown-linux-gnu
+
+      - name: "Upload 'ShellCheck Results' artifact."
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'ShellCheck Results'
+          path: ${{ github.workspace }}/shellcheck.*
+
+      - name: "Publish 'Code scanning results / ShellCheck'."
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ github.workspace }}/shellcheck.sarif
