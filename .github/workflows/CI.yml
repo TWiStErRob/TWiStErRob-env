@@ -110,15 +110,16 @@ jobs:
       - name: "Run shellcheck."
         # Use https://github.com/koalaman/shellcheck
         run: |
-          SHELLCHECK_VERSION=stable
+          SHELLCHECK_VERSION=0.9.0
+          
           curl --silent --show-error --location --remote-name \
-              "https://github.com/koalaman/shellcheck/releases/download/${SHELLCHECK_VERSION?}/shellcheck-${SHELLCHECK_VERSION?}.linux.x86_64.tar.xz"
-          tar --extract --xz --verbose "shellcheck-*.tar.xz"
-          "./shellcheck-${SHELLCHECK_VERSION}/shellcheck" --version
+              "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION?}/shellcheck-v${SHELLCHECK_VERSION?}.linux.x86_64.tar.xz"
+          tar --extract --xz --verbose --file="shellcheck-v${SHELLCHECK_VERSION?}.linux.x86_64.tar.xz"
+          "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --version
           
           # `shellcheck **.{sh}`, but without globbing.
           find ${{ github.workspace }} -type f \( -name '*.sh' \) \
-              -exec "./shellcheck-${SHELLCHECK_VERSION}/shellcheck" --severity=style --format=json --shell=sh {} + \
+              -exec "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --severity=style --format=json --shell=sh {} + \
               > shellcheck.json
 
       - name: "Convert shellcheck JSON output to SARIF."
@@ -136,9 +137,8 @@ jobs:
               "https://github.com/psastras/sarif-rs/releases/download/sarif-fmt-v${SARIF_FMT_VERSION?}/sarif-fmt-x86_64-unknown-linux-gnu"
           chmod +x sarif-fmt-x86_64-unknown-linux-gnu
           
-          cat shellcheck.json \
-              | ./shellcheck-sarif-x86_64-unknown-linux-gnu \
-              | tee shellcheck.sarif \ 
+          ./shellcheck-sarif-x86_64-unknown-linux-gnu < shellcheck.json \
+              | tee shellcheck.sarif \
               | ./sarif-fmt-x86_64-unknown-linux-gnu
 
       - name: "Upload 'ShellCheck Results' artifact."
