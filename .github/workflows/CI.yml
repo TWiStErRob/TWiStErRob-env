@@ -118,6 +118,7 @@ jobs:
             --rm
             --volume ${{ github.workspace }}/pst-maildir-imap:/workdir
           run: |
+            #set -e #Disabled for now, because the files created by GHA are not accessible in Docker.
             cd /workdir
             readpst -o test/ test/test.pst
             mkdir -p test/Inbox/
