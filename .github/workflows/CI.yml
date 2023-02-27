@@ -110,6 +110,12 @@ jobs:
         working-directory: pst-maildir-imap
         run: docker build --tag pst2maildir .
 
+      - name: "Find user."
+        id: id
+        run: |
+          echo "uid=$(id --user)" >> $GITHUB_OUTPUT
+          echo "gid=$(id --group)" >> $GITHUB_OUTPUT
+
       - name: "Run test migration in container."
         uses: addnab/docker-run-action@v3
         with:
@@ -122,9 +128,11 @@ jobs:
             cd /workdir
             readpst -o test/ test/test.pst
             mkdir -p test/Inbox/
-            perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/ runner docker
+            perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/ ${{ steps.id.outputs.uid }} ${{ steps.id.outputs.gid }}
             find test/Inbox/ -type f -exec python3 fix_maildir_mail_mtime.py "{}" \;
             find test/ -type f -exec chmod +r "{}" \;
+            ls -la .
+            cd test/
             ls -la .
             ls -la Inbox
             ls -la Inbox/cur
