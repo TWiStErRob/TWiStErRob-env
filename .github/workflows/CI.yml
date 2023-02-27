@@ -94,6 +94,70 @@ jobs:
         run: kotlinc notion-move-to-property.main.kts
 
 
+  svn2git-migration:
+    name:  "🔨 Build & Check / SVN to GIT migration"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: svn2git-migration
+        run: |
+          git clone https://github.com/svn-all-fast-export/svn2git.git
+          
+          cd svn2git
+          #docker build -t svn2git . # 2-4 minutes, ~200 MB download, 641MB space
+          cd ..
+          
+          #docker build -t svn2git-work .
+          
+          mkdir workdir
+          cd workdir
+          svnadmin create test-repository
+          svn co file://$(pwd)/test-repository test-checkout
+          cd test-checkout
+          echo "test" > test.txt
+          svn add test.txt
+          svn commit -m "Test Project\
+          [IMP] Initial import"
+          svn update
+          svn info
+          set SVN_REPO=$(pwd)
+          cd ../..
+          
+          echo "$(whoami) = Test User <test@test.test>" > conf/migrate.authors
+          
+          cat <<- 'EOF'
+            #!/usr/bin/env sh
+            svn relocate file:///tmp/svn test-checkout
+            /usr/local/svn2git/svn-all-fast-export \
+              --identity-map /tmp/conf/migrate.authors \
+              --rules /tmp/conf/monorepo-all.rules \
+              --debug-rules \
+              --stats \
+              --svn-ignore \
+              --propcheck \
+              --empty-dirs \
+              --add-metadata \
+              --add-metadata-notes \
+              --msg-filter 'sed -z -r -f /tmp/conf/svn-msg-filter.sed' \
+              /tmp/svn \
+              >svn2git.log 2>&1
+          EOF> conf/test.sh
+          chmod +x conf/test.sh
+          
+          docker run --rm -it -v %CD%\conf:/tmp/conf -v %CD%\workdir:/workdir -v %SVN_REPO%:/tmp/svn svn2git-work /tmp/conf/test.sh
+
+      - name: "Upload 'svn2git test' artifact."
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'svn2git test'
+          path: ${{ github.workspace }}/svn2git-migration/workdir/
+
+
   detekt:
     name: "🔍 Static Checks / Detekt"
     runs-on: ubuntu-latest
