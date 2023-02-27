@@ -104,7 +104,12 @@ jobs:
 
       - name: "Prepare test data."
         working-directory: pst-maildir-imap
-        run: unzip test.zip -d test/
+        run: |
+          # Pre-create folder so Docker can access it.
+          mkdir -p test/
+          chmod +rw test/
+          # Prepare PST file.
+          unzip test.zip -d test/
 
       - name: "Build pst2maildir image."
         working-directory: pst-maildir-imap
