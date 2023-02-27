@@ -13,7 +13,6 @@ PST to Maildir to IMAP
      X17 is 2010 SP1, the difference beween the two is in the "Updates" folder: everything except README.txt.
    * Office 2010 Single Image x86 + x64 disk image (Home and Student, Home and Business, Professional)  
      http://azcdn01.digitalrivercontent.net/office2010/X16-31933.iso (not archive, and not hosted any more)
- * `bash` for `script.sh` (from https://github.com/porwat/PST_to_Maildir)
  * `readpst` installed with `apt install pst-utils`  
     ```console
     ~$ readpst -V
@@ -44,12 +43,18 @@ Note: Windows Explorer / Total Commander can see WSL Home in: `\\wsl$\Ubuntu\hom
 
 # Process
 
- 1. Compact PST file in Outlook
+ 1. [Compact PST file in Outlook](https://support.microsoft.com/en-us/office/reduce-the-size-of-your-mailbox-and-outlook-data-files-pst-and-ost-e4c6a4f1-d39c-47dc-a4fa-abe96dc8c7ef#ID0EBBD=Office_2010)
  1. Exit Outlook to make sure pst file lock is released and data written.  
     Make sure it's not on the system tray.
- 1. Run `script.sh` on PST file to a folder named `mail` (can be changed in `mbsync.rc`)  
-    This runs `readpst` and creates a big `.mbox` file from a PST and splits it up using `mbox2maildir.pl`.
- 1. Fix the timestamps with
+ 1. Convert a PST file to a big `.mbox` file:
+    ```bash
+    readpst -o test/ test/test.pst
+    ```
+ 1. Split up the bix .mbox file into smaller ones:
+    ```bash
+    perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/ 504 504
+    ```
+ 1. Fix the timestamps with:
     ```bash
     find mail -type f -exec python3 fix_maildir_mail_mtime.py "{}" \;
     ```

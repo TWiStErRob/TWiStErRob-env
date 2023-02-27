@@ -94,6 +94,51 @@ jobs:
         run: kotlinc notion-move-to-property.main.kts
 
 
+  pst-maildir:
+    name:  "🔨 Build & Check / PST to Maildir migration"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Prepare test data."
+        working-directory: pst-maildir-imap
+        run: unzip test.zip -d test/
+
+      - name: "Build svn2git image."
+        working-directory: pst-maildir-imap
+        run: docker build --tag pst2maildir .
+
+      - name: "Run test migration in container."
+        uses: addnab/docker-run-action@v3
+        with:
+          image: pst2maildir
+          options: |
+            --rm
+            --volume ${{ github.workspace }}/pst-maildir-imap:/workdir
+          run: |
+            cd /workdir
+            readpst -o test/ test/test.pst
+            mkdir -p test/Inbox/
+            perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/ 504 504
+            find test/Inbox/ -type f -exec python3 fix_maildir_mail_mtime.py "{}" \;
+
+      - name: "Validate migrated maildir output."
+        working-directory: pst-maildir-imap/test
+        run: |
+          head Inbox.mbox
+          ls Inbox/cur/*.mbox*
+          find Inbox/cur/ -type f -exec head "{}" \;
+
+      - name: "Upload 'pst2maildir test' artifact."
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'svn2git test'
+          path: ${{ github.workspace }}/pst-maildir-imap/test/
+
+
   svn2git-migration:
     name:  "🔨 Build & Check / SVN to GIT migration"
     runs-on: ubuntu-latest
@@ -135,7 +180,7 @@ jobs:
           
           cd svn2git
           sed --in-place --expression='s/debian:8.11/debian:buster/' Dockerfile
-          docker build --tag svn2git . # 2-4 minutes, ~200 MB download, 641MB space
+          docker build --tag svn2git .
           cd ..
           
           docker build --tag svn2git-work .
@@ -150,8 +195,8 @@ jobs:
             --volume ${{ github.workspace }}/svn2git-migration/workdir:/workdir
             --volume ${{ env.SVN_REPO }}:/tmp/svn
           run: |
-            #!/usr/bin/env sh
             svn relocate file:///tmp/svn test-checkout
+            
             /usr/local/svn2git/svn-all-fast-export \
             --identity-map /tmp/conf/migrate.authors \
             --rules /tmp/conf/monorepo-all.rules \
