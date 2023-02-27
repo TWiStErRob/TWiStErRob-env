@@ -128,7 +128,7 @@ jobs:
         working-directory: pst-maildir-imap/test
         run: |
           head Inbox.mbox
-          ls Inbox/cur/*.mbox*
+          sudo ls -la Inbox/cur/*.mbox*
           find Inbox/cur/ -type f -exec head "{}" \;
 
       - name: "Upload 'pst2maildir test' artifact."
