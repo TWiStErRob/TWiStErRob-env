@@ -250,6 +250,7 @@ jobs:
           find ${{ github.workspace }} -type f \( -name '*.sh' \) \
               -exec "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --enable=all --severity=style --shell=sh --check-sourced --external-sources --format=json {} + \
               > shellcheck.json
+          sed --in-place 's!"file":"${{ github.workspace }}/!"file":"!g' shellcheck.json
 
       - name: "Convert shellcheck JSON output to SARIF."
         if: success() || failure()
