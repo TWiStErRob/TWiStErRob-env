@@ -124,6 +124,7 @@ jobs:
             --rm
             --volume ${{ github.workspace }}/pst-maildir-imap:/workdir
           run: |
+            set -e
             cd /workdir
             readpst -o test/ test/test.pst
             mkdir -p test/Inbox/
@@ -133,11 +134,11 @@ jobs:
       - name: "Validate migrated maildir output."
         working-directory: pst-maildir-imap/test
         run: |
-          head Inbox.mbox
           ls -la .
           ls -la Inbox
           ls -la Inbox/cur
           ls -la Inbox/cur/*.mbox*
+          head Inbox.mbox
           find Inbox/cur/ -type f -exec head "{}" \;
 
       - name: "Upload 'pst2maildir test' artifact."
@@ -204,6 +205,8 @@ jobs:
             --volume ${{ github.workspace }}/svn2git-migration/workdir:/workdir
             --volume ${{ env.SVN_REPO }}:/tmp/svn
           run: |
+            set -e
+            
             svn relocate file:///tmp/svn test-checkout
             
             /usr/local/svn2git/svn-all-fast-export \
