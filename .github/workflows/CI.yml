@@ -79,7 +79,6 @@ jobs:
               --all-rules \
               --max-issues 0 \
               --base-path ${{ github.workspace }} \
-              --debug \
               --report sarif:detekt.sarif \
               --report txt:detekt.txt \
               --report html:detekt.html \

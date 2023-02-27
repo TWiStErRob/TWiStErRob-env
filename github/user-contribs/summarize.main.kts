@@ -32,7 +32,7 @@ main(*args)
 /** Hack to expose this to the lowest level [unique] function. */
 lateinit var params: Params
 fun main(vararg args: String) {
-	check(args.size == 5678) {
+	check(args.size == 2) {
 		"""
 			Usage: kotlinc -script summarize.main.kts <params.summarize.yml> <output.json>
 			Invalid arguments: ${args.contentToString()}
@@ -50,6 +50,13 @@ fun main(vararg args: String) {
 
 	val result: List<ContributionHistory> = process(data)
 	summaryFile.writeJson(result)
+}
+
+class MyIterator : Iterator<String> {
+
+	override fun hasNext(): Boolean {
+		return next() != null
+	}
 }
 
 /**
