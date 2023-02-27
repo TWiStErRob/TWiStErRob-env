@@ -88,7 +88,7 @@ jobs:
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v3
-  
+
       - name: "Compile .main.kts."
         working-directory: notion/page-section-move-to-property
         run: kotlinc notion-move-to-property.main.kts
