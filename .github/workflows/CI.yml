@@ -104,7 +104,13 @@ jobs:
 
       - name: "Prepare test data."
         working-directory: pst-maildir-imap
-        run: unzip test.zip -d test/
+        run: |
+          unzip test.zip -d test/
+          # Pre-create folders so that GHA can access them.
+          mkdir -p test/Inbox/
+          mkdir -p test/Inbox/cur/
+          mkdir -p test/Inbox/prev/
+          mkdir -p test/Inbox/tmp/
 
       - name: "Build pst2maildir image."
         working-directory: pst-maildir-imap
