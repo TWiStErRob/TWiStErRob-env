@@ -153,7 +153,7 @@ jobs:
           git clone https://github.com/svn-all-fast-export/svn2git.git
           
           cd svn2git
-          sed -i .bak 's/debian:8.11/debian:buster/' Dockerfile
+          sed -i 's/debian:8.11/debian:buster/' Dockerfile
           docker build -t svn2git . # 2-4 minutes, ~200 MB download, 641MB space
           cd ..
           
