@@ -21,6 +21,45 @@ jobs:
         run: kotlinc find-merged-branches.main.kts
 
 
+  github-draft-issues:
+    name: "🔨 Build / GitHub / Draft Issues"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: github/project-manage-draft-issues
+        run: kotlinc manage-draft-issues.main.kts
+
+
+  github-repository-convention:
+    name: "🔨 Build / GitHub / Repository Convention"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: github/repository-convention
+        run: kotlinc validate.main.kts
+
+
+  github-user-contribs:
+    name: "🔨 Build / GitHub / User Contributions"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: github/user-contribs
+        run: kotlinc get.main.kts summarize.main.kts
+
+  
   detekt:
     name: "🔍 Static Checks / Detekt"
     runs-on: ubuntu-latest
