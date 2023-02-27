@@ -276,7 +276,7 @@ jobs:
           name: 'ShellCheck Results'
           path: ${{ github.workspace }}/shellcheck.*
 
-      - name: "Publish 'Code scanning results / ShellCheck'."
+      - name: "Publish 'Code scanning results / shellcheck'."
         if: success() || failure()
         uses: github/codeql-action/upload-sarif@v2
         with:
