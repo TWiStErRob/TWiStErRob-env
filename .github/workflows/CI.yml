@@ -139,7 +139,7 @@ jobs:
           
           ./shellcheck-sarif-x86_64-unknown-linux-gnu < shellcheck.json \
               | tee shellcheck.sarif \
-              | ./sarif-fmt-x86_64-unknown-linux-gnu
+              | ./sarif-fmt-x86_64-unknown-linux-gnu \
 
       - name: "Upload 'ShellCheck Results' artifact."
         if: success() || failure()
