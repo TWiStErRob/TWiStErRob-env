@@ -159,8 +159,13 @@ jobs:
 
       - name: "Run test migration in container."
         working-directory: svn2git-migration
-        run: |
-          docker run --rm -v $(pwd)\conf:/tmp/conf -v $(pwd)\workdir:/workdir -v ${SVN_REPO}:/tmp/svn svn2git-work /tmp/conf/test.sh
+        run: >
+          docker run --rm
+          -v $(pwd)\conf:/tmp/conf
+          -v $(pwd)\workdir:/workdir
+          -v ${SVN_REPO}:/tmp/svn
+          svn2git-work
+          /tmp/conf/test.sh
 
       - name: "Upload 'svn2git test' artifact."
         if: success() || failure()
