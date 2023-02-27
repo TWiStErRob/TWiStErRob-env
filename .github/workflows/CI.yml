@@ -109,6 +109,8 @@ jobs:
           cd workdir
           
           svnadmin create test-repository
+          echo "SVN_REPO=$(pwd)/test-repository" >> $GITHUB_ENV
+          
           svn co file://$(pwd)/test-repository test-checkout
           cd test-checkout
           
@@ -119,8 +121,6 @@ jobs:
           svn update
           svn info
           svn log
-          
-          echo "SVN_REPO=$(pwd)" >> $GITHUB_ENV
 
       - name: "Set up migration configuration."
         working-directory: svn2git-migration
@@ -134,11 +134,11 @@ jobs:
           git clone https://github.com/svn-all-fast-export/svn2git.git
           
           cd svn2git
-          sed -i 's/debian:8.11/debian:buster/' Dockerfile
-          docker build -t svn2git . # 2-4 minutes, ~200 MB download, 641MB space
+          sed --in-place 's/debian:8.11/debian:buster/' Dockerfile
+          docker build --tag svn2git . # 2-4 minutes, ~200 MB download, 641MB space
           cd ..
           
-          docker build -t svn2git-work .
+          docker build --tag svn2git-work .
 
       - name: "Run test migration in container."
         uses: addnab/docker-run-action@v3
@@ -146,9 +146,9 @@ jobs:
           image: svn2git-work
           options: |
             --rm
-            -v ${{ github.workspace }}/svn2git-migration/conf:/tmp/conf
-            -v ${{ github.workspace }}/svn2git-migration/workdir:/workdir
-            -v ${{ env.SVN_REPO }}:/tmp/svn
+            --volume ${{ github.workspace }}/svn2git-migration/conf:/tmp/conf
+            --volume ${{ github.workspace }}/svn2git-migration/workdir:/workdir
+            --volume ${{ env.SVN_REPO }}:/tmp/svn
           run: |
             #!/usr/bin/env sh
             svn relocate file:///tmp/svn test-checkout
