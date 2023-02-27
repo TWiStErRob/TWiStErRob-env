@@ -1,5 +1,6 @@
 FROM svn2git
 # This Dockerfile assumes a patched svn2git build, which is `FROM debian:buster`.
+# See also https://github.com/svn-all-fast-export/svn2git/pull/150
 
 # Change locale to let svn handle international characters
 ENV LC_ALL C.UTF-8
