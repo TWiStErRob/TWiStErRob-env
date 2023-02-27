@@ -123,6 +123,7 @@ jobs:
             mkdir -p test/Inbox/
             perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/ 504 504
             find test/Inbox/ -type f -exec python3 fix_maildir_mail_mtime.py "{}" \;
+            chown -R runner test/
 
       - name: "Validate migrated maildir output."
         working-directory: pst-maildir-imap/test
