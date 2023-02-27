@@ -102,17 +102,6 @@ jobs:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v3
 
-      - name: "Build svn2git image."
-        working-directory: svn2git-migration
-        run: |
-          git clone https://github.com/svn-all-fast-export/svn2git.git
-          
-          cd svn2git
-          #docker build -t svn2git . # 2-4 minutes, ~200 MB download, 641MB space
-          cd ..
-          
-          #docker build -t svn2git-work .
-
       - name: "Create test repository."
         working-directory: svn2git-migration
         run: |
@@ -133,10 +122,10 @@ jobs:
           
           echo "SVN_REPO=$(pwd)" >> $GITHUB_ENV
 
-      - name: "Run test migration in container."
-        working-directory: svn2git-migration
+      - name: "Set up migration configuration."
         run: |
           echo "$(whoami) = Test User <test@test.test>" > conf/migrate.authors
+          cat conf/migrate.authors
           
           cat > conf/test.sh <<- 'EOF'
             #!/usr/bin/env sh
@@ -156,8 +145,22 @@ jobs:
               >svn2git.log 2>&1
           EOF
           chmod +x conf/test.sh
+
+      - name: "Build svn2git image."
+        working-directory: svn2git-migration
+        run: |
+          git clone https://github.com/svn-all-fast-export/svn2git.git
           
-          docker run --rm -it -v $(pwd)\conf:/tmp/conf -v $(pwd)\workdir:/workdir -v ${SVN_REPO}:/tmp/svn svn2git-work /tmp/conf/test.sh
+          cd svn2git
+          docker build -t svn2git . # 2-4 minutes, ~200 MB download, 641MB space
+          cd ..
+          
+          docker build -t svn2git-work .
+
+      - name: "Run test migration in container."
+        working-directory: svn2git-migration
+        run: |
+          docker run --rm -v $(pwd)\conf:/tmp/conf -v $(pwd)\workdir:/workdir -v ${SVN_REPO}:/tmp/svn svn2git-work /tmp/conf/test.sh
 
       - name: "Upload 'svn2git test' artifact."
         if: success() || failure()
