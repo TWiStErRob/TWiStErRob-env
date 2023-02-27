@@ -51,6 +51,7 @@ import java.io.StringReader
 import java.io.StringWriter
 import java.io.Writer
 import java.net.URI
+import java.net.URLEncoder
 import javax.json.Json
 import javax.json.JsonArray
 import javax.json.JsonObject
@@ -201,8 +202,13 @@ suspend fun GitHub.validateFiles(repo: JsonObject): JsonArray {
 		repo = name,
 		ref = defaultBranch
 	)
-	fun webUrl(entry: TreeResponse.TreeEntry): URI =
-		URI.create("https://github.com/${owner}/${name}/blob/${defaultBranch}/${entry.path}")
+	fun webUrl(entry: TreeResponse.TreeEntry): URI {
+		val ownerEnc = URLEncoder.encode(owner, Charsets.UTF_8)
+		val nameEnc = URLEncoder.encode(name, Charsets.UTF_8)
+		val defaultBranchEnc = URLEncoder.encode(defaultBranch, Charsets.UTF_8)
+		val pathEnc = URLEncoder.encode(entry.path, Charsets.UTF_8)
+		return URI.create("https://github.com/${ownerEnc}/${nameEnc}/blob/${defaultBranchEnc}/${pathEnc}")
+	}
 
 	val builder = Json.createArrayBuilder()
 	if (response.truncated) {
