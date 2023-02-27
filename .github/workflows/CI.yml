@@ -125,6 +125,10 @@ jobs:
             perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/ runner docker
             find test/Inbox/ -type f -exec python3 fix_maildir_mail_mtime.py "{}" \;
             find test/ -type f -exec chmod +r "{}" \;
+            ls -la .
+            ls -la Inbox
+            ls -la Inbox/cur
+            ls -la Inbox/cur/*.mbox*
 
       - name: "Validate migrated maildir output."
         working-directory: pst-maildir-imap/test
