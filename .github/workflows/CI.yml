@@ -57,9 +57,43 @@ jobs:
 
       - name: "Compile .main.kts."
         working-directory: github/user-contribs
-        run: kotlinc get.main.kts summarize.main.kts
+        run: |
+          kotlinc
+          get.main.kts
+          summarize.main.kts
 
+
+  notion-import-data:
+    name: "🔨 Build / Notion / Import Data"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: notion/import-data
+        run: >
+          kotlinc
+          notion-import-csv.main.kts
+          notion-import-dev-summit.main.kts
+          notion-import-droidcon.main.kts
+          siliconmilkroundabout-2022-november/companies-attending.main.kts
+
+
+  notion-move-to-property:
+    name: "🔨 Build / Notion / Move to Property"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
   
+      - name: "Compile .main.kts."
+        working-directory: notion/page-section-move-to-property
+        run: kotlinc notion-move-to-property.main.kts
+
+
   detekt:
     name: "🔍 Static Checks / Detekt"
     runs-on: ubuntu-latest
