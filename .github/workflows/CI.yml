@@ -131,7 +131,7 @@ jobs:
       - name: "Build svn2git image."
         working-directory: svn2git-migration
         run: |
-          git clone https://github.com/svn-all-fast-export/svn2git.git
+          git clone https://github.com/svn-all-fast-export/svn2git.git -b 1.0.18
           
           cd svn2git
           sed --in-place 's/debian:8.11/debian:buster/' Dockerfile
@@ -165,6 +165,20 @@ jobs:
             --msg-filter 'sed -z -r -f /tmp/conf/svn-msg-filter.sed' \
             /tmp/svn \
             >svn2git.log 2>&1
+
+      - name: "Validate migrated git output."
+        working-directory: svn2git-migration/workdir
+        run: |
+          git clone svn.git
+          cd svn
+          git log --no-decorate | grep -v -E 'Date:|commit' > actual-git-log.txt
+          cat > expected-git-log.txt <<- EOF
+          	Author: Test User <test@test.test>
+          	
+          	    [SVN] r1 Test Project in /
+          	    [IMP] Initial import
+          EOF
+          diff expected-git-log.txt actual-git-log.txt
 
       - name: "Upload 'svn2git test' artifact."
         if: success() || failure()
