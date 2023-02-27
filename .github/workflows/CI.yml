@@ -127,25 +127,6 @@ jobs:
         run: |
           echo "$(whoami) = Test User <test@test.test>" > conf/migrate.authors
           cat conf/migrate.authors
-          
-          cat > conf/test.sh <<- 'EOF'
-            #!/usr/bin/env sh
-            svn relocate file:///tmp/svn test-checkout
-            /usr/local/svn2git/svn-all-fast-export \
-              --identity-map /tmp/conf/migrate.authors \
-              --rules /tmp/conf/monorepo-all.rules \
-              --debug-rules \
-              --stats \
-              --svn-ignore \
-              --propcheck \
-              --empty-dirs \
-              --add-metadata \
-              --add-metadata-notes \
-              --msg-filter 'sed -z -r -f /tmp/conf/svn-msg-filter.sed' \
-              /tmp/svn \
-              >svn2git.log 2>&1
-          EOF
-          chmod +x conf/test.sh
 
       - name: "Build svn2git image."
         working-directory: svn2git-migration
@@ -160,14 +141,30 @@ jobs:
           docker build -t svn2git-work .
 
       - name: "Run test migration in container."
-        working-directory: svn2git-migration
-        run: >
-          docker run --rm
-          -v $(pwd)\conf:/tmp/conf
-          -v $(pwd)\workdir:/workdir
-          -v ${SVN_REPO}:/tmp/svn
-          svn2git-work
-          /tmp/conf/test.sh
+        uses: addnab/docker-run-action@v3
+        with:
+          image: svn2git-work
+          options: |
+            --rm
+            -v ${{ github.workspace }}/svn2git-migration/conf:/tmp/conf
+            -v ${{ github.workspace }}/svn2git-migration/workdir:/workdir
+            -v ${{ env.SVN_REPO }}:/tmp/svn
+          run: |
+            #!/usr/bin/env sh
+            svn relocate file:///tmp/svn test-checkout
+            /usr/local/svn2git/svn-all-fast-export \
+            --identity-map /tmp/conf/migrate.authors \
+            --rules /tmp/conf/monorepo-all.rules \
+            --debug-rules \
+            --stats \
+            --svn-ignore \
+            --propcheck \
+            --empty-dirs \
+            --add-metadata \
+            --add-metadata-notes \
+            --msg-filter 'sed -z -r -f /tmp/conf/svn-msg-filter.sed' \
+            /tmp/svn \
+            >svn2git.log 2>&1
 
       - name: "Upload 'svn2git test' artifact."
         if: success() || failure()
