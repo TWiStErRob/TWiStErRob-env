@@ -94,6 +94,70 @@ jobs:
         run: kotlinc notion-move-to-property.main.kts
 
 
+  pst-maildir:
+    name:  "🔨 Build & Check / PST to Maildir migration"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Prepare test data."
+        working-directory: pst-maildir-imap
+        run: unzip test.zip -d test/
+
+      - name: "Build pst2maildir image."
+        working-directory: pst-maildir-imap
+        run: docker build --tag pst2maildir .
+
+      - name: "Find user."
+        id: id
+        run: |
+          echo "uid=$(id --user)" >> $GITHUB_OUTPUT
+          echo "gid=$(id --group)" >> $GITHUB_OUTPUT
+
+      - name: "Run test migration in container."
+        uses: addnab/docker-run-action@v3
+        with:
+          image: pst2maildir
+          options: |
+            --rm
+            --volume ${{ github.workspace }}/pst-maildir-imap:/workdir
+          run: |
+            set -e
+            cd /workdir
+            readpst -o test/ test/test.pst
+            mkdir -p test/Inbox/
+            perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/ ${{ steps.id.outputs.uid }} ${{ steps.id.outputs.gid }}
+            find test/Inbox/ -type f -exec python3 fix_maildir_mail_mtime.py "{}" \;
+            find test/ -type f -exec chmod +r "{}" \;
+
+      - name: "Validate migrated maildir output."
+        working-directory: pst-maildir-imap/test
+        run: |
+          head Inbox.mbox
+          ls -la Inbox/cur/*.mbox*
+          find Inbox/cur/ -type f -exec head "{}" \;
+
+      - name: "Prepare 'pst2maildir test' artifact."
+        if: success() || failure()
+        working-directory: pst-maildir-imap/test
+        run: |
+          # Compress Inbox/ because it contains strange characters in the filenames.
+          # > Error: Artifact path is not valid: /Inbox/cur/1677516690.12.mbox:2,S. Contains the following character:  Colon :
+          # > Invalid characters include:  Double quote ", Colon :, Less than <, Greater than >, Vertical bar |, Asterisk *, Question mark ?, Carriage return \r, Line feed \n
+          # > The following characters are not allowed in files that are uploaded due to limitations with certain file systems such as NTFS.
+          # > To maintain file system agnostic behavior, these characters are intentionally not allowed to prevent potential problems with downloads on different file systems.
+          tar -f pst2maildir-inbox.tar -c Inbox/ --remove-files
+
+      - name: "Upload 'pst2maildir test' artifact."
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'pst2maildir test'
+          path: ${{ github.workspace }}/pst-maildir-imap/test/
+
+
   svn2git-migration:
     name:  "🔨 Build & Check / SVN to GIT migration"
     runs-on: ubuntu-latest
@@ -134,8 +198,8 @@ jobs:
           git clone https://github.com/svn-all-fast-export/svn2git.git -b 1.0.18
           
           cd svn2git
-          sed --in-place 's/debian:8.11/debian:buster/' Dockerfile
-          docker build --tag svn2git . # 2-4 minutes, ~200 MB download, 641MB space
+          sed --in-place --expression='s/debian:8.11/debian:buster/' Dockerfile
+          docker build --tag svn2git .
           cd ..
           
           docker build --tag svn2git-work .
@@ -150,8 +214,10 @@ jobs:
             --volume ${{ github.workspace }}/svn2git-migration/workdir:/workdir
             --volume ${{ env.SVN_REPO }}:/tmp/svn
           run: |
-            #!/usr/bin/env sh
+            set -e
+            
             svn relocate file:///tmp/svn test-checkout
+            
             /usr/local/svn2git/svn-all-fast-export \
             --identity-map /tmp/conf/migrate.authors \
             --rules /tmp/conf/monorepo-all.rules \
@@ -162,7 +228,7 @@ jobs:
             --empty-dirs \
             --add-metadata \
             --add-metadata-notes \
-            --msg-filter 'sed -z -r -f /tmp/conf/svn-msg-filter.sed' \
+            --msg-filter 'sed --zero-terminated --regexp-extended --file=/tmp/conf/svn-msg-filter.sed' \
             /tmp/svn \
             >svn2git.log 2>&1
 
@@ -250,6 +316,8 @@ jobs:
           find ${{ github.workspace }} -type f \( -name '*.sh' \) \
               -exec "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --enable=all --severity=style --shell=sh --check-sourced --external-sources --format=json {} + \
               > shellcheck.json
+          
+          # The previous command will fail if violations are found, careful putting more commands here.
 
       - name: "Convert shellcheck JSON output to SARIF."
         if: success() || failure()
@@ -260,6 +328,9 @@ jobs:
           curl --silent --show-error --location --remote-name \
               "https://github.com/psastras/sarif-rs/releases/download/shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}/shellcheck-sarif-x86_64-unknown-linux-gnu"
           chmod +x shellcheck-sarif-x86_64-unknown-linux-gnu
+          
+          # Relativize paths in the shellcheck JSON output, so in turn the SARIF output is relative too.
+          sed --in-place --expression='s!"file":"${{ github.workspace }}/!"file":"!g' shellcheck.json
           
           ./shellcheck-sarif-x86_64-unknown-linux-gnu < shellcheck.json > shellcheck.sarif
 

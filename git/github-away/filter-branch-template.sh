@@ -5,21 +5,23 @@
 # Working directory (PWD): <repo>/.git-rewrite/t/
 # Docs: https://git-scm.com/docs/git-filter-branch
 
-if [ -z "$GIT_COMMIT" ]; then echo "GIT_COMMIT is empty"; exit 1; fi
+if [ -z "${GIT_COMMIT}" ]; then echo "GIT_COMMIT is empty"; exit 1; fi
 
 # Self diagnostics
 out_dir=../../.git/filter-branch-diagnostics.~
-mkdir -p $out_dir
-out=$out_dir/$GIT_COMMIT
-rm -f $out
-echo Params to script: >> $out
-echo "$@" >> $out
-echo Env of execution: >> $out
-env | sort >> $out
+mkdir -p "${out_dir}"
+out=${out_dir}/${GIT_COMMIT}
+{
+    echo "Params to script:"
+    echo "$@"
+    echo "Env of execution:"
+    env | sort
+} > "${out}"
 
 # Actual changes for filter-branch
-# Use `echo ... >> $out` to leave a trace.
-if [ "$GIT_COMMITTER_EMAIL" = "user@local.host" ];
+# Use `echo ... >> "${out}"` to leave a trace.
+# shellcheck disable=SC2034 # GIT_ prefixed variables are produced and used by git.
+if [ "${GIT_COMMITTER_EMAIL}" = "user@local.host" ];
 then
     GIT_COMMITTER_NAME="Róbert Papp (TWiStErRob)";
     GIT_AUTHOR_NAME="Róbert Papp (TWiStErRob)";
