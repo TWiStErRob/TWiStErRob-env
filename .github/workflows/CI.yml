@@ -131,22 +131,24 @@ jobs:
             perl ./mbox2maildir.pl test/Inbox.mbox test/Inbox/ ${{ steps.id.outputs.uid }} ${{ steps.id.outputs.gid }}
             find test/Inbox/ -type f -exec python3 fix_maildir_mail_mtime.py "{}" \;
             find test/ -type f -exec chmod +r "{}" \;
-            ls -la .
-            cd test/
-            ls -la .
-            ls -la Inbox
-            ls -la Inbox/cur
-            ls -la Inbox/cur/*.mbox*
 
       - name: "Validate migrated maildir output."
         working-directory: pst-maildir-imap/test
         run: |
-          ls -la .
-          ls -la Inbox
-          ls -la Inbox/cur
-          ls -la Inbox/cur/*.mbox*
           head Inbox.mbox
+          ls -la Inbox/cur/*.mbox*
           find Inbox/cur/ -type f -exec head "{}" \;
+
+      - name: "Prepare 'pst2maildir test' artifact."
+        if: success() || failure()
+        working-directory: pst-maildir-imap/test
+        run: |
+          # Compress Inbox/ because it contains strange characters in the filenames.
+          # > Error: Artifact path is not valid: /Inbox/cur/1677516690.12.mbox:2,S. Contains the following character:  Colon :
+          # > Invalid characters include:  Double quote ", Colon :, Less than <, Greater than >, Vertical bar |, Asterisk *, Question mark ?, Carriage return \r, Line feed \n
+          # > The following characters are not allowed in files that are uploaded due to limitations with certain file systems such as NTFS.
+          # > To maintain file system agnostic behavior, these characters are intentionally not allowed to prevent potential problems with downloads on different file systems.
+          tar -f pst2maildir-inbox.tar -c Inbox/ --remove-files
 
       - name: "Upload 'pst2maildir test' artifact."
         if: success() || failure()
