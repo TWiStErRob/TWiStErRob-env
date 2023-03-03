@@ -6,6 +6,7 @@ $user = [ordered]@{
     HOME = "%USERPROFILE%"
     # base for programming stuff
     PROG_HOME="P:"
+    PROG_HOME_LARGE="Z:"
     # needed for my gradle plugin
     RELEASE_HOME = "%PROG_HOME%\repos\release"
     # command line utility collection
@@ -13,8 +14,33 @@ $user = [ordered]@{
     GIT_HOME = "%PROG_HOME%\tools\vcs\git"
     BUNCH_HOME = "%PROG_HOME%\tools\build\bunch-0.9.0"
 
-    ANDROID_HOME = "%PROG_HOME%\tools\sdk\android"
-    ANDROID_NDK_HOME = "%PROG_HOME%\tools\sdk\android-ndk-r14b"
+    # Conventional settings for Android Studio and other tools.
+    # https://developer.android.com/studio/command-line/variables#android_verbose
+    ANDROID_HOME = "%PROG_HOME_LARGE%\tools\sdk\android"
+    ANDROID_AVD_HOME = "%ANDROID_HOME%\.android\avd"
+    ANDROID_USER_HOME = "%ANDROID_HOME%\.android\user"
+    ANDROID_EMULATOR_HOME = "%ANDROID_HOME%\.android\emulator"
+    # DO NOT SET THIS, it messes up AVD creation in latest AS (EE).
+    #ANDROID_SDK_HOME = "%ANDROID_HOME%\.android\legacy"
+    ANDROID_NDK_HOME = "%PROG_HOME_LARGE%\tools\sdk\android-ndk-r14b"
+
+    # com.android.prefs.AndroidLocationsException: Several environment variables and/or system properties contain different paths to the Android Preferences folder.
+    # Please correct and use only one way to inject the preference location.
+    #
+    # - ANDROID_SDK_HOME(environment variable): Z:\tools\sdk\android\.android\legacy
+    # - ANDROID_USER_HOME(environment variable): Z:\tools\sdk\android\.android\user
+    #
+    # It is recommended to use ANDROID_USER_HOME as other methods are deprecated
+    #     at com.android.prefs.PathLocator.singlePathOf(AbstractAndroidLocations.kt:310)
+    #     at com.android.prefs.AbstractAndroidLocations.computeAndroidFolder(AbstractAndroidLocations.kt:144)
+    #     at com.android.prefs.AbstractAndroidLocations.getPrefsLocation(AbstractAndroidLocations.kt:75)
+    #     at com.android.tools.idea.welcome.config.GlobalInstallerData.readProperties(InstallerData.kt:75)
+    #     at com.android.tools.idea.welcome.config.GlobalInstallerData.parse(InstallerData.kt:103)
+    #     at com.android.tools.idea.welcome.config.GlobalInstallerData.<clinit>(InstallerData.kt:95)
+    #     at com.android.tools.idea.welcome.wizard.AndroidStudioWelcomeScreenProvider$Companion.isHandoff(AndroidStudioWelcomeScreenProvider.kt:90)
+    #     at com.android.tools.idea.welcome.wizard.AndroidStudioWelcomeScreenProvider$Companion.getWizardMode(AndroidStudioWelcomeScreenProvider.kt:79)
+    #     at com.android.tools.idea.welcome.wizard.AndroidStudioWelcomeScreenProvider.isAvailable(AndroidStudioWelcomeScreenProvider.kt:56)
+    #     at com.android.tools.idea.welcome.wizard.FirstRunWizardFrameProvider.lambda$createFrame$0(FirstRunWizardFrameProvider.java:39)
 
     GCLOUD_HOME = "%PROG_HOME%\tools\sdk\google-cloud-sdk"
     # set up a Gradle for global things
@@ -27,7 +53,7 @@ $user = [ordered]@{
     # Global Gradle JVM options, JAVA_OPTS would also work, but that probably conflicts with other programs (maven?)
     GRADLE_OPTS = "-Xmx512M"
     # relocate Gradle directory from ~/.gradle
-    GRADLE_USER_HOME = "%PROG_HOME%\caches\gradle"
+    GRADLE_USER_HOME = "%PROG_HOME_LARGE%\caches\gradle"
     HEROKU_HOME = "%PROG_HOME%\tools\vcs\heroku"
     MVN_HOME = "%PROG_HOME%\tools\build\apache-maven-3.8.6"
     # NodeJS / NPM / NVM
