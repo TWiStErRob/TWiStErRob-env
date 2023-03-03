@@ -4,4 +4,4 @@ Helper script for bulk-creating/updating draft issues. It supports setting custo
 
 ## Development
 
-This is a Kotlin Script. See [DEVELOPMENT.md](../../docs/DEVELOPMENT.md) for more information.
+This is a Kotlin Script. See [DEVELOPMENT.md](../../../.github/DEVELOPMENT.md) for more information.
