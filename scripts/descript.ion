@@ -1,0 +1,2 @@
+setup.ps1 powershell -ExecutionPolicy bypass .\setup.ps1
+backup.ps1 powershell -ExecutionPolicy bypass .\backup.ps1

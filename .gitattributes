@@ -1,3 +1,16 @@
+# Assume everything to be LF, just to be consistent with other repositories.
 * text=auto eol=lf
 
+###### Windows scripting
+# Windows Batch files are always CRLF.
 *.bat text eol=crlf
+# Powershell allows both CRLF and LF, but since it's cross-platform, use the Unix ending.
+*.ps1 text eol=lf
+
+###### Total Commander files
+# Need to be CRLF because, tcmd will re-write these files when changed.
+descript.ion text eol=crlf
+
+###### Windows Explorer files
+# Don't risk breaking explorer.exe, it's a Windows file, keep CRLF.
+desktop.ini text eol=crlf
