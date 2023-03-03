@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Compile .main.kts."
-        working-directory: git/merged-branches
+        working-directory: scripts/git/merged-branches
         run: kotlinc find-merged-branches.main.kts
 
 
@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Compile .main.kts."
-        working-directory: github/project-manage-draft-issues
+        working-directory: scripts/github/project-manage-draft-issues
         run: kotlinc manage-draft-issues.main.kts
 
 
@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Compile .main.kts."
-        working-directory: github/repository-convention
+        working-directory: scripts/github/repository-convention
         run: kotlinc validate.main.kts
 
 
@@ -56,7 +56,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Compile .main.kts."
-        working-directory: github/user-contribs
+        working-directory: scripts/github/user-contribs
         run: >
           kotlinc
           get.main.kts
@@ -72,7 +72,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Compile .main.kts."
-        working-directory: notion/import-data
+        working-directory: scripts/notion/import-data
         run: >
           kotlinc
           notion-import-csv.main.kts
@@ -90,7 +90,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Compile .main.kts."
-        working-directory: notion/page-section-move-to-property
+        working-directory: scripts/notion/page-section-move-to-property
         run: kotlinc notion-move-to-property.main.kts
 
 
@@ -103,11 +103,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Prepare test data."
-        working-directory: pst-maildir-imap
+        working-directory: scripts/special/pst-maildir-imap
         run: unzip test.zip -d test/
 
       - name: "Build pst2maildir image."
-        working-directory: pst-maildir-imap
+        working-directory: scripts/special/pst-maildir-imap
         run: docker build --tag pst2maildir .
 
       - name: "Find user."
@@ -122,7 +122,7 @@ jobs:
           image: pst2maildir
           options: |
             --rm
-            --volume ${{ github.workspace }}/pst-maildir-imap:/workdir
+            --volume ${{ github.workspace }}/scripts/special/pst-maildir-imap:/workdir
           run: |
             set -e
             cd /workdir
@@ -133,7 +133,7 @@ jobs:
             find test/ -type f -exec chmod +r "{}" \;
 
       - name: "Validate migrated maildir output."
-        working-directory: pst-maildir-imap/test
+        working-directory: scripts/special/pst-maildir-imap/test
         run: |
           head Inbox.mbox
           ls -la Inbox/cur/*.mbox*
@@ -141,7 +141,7 @@ jobs:
 
       - name: "Prepare 'pst2maildir test' artifact."
         if: success() || failure()
-        working-directory: pst-maildir-imap/test
+        working-directory: scripts/special/pst-maildir-imap/test
         run: |
           # Compress Inbox/ because it contains strange characters in the filenames.
           # > Error: Artifact path is not valid: /Inbox/cur/1677516690.12.mbox:2,S. Contains the following character:  Colon :
@@ -155,7 +155,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: 'pst2maildir test'
-          path: ${{ github.workspace }}/pst-maildir-imap/test/
+          path: ${{ github.workspace }}/scripts/special/pst-maildir-imap/test/
 
 
   svn2git-migration:
@@ -167,7 +167,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Create test repository."
-        working-directory: svn2git-migration
+        working-directory: scripts/special/svn2git-migration
         run: |
           mkdir workdir
           cd workdir
@@ -187,13 +187,13 @@ jobs:
           svn log
 
       - name: "Set up migration configuration."
-        working-directory: svn2git-migration
+        working-directory: scripts/special/svn2git-migration
         run: |
           echo "$(whoami) = Test User <test@test.test>" > conf/migrate.authors
           cat conf/migrate.authors
 
       - name: "Build svn2git image."
-        working-directory: svn2git-migration
+        working-directory: scripts/special/svn2git-migration
         run: |
           git clone https://github.com/svn-all-fast-export/svn2git.git -b 1.0.18
           
@@ -210,8 +210,8 @@ jobs:
           image: svn2git-work
           options: |
             --rm
-            --volume ${{ github.workspace }}/svn2git-migration/conf:/tmp/conf
-            --volume ${{ github.workspace }}/svn2git-migration/workdir:/workdir
+            --volume ${{ github.workspace }}/scripts/special/svn2git-migration/conf:/tmp/conf
+            --volume ${{ github.workspace }}/scripts/special/svn2git-migration/workdir:/workdir
             --volume ${{ env.SVN_REPO }}:/tmp/svn
           run: |
             set -e
@@ -233,7 +233,7 @@ jobs:
             >svn2git.log 2>&1
 
       - name: "Validate migrated git output."
-        working-directory: svn2git-migration/workdir
+        working-directory: scripts/special/svn2git-migration/workdir
         run: |
           git clone svn.git
           cd svn
@@ -251,7 +251,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: 'svn2git test'
-          path: ${{ github.workspace }}/svn2git-migration/workdir/
+          path: ${{ github.workspace }}/scripts/special/svn2git-migration/workdir/
 
 
   detekt:

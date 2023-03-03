@@ -11,11 +11,11 @@ GitHub GraphQL queries require the following scopes:
 
 Notion import needs a Connection with read/write access.
 
-See [DEVELOPMENT.md](../../../docs/DEVELOPMENT.md) for more information.
+See [DEVELOPMENT.md](../../../../.github/DEVELOPMENT.md) for more information.
 
 ## Steps
  1. [Query](ProjectV2Items.graphql) a few times to get all items.
-    * See [DEVELOPMENT.md](../../../docs/DEVELOPMENT.md) how.
+    * See [DEVELOPMENT.md](../../../../.github/DEVELOPMENT.md) how.
     * Look at `data.user.projectV2.items.hasNextPage` and pass in the `endCursor` to the next query.
     * Saved files as `output<n>.json`.
  2. Merge items:

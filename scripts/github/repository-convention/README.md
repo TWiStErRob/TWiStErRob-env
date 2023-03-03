@@ -12,4 +12,4 @@ kotlinc -script validate.main.kts <org or user> > my.output.json
 ## Development
 
 This is a Kotlin Script + GitHub GraphQL with `public_repo`, `admin:org`, `read:user` and `read:discussion` scopes.
-See [DEVELOPMENT.md](../../docs/DEVELOPMENT.md) for more information.
+See [DEVELOPMENT.md](../../../.github/DEVELOPMENT.md) for more information.
