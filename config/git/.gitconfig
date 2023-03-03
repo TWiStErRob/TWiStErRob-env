@@ -1,0 +1,30 @@
+[user]
+	name = Róbert Papp (TWiStErRob)
+	email = papp.robert.s@gmail.com
+	signingkey = p:\\secrets\\github\\github_rsa.pub
+[push]
+	default = simple
+[alias]
+	uncommit = reset HEAD^
+[core]
+	editor = 'p:\\tools\\misc\\notepad++\\notepad++.exe' -multiInst -notabbar -nosession -noPlugin
+	autocrlf = false
+	safecrlf = warn
+	#eol = lf
+[i18n]
+	commitencoding = utf-8
+[credential]
+	helper = wincred
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+[credential "helperselector"]
+	selected = wincred
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	allowedSignersFile = p:\\config\\git\\allowedSignersFile
+[safe]
+	directory = P:/
