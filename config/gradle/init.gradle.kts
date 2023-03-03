@@ -40,7 +40,7 @@ if (GradleVersion.version("6.2.2") < GradleVersion.current().baseVersion) {
 			.gradleProperties
 			.find("org.gradle.warning.mode")
 		// Last non-null of [default, prop, start] wins during Gradle initialization.
-		val actual = deprecatedFeatureHandler.warningMode
+		val actual = DEPRECATED_FEATURE_HANDLER.warningMode
 		// Overriding to All to get every warning in my face, unless the project is set up already.
 		val override = org.gradle.api.logging.configuration.WarningMode.All
 		// Note: there's no way to get the actual command line passed to the gradlew command, nor the Gradle Daemon.
@@ -58,13 +58,15 @@ if (GradleVersion.version("6.2.2") < GradleVersion.current().baseVersion) {
 					"${this@settings} has no Warning Mode specified, " +
 							"using a default fallback in init script: --warning-mode=${override.name.toLowerCase()}."
 			)
-			deprecatedFeatureHandler.warningMode = override
+			DEPRECATED_FEATURE_HANDLER.warningMode = override
 			gradle.startParameter.warningMode = override
 		}
 	}
 }
 
-val deprecatedFeatureHandler: org.gradle.internal.featurelifecycle.LoggingDeprecatedFeatureHandler
+
+@Suppress("VariableNaming")
+val DEPRECATED_FEATURE_HANDLER: org.gradle.internal.featurelifecycle.LoggingDeprecatedFeatureHandler
 	get() = org.gradle.internal.deprecation
 		.DeprecationLogger::class.java
 		.getDeclaredField("DEPRECATED_FEATURE_HANDLER")
