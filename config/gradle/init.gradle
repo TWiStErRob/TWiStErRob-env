@@ -1,0 +1,99 @@
+import org.gradle.util.GradleVersion
+
+// NB: any changes to this script require a new daemon (`gradlew --stop` or `gradlew --no-daemon <tasks>`)
+rootProject { Project rootProject -> // see https://stackoverflow.com/a/48087543/253468
+	// listen for lifecycle events on the project's plugins
+	rootProject.plugins.whenPluginAdded { Plugin plugin ->
+		// check if any Android plugin is being applied (not necessarily just 'com.android.application')
+		// this plugin is actually exactly for this purpose: to get notified
+		if (plugin.class.name == 'com.android.build.gradle.api.AndroidBasePlugin') {
+			logger.info 'Turning off `build/android-profile/profile-*.(rawproto|json)` generation.'
+			// execute the hack in the context of the buildscript, not in this initscript
+			if (gradleVersion ==~ /^[3-4]\..*/) {
+				new GroovyShell(plugin.class.classLoader).evaluate("""
+				    com.android.build.gradle.internal.profile.ProfilerInitializer.recordingBuildListener =
+				        new com.android.build.gradle.internal.profile.RecordingBuildListener(
+				            com.android.builder.profile.ProcessProfileWriter.get());
+				""")
+			}
+		}
+	}
+}
+
+if (GradleVersion.version("6.2.2") < GradleVersion.current().baseVersion) {
+	// Closure receiver: Settings, Gradle.beforeSettings { } was added in Gradle 6.0
+	// GradlePropertiesController was added in 6.2.2 https://github.com/gradle/gradle/commit/6abcc3fa4a01f276100955f0761096d705237be6
+	beforeSettings {
+		// If there's nothing set, this value would be used.
+		def defaul = new org.gradle.internal.logging.DefaultLoggingConfiguration().warningMode
+		// `--warning-mode=?` on command line (value == default if not set).
+		def start = startParameter.warningMode
+		// `-Porg.gradle.warning.mode=?` on command line, or `org.gradle.warning.mode=?` in gradle.properties.
+		def prop = services.get(org.gradle.initialization.GradlePropertiesController.class)
+			.gradleProperties.find("org.gradle.warning.mode")
+		// Last non-null of [default, prop, start] wins during Gradle initialization.
+		def actual = org.gradle.internal.deprecation.DeprecationLogger.DEPRECATED_FEATURE_HANDLER.warningMode
+		// Overriding to All to get every warning in my face, unless the project is set up already.
+		def override = org.gradle.api.logging.configuration.WarningMode.All
+		// Note: there's no way to get the actual command line passed to the gradlew command, nor the Gradle Daemon.
+		// The main() args are parsed and never stored. Checked in Gradle 7.4.2. The standard ways:
+		//  * java.lang.management.ManagementFactory.getRuntimeMXBean().inputArguments
+		//  * java.lang.ProcessHandle.current().info().commandLine()
+		// don't work either, because the Gradle Daemon process gets it the commands through a connection, not the command line.
+
+		// I only want to override the value if there's nothing explicitly set.
+		if (actual == defaul && start == defaul && prop == null) {
+			// This is not possible to detect, as the default is not null.
+			// This is a best effort to detect, it'll fail and override anyway if user explicitly launches `gradlew --warning-mode=summary`.
+			logger.lifecycle(
+					"${it} has no Warning Mode specified, " +
+							"using a default fallback in init script: --warning-mode=${override.name().toLowerCase()}."
+			)
+			org.gradle.internal.deprecation.DeprecationLogger.DEPRECATED_FEATURE_HANDLER.warningMode =
+			startParameter.warningMode = override
+		}
+	}
+}
+
+/* // comment this line to enable all this logging
+println """
+Init script: ${startParameter.allInitScripts}
+Version: ${gradleVersion}
+User home: ${gradleUserHomeDir}
+Gradle home: ${gradleHomeDir}
+"""
+//Project root: ${rootProject.rootDir}
+//Project name: ${rootProject.name}
+settingsEvaluated { Settings settings ->
+	println "settingsEvaluated ${settings}"
+}
+allprojects { Project project ->
+	println "allprojects ${project}"
+}
+rootProject { Project rootProject ->
+	println "rootProject ${rootProject}"
+	rootProject.plugins.whenPluginAdded { plugin ->
+		println "whenPluginAdded ${plugin}"
+	}
+}
+projectsLoaded { Gradle gradle ->
+	println "projectsLoaded ${gradle}"
+}
+beforeProject { Project project ->
+	println "beforeProject ${project}"
+}
+afterProject { Project project ->
+	println "afterProject ${project}"
+}
+projectsEvaluated { Gradle gradle ->
+	println "projectsEvaluated ${gradle}"
+}
+buildFinished { BuildResult buildresult ->
+	println "buildFinished ${buildresult}"
+}
+
+buildStarted { Gradle gradle ->
+	// TODO not called
+	println "buildStarted ${gradle}"
+}
+//*/
