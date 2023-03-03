@@ -22,7 +22,7 @@ $user = [ordered]@{
     ANDROID_EMULATOR_HOME = "%ANDROID_HOME%\.android\emulator"
     # DO NOT SET THIS, it messes up AVD creation in latest AS (EE).
     #ANDROID_SDK_HOME = "%ANDROID_HOME%\.android\legacy"
-    ANDROID_NDK_HOME = "%PROG_HOME_LARGE%\tools\sdk\android-ndk-r14b"
+    ANDROID_NDK_HOME = "%ANDROID_HOME%\ndk\25.1.8937393"
 
     BACKUP_DIR = "G:\My Drive\Safe"
 
@@ -46,8 +46,8 @@ $user = [ordered]@{
 
     GCLOUD_HOME = "%PROG_HOME%\tools\sdk\google-cloud-sdk"
     # set up a Gradle for global things
-    GRADLE5_HOME = "%PROG_HOME%\tools\build\gradle\gradle-5.6.4-all\ankdp27end7byghfw1q2sw75f\gradle-5.6.4"
     GRADLE7_HOME = "%PROG_HOME%\tools\build\gradle\gradle-7.6-all\9f832ih6bniajn45pbmqhk2cw\gradle-7.6"
+    GRADLE8_HOME = "%PROG_HOME%\tools\build\gradle\gradle-8.0.1-all\aro4hu1c3oeioove7l0i4i14o\gradle-8.0.1"
     GRADLE_HOME = "%GRADLE7_HOME%"
     # Global Gradle arguments to be passed to `gradle`/`gradlew`
     #-PSNAPSHOT_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2 -PRELEASE_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2
@@ -148,11 +148,17 @@ $paths = @(
         "%BUNCH_HOME%\bin",
         # Android
         "%TOOLS_HOME%\android",
+        # apkanalyzer, avdmanager, lint, retrace, sdkmanager
         "%ANDROID_HOME%\cmdline-tools\latest\bin",
-        "%ANDROID_HOME%\tools",
-        "%ANDROID_HOME%\tools\bin",
-        "%ANDROID_HOME%\platform-tools",
+        # emulator
         "%ANDROID_HOME%\emulator",
+        # emulator, monitor, android
+        "%ANDROID_HOME%\tools",
+        # uiautomatorviewer, avdmanager, lint, monkeyrunner, sdkmanager, uiautomatorviewer
+        "%ANDROID_HOME%\tools\bin",
+        # adb, fastboot, hprof-conv, sqlite3
+        "%ANDROID_HOME%\platform-tools",
+        # d8, aapt, aapt2, aidl, dexdump, zipalign, apksigner
         "%ANDROID_HOME%\build-tools\33.0.1",
         # Clouds
         "%GCLOUD_HOME%\bin",

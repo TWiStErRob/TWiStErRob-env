@@ -1,4 +1,4 @@
-function substWithLabel {
+function substWithLabel() {
     param(
         [String]$driveLetter,
         [String]$label,
@@ -8,12 +8,12 @@ function substWithLabel {
     substlabel $driveLetter $label
 }
 
-Function New-SymLink {
-    [Diagnostics.CodeAnalysis.SuppressMessage("PSUseShouldProcessForStateChangingFunctions")]
-    [Diagnostics.CodeAnalysis.SuppressMessage("PSAvoidUsingInvokeExpression")]
+Function New-SymLink() {
+    [Diagnostics.CodeAnalysis.SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "")]
+    [Diagnostics.CodeAnalysis.SuppressMessage("PSAvoidUsingInvokeExpression", "")]
     param(
-        $link,
-        $target
+        [String]$link,
+        [String]$target
     )
 
     $resolvedLink = [System.Environment]::ExpandEnvironmentVariables($link)
@@ -30,11 +30,11 @@ Function New-SymLink {
     Invoke-Expression "$command ""$link"" ""$resolvedTarget"""
 }
 
-Function Remove-SymLink {
-    [Diagnostics.CodeAnalysis.SuppressMessage("PSUseShouldProcessForStateChangingFunctions")]
-    [Diagnostics.CodeAnalysis.SuppressMessage("PSAvoidUsingInvokeExpression")]
+Function Remove-SymLink() {
+    [Diagnostics.CodeAnalysis.SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "")]
+    [Diagnostics.CodeAnalysis.SuppressMessage("PSAvoidUsingInvokeExpression", "")]
     param(
-        $link
+        [String]$link
     )
 
     $resolvedLink = Resolve-Path -LiteralPath ([System.Environment]::ExpandEnvironmentVariables($link))

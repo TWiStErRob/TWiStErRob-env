@@ -1,3 +1,3 @@
 . p:\scripts\utils.ps1
 
-New-SymLink "%USERPROFILE%\.android\debug.keystore" ".\debug.keystore"
+New-SymLink "%ANDROID_USER_HOME%\debug.keystore" ".\android\debug.keystore"
