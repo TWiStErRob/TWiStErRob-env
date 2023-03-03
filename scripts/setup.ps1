@@ -38,7 +38,7 @@ Set-Location $cwd
 . .\utils.ps1
 
 # Set autoexec.cmd for "cmd.exe" launch to support Unicode and better color/history handling.
-echo "HKLM\SOFTWARE\Microsoft\Command Processor\Autorun = ""p:\tools\misc\autoexec.cmd"""
+Write-Host "HKLM\SOFTWARE\Microsoft\Command Processor\Autorun = ""p:\tools\misc\autoexec.cmd"""
 reg add "HKLM\SOFTWARE\Microsoft\Command Processor" /v "Autorun" /d "p:\tools\misc\autoexec.cmd" /f
 
 # For subst to work from these host drives their label needs to be cleared, but they can be visually re-programmed.
@@ -49,7 +49,7 @@ Write-Host
 & .\env.ps1
 
 Write-Host
-Write-Host Setting up links...
+Write-Host "Setting up links..."
 # Expected outputs: symbolic link created for dir <<===>> path
 
 New-SymLink "P:\downloads" "%USERPROFILE%\Downloads"
@@ -64,42 +64,42 @@ New-SymLink "p:\web\twisterrob.net\root" "p:\web\twisterrob.net\000webhost.net\f
 
 New-SymLink "%ProgramFiles%\nodejs" "P:\tools\lang\nvm-1.1.5\v14.17.6"
 
-Write-Host Done with links.
+Write-Host "Done with links."
 
 Write-Host
-Write-Host Setting up config...
+Write-Host "Setting up config..."
 Push-Location $env:PROG_HOME\config
 & .\setup.ps1
 Pop-Location
-Write-Host Done with config.
+Write-Host "Done with config."
 
 Write-Host
-Write-Host Setting up tools...
+Write-Host "Setting up tools..."
 Push-Location $env:PROG_HOME\tools
 & .\setup.ps1
 Pop-Location
-Write-Host Done with tools.
+Write-Host "Done with tools."
 
 Write-Host
-Write-Host Setting up secrets...
+Write-Host "Setting up secrets..."
 Push-Location $env:PROG_HOME\secrets
 & .\setup.ps1
 Pop-Location
-Write-Host Done with secrets.
+Write-Host "Done with secrets."
 
 Write-Host
-Write-Host Setting up projects...
+Write-Host "Setting up projects..."
 Push-Location $env:PROG_HOME\projects
 & .\setup.ps1
 Pop-Location
-Write-Host Done with projects.
+Write-Host "Done with projects."
 
 Write-Host
-Write-Host Setting up vitual drives...
+Write-Host "Setting up vitual drives..."
 substWithLabel B "TODO" "TODO"
 substWithLabel D "Data" "data"
 substWithLabel T "Downloads" "$env:USERPROFILE\Downloads"
 subst
-Write-Host Done with virtual drives.
+Write-Host "Done with virtual drives."
 
 pause

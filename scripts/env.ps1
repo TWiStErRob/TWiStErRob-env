@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-Write-Host Setting up Environment Variables...
+Write-Host "Setting up Environment Variables..."
 $user = [ordered]@{
     # just for easy navigation
     HOME = "%USERPROFILE%"
@@ -23,6 +23,8 @@ $user = [ordered]@{
     # DO NOT SET THIS, it messes up AVD creation in latest AS (EE).
     #ANDROID_SDK_HOME = "%ANDROID_HOME%\.android\legacy"
     ANDROID_NDK_HOME = "%PROG_HOME_LARGE%\tools\sdk\android-ndk-r14b"
+
+    BACKUP_DIR = "G:\My Drive\Safe"
 
     # com.android.prefs.AndroidLocationsException: Several environment variables and/or system properties contain different paths to the Android Preferences folder.
     # Please correct and use only one way to inject the preference location.
@@ -181,4 +183,4 @@ foreach ($v in $user.GetEnumerator()) {
     Set-Item "env:$($v.Name)" $value
     [Environment]::SetEnvironmentVariable($v.Name, $value, "User") # or Machine
 }
-Write-Host Done with Environment Variables.
+Write-Host "Done with Environment Variables."

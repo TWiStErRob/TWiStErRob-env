@@ -8,6 +8,8 @@ function substWithLabel {
     substlabel $driveLetter $label
 }
 
+[Diagnostics.CodeAnalysis.SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "", Scope = "Function")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingInvokeExpression", "")]
 Function New-SymLink($link, $target) {
     $resolvedLink = [System.Environment]::ExpandEnvironmentVariables($link)
     $resolvedTarget = Resolve-Path -LiteralPath ([System.Environment]::ExpandEnvironmentVariables($target))
@@ -23,6 +25,8 @@ Function New-SymLink($link, $target) {
     Invoke-Expression "$command ""$link"" ""$resolvedTarget"""
 }
 
+[Diagnostics.CodeAnalysis.SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "")]
+[Diagnostics.CodeAnalysis.SuppressMessage("PSAvoidUsingInvokeExpression", "")]
 Function Remove-SymLink($link) {
     $resolvedLink = Resolve-Path -LiteralPath ([System.Environment]::ExpandEnvironmentVariables($link))
     Write-Host "Unlinking ""$link"" (""$resolvedLink"")"
