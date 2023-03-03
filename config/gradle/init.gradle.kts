@@ -40,30 +40,31 @@ if (GradleVersion.version("6.2.2") < GradleVersion.current().baseVersion) {
 			.gradleProperties
 			.find("org.gradle.warning.mode")
 		// Last non-null of [default, prop, start] wins during Gradle initialization.
-		val actual = DEPRECATED_FEATURE_HANDLER.warningMode
+		val actual = deprecatedFeatureHandler.warningMode
 		// Overriding to All to get every warning in my face, unless the project is set up already.
 		val override = org.gradle.api.logging.configuration.WarningMode.All
 		// Note: there's no way to get the actual command line passed to the gradlew command, nor the Gradle Daemon.
 		// The main() args are parsed and never stored. Checked in Gradle 7.4.2. The standard ways:
 		//  * java.lang.management.ManagementFactory.getRuntimeMXBean().inputArguments
 		//  * java.lang.ProcessHandle.current().info().commandLine()
-		// don't work either, because the Gradle Daemon process gets it the commands through a connection, not the command line.
+		// don't work either,
+		// because the Gradle Daemon process gets it the commands through a connection, not the command line.
 
 		// I only want to override the value if there's nothing explicitly set.
 		if (actual == defaul && start == defaul && prop == null) {
-			// This is not possible to detect, as the default is not null.
-			// This is a best effort to detect, it'll fail and override anyway if user explicitly launches `gradlew --warning-mode=summary`.
+			// This is not possible to detect, as the default is not null, using a best effort implementation:
+			// it'll fail and override anyway if user explicitly launches `gradlew --warning-mode=summary`.
 			logger.lifecycle(
 					"${this@settings} has no Warning Mode specified, " +
 							"using a default fallback in init script: --warning-mode=${override.name.toLowerCase()}."
 			)
-			DEPRECATED_FEATURE_HANDLER.warningMode = override
+			deprecatedFeatureHandler.warningMode = override
 			gradle.startParameter.warningMode = override
 		}
 	}
 }
 
-val DEPRECATED_FEATURE_HANDLER: org.gradle.internal.featurelifecycle.LoggingDeprecatedFeatureHandler
+val deprecatedFeatureHandler: org.gradle.internal.featurelifecycle.LoggingDeprecatedFeatureHandler
 	get() = org.gradle.internal.deprecation
 		.DeprecationLogger::class.java
 		.getDeclaredField("DEPRECATED_FEATURE_HANDLER")
