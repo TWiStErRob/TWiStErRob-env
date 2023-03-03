@@ -55,6 +55,16 @@ if (GradleVersion.version("6.2.2") < GradleVersion.current().baseVersion) {
 	}
 }
 
+if (GradleVersion.version("6.0") < GradleVersion.current().baseVersion) {
+	gradle.beforeSettings {
+		it.buildCache {
+			local {
+				removeUnusedEntriesAfterDays = 365
+			}
+		}
+	}
+}
+
 /* // comment this line to enable all this logging
 println """
 Init script: ${startParameter.allInitScripts}
