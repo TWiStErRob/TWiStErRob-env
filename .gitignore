@@ -1,1 +1,9 @@
-/.idea/
+# Ignore everything to make sure no unintended files are added.
+# Use `git add ... -f` to track files.
+/*/
+!/scripts/
+/scripts/.idea/
+/scripts/temp/
+
+# dir: `<SYMLINKD> downloads [C:\Users\TWiStEr\Downloads]` is not a directory.
+/downloads
