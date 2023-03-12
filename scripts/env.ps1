@@ -53,7 +53,7 @@ $user = [ordered]@{
     #-PSNAPSHOT_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2 -PRELEASE_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2
     GRADLE_ARGS = "--stacktrace"
     # Global Gradle JVM options, JAVA_OPTS would also work, but that probably conflicts with other programs (maven?)
-    GRADLE_OPTS = "-Xmx512M"
+    GRADLE_OPTS = "-Xmx512M -Djdk.tls.client.protocols=TLSv1.2"
     # relocate Gradle directory from ~/.gradle
     GRADLE_USER_HOME = "%PROG_HOME_LARGE%\caches\gradle"
     HEROKU_HOME = "%PROG_HOME%\tools\vcs\heroku"
