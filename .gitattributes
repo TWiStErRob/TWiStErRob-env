@@ -6,6 +6,8 @@
 *.bat text eol=crlf
 # Powershell allows both CRLF and LF, but since it's cross-platform, use the Unix ending.
 *.ps1 text eol=lf
+# Visual Basic Scripts for Windows.
+*.vbs text eol=crlf
 
 ###### Total Commander files
 # Need to be CRLF because, tcmd will re-write these files when changed.
