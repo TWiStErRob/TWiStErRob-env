@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
 	val groups = parseGroups(inputFile)
 	val trees = buildTrees(groups)
 	process(trees)
-	println(DOT.renderTrees(trees))
+	println(DOT().renderTrees(trees))
 }
 
 fun parseGroups(inputFile: File): List<List<File>> =
@@ -48,7 +48,7 @@ fun process(node: Node) {
 	}
 }
 
-object Text {
+class Text {
 
 	fun renderTrees(trees: Map<File, Tree>): String =
 		trees.entries.joinToString("\n\n") { it.key.toString() + ": " + renderTree(it.value.root) }
@@ -64,8 +64,10 @@ object Text {
 		}
 }
 
-object DOT {
+class DOT {
 
+	private val renderedRelations: MutableSet<Pair<Node, Node>> = mutableSetOf()
+	
 	private fun id(file: File): String =
 		escapedString(file.absolutePath)
 
@@ -85,8 +87,10 @@ object DOT {
 	 * }
 	 * ```
 	 */
-	fun renderTrees(trees: Map<File, Tree>): String =
-		renderTree(trees.values.single())
+	fun renderTrees(trees: Map<File, Tree>): String {
+		renderedRelations.clear()
+		return renderTree(trees.values.single())
+	}
 
 	private fun renderTree(tree: Tree): String =
 		buildString {
@@ -101,10 +105,12 @@ object DOT {
 			renderTree(child)
 			renderEdge(node, child)
 		}
-		node.related
-			.map { related -> node.realNode to related.realNode }
-			.distinct()
-			.forEach { (from, to) -> renderRelated(from, to) }
+		if (node.related.size > 2) {
+			node.related
+				.map { related -> node.realNode to related.realNode }
+				.distinct()
+				.forEach { (from, to) -> renderRelated(from, to) }
+		}
 	}
 
 	private val Node.realNode: Node
@@ -129,12 +135,15 @@ object DOT {
 	}
 
 	private fun StringBuilder.renderRelated(from: Node, to: Node) {
+		if ((from to to) in renderedRelations) return
+		if ((to to from) in renderedRelations) return
 		append("  ")
 		append(id(from.entry))
 		append(" -> ")
 		append(id(to.entry))
 		append("[constraint=false, arrowhead = none, style = dashed]")
 		append(";\n")
+		renderedRelations.add(from to to)
 	}
 }
 
