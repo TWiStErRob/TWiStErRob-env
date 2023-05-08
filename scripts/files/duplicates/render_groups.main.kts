@@ -12,7 +12,8 @@ fun main(args: Array<String>) {
 	val inputFile = File(args[0])
 	val groups = parseGroups(inputFile)
 	val trees = buildTrees(groups)
-	process(trees)
+	liftRelations(trees)
+	trimRelations(trees)
 	println(DOT().renderTrees(trees))
 }
 
@@ -35,17 +36,28 @@ fun buildTrees(groups: List<List<File>>): Map<File, Tree> {
 	return trees
 }
 
-fun process(trees: Map<File, Tree>) {
-	trees.values.forEach { process(it.root) }
+fun liftRelations(trees: Map<File, Tree>) {
+	trees.values.forEach { liftRelations(it.root) }
 }
 
-fun process(node: Node) {
-	node.children.forEach(::process)
-	if (node.children.isNotEmpty() && node.children.all { it.entry.isFile }) {
-		node.children.flatMap { it.related }.forEach { it.related.add(node) }
-		node.related.addAll(node.children.flatMap { it.related })
-		node.children.clear()
+fun liftRelations(node: Node) {
+	node.children.forEach(::liftRelations)
+	val children = node.children.filter { it.entry.isFile }
+	children.flatMap { it.related }.forEach { it.related.add(node) }
+	node.related.addAll(children.flatMap { it.related })
+	node.children.removeAll(children.toSet())
+}
+
+fun trimRelations(trees: Map<File, Tree>) {
+	trees.values.forEach { trimRelations(it.root) }
+}
+
+fun trimRelations(node: Node) {
+	node.children.forEach(::trimRelations)
+	node.children.removeIf { child ->
+		child.related.size in 1..12
 	}
+	node.children.removeIf { it.children.isEmpty() && it.related.isEmpty() }
 }
 
 class Text {
@@ -105,12 +117,10 @@ class DOT {
 			renderTree(child)
 			renderEdge(node, child)
 		}
-		if (node.related.size > 2) {
-			node.related
-				.map { related -> node.realNode to related.realNode }
-				.distinct()
-				.forEach { (from, to) -> renderRelated(from, to) }
-		}
+		node.related
+			.map { related -> node.realNode to related.realNode }
+			.distinct()
+			.forEach { (from, to) -> renderRelated(from, to) }
 	}
 
 	private val Node.realNode: Node
