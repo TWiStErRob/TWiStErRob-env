@@ -41,14 +41,9 @@ fun process(trees: Map<File, Tree>) {
 
 fun process(node: Node) {
 	node.children.forEach(::process)
-	if (node.children.all { it.entry.isFile }) {
-		node.children.forEach { child ->
-			child.related.forEach {
-				it.related.remove(child)
-				it.related.add(node)
-			}
-		}
-		node.related.addAll(node.children.flatMap { it.related }.mapNotNull { it.parent })
+	if (node.children.isNotEmpty() && node.children.all { it.entry.isFile }) {
+		node.children.flatMap { it.related }.forEach { it.related.add(node) }
+		node.related.addAll(node.children.flatMap { it.related })
 		node.children.clear()
 	}
 }
@@ -106,10 +101,16 @@ object DOT {
 			renderTree(child)
 			renderEdge(node, child)
 		}
-		node.related.forEach { related ->
-			renderRelated(node, related)
-		}
+		node.related
+			.map { related -> node.realNode to related.realNode }
+			.distinct()
+			.forEach { (from, to) -> renderRelated(from, to) }
 	}
+
+	private val Node.realNode: Node
+		get() = generateSequence(this) {
+			if (it.parent?.children?.contains(it) == true) null else it.parent
+		}.last()
 
 	private fun StringBuilder.renderNode(node: Node) {
 		append("  ")
@@ -142,7 +143,11 @@ class Node(
 	var parent: Node? = null,
 	val children: MutableSet<Node> = mutableSetOf(),
 	val related: MutableSet<Node> = mutableSetOf(),
-)
+) {
+
+	override fun toString(): String =
+		entry.toString()
+}
 
 class Tree(root: File) {
 
