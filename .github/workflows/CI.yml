@@ -16,6 +16,22 @@ env:
 
 jobs:
 
+
+  files-duplicates:
+    name: "🔨 Build / Files / Duplicates"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Compile .main.kts."
+        working-directory: scripts/files/duplicates
+        run: >
+          kotlinc
+          match_groups.main.kts
+          render_groups.main.kts
+
   git-merged-branches:
     name: "🔨 Build / GIT / Merged Branches"
     runs-on: ubuntu-latest
