@@ -12,6 +12,7 @@ fun main(args: Array<String>) {
 	val inputFile = File(args[0])
 	val groups = parseGroups(inputFile)
 	val trees = buildTrees(groups)
+	process(trees)
 	println(DOT.renderTrees(trees))
 }
 
@@ -32,6 +33,24 @@ fun buildTrees(groups: List<List<File>>): Map<File, Tree> {
 		}
 	}
 	return trees
+}
+
+fun process(trees: Map<File, Tree>) {
+	trees.values.forEach { process(it.root) }
+}
+
+fun process(node: Node) {
+	node.children.forEach(::process)
+	if (node.children.all { it.entry.isFile }) {
+		node.children.forEach { child ->
+			child.related.forEach {
+				it.related.remove(child)
+				it.related.add(node)
+			}
+		}
+		node.related.addAll(node.children.flatMap { it.related }.mapNotNull { it.parent })
+		node.children.clear()
+	}
 }
 
 object Text {
@@ -120,6 +139,7 @@ object DOT {
 
 class Node(
 	val entry: File,
+	var parent: Node? = null,
 	val children: MutableSet<Node> = mutableSetOf(),
 	val related: MutableSet<Node> = mutableSetOf(),
 )
@@ -133,7 +153,7 @@ class Tree(root: File) {
 		var node = root
 		path.forEach { pathPart ->
 			node = node.children.singleOrNull { it.entry == pathPart }
-				?: Node(pathPart).also { node.children.add(it) }
+				?: Node(pathPart, node).also { node.children.add(it) }
 		}
 		return node
 	}
