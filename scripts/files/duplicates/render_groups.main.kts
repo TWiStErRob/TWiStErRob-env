@@ -107,6 +107,8 @@ class DOT {
 	private fun renderTree(tree: Tree): String =
 		buildString {
 			append("digraph ${id(tree.root.entry)} {\n")
+			// Ensure that relations are not going roundabout the whole graph, use straight lines only.
+			append("  graph [splines=\"line\"];\n")
 			renderTree(tree.root)
 			append("}\n")
 		}
