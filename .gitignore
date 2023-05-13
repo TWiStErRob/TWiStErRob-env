@@ -1,1 +1,4 @@
 /.idea/
+
+# Ignore temporary folders.
+temp/
