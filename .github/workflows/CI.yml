@@ -78,7 +78,7 @@ jobs:
           notion-import-csv.main.kts
           notion-import-dev-summit.main.kts
           notion-import-droidcon.main.kts
-          siliconmilkroundabout-2022-november/companies-attending.main.kts
+          siliconmilkroundabout/companies-attending.main.kts
 
 
   notion-move-to-property:
