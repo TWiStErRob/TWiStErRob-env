@@ -358,3 +358,34 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ github.workspace }}/shellcheck.sarif
+
+
+  psscriptanalyzer:
+    name: "🔍 Static Checks / PSScriptAnalyzer"
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v3
+
+      - name: "Run PSScriptAnalyzer."
+        uses: microsoft/psscriptanalyzer-action@v1.1
+        with:
+          path: ${{ github.workspace }}\
+          recurse: true
+          output: PSScriptAnalyzer.sarif
+          # Not a yaml array, used directly inside a PowerShell array @(...) when invoking analyzer.
+          excludeRule: '"PSAvoidUsingWriteHost"'
+
+      - name: "Upload 'PSScriptAnalyzer Results' artifact."
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'PSScriptAnalyzer Results'
+          path: ${{ github.workspace }}/PSScriptAnalyzer.*
+
+      - name: "Publish 'Code scanning results / PSScriptAnalyzer'."
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ github.workspace }}/PSScriptAnalyzer.sarif
