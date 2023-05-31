@@ -61,6 +61,7 @@ $user = [ordered]@{
     # NodeJS / NPM / NVM
     NODE_HOME = "%ProgramFiles%\nodejs"
     NPM_CONFIG_CACHE = "%PROG_HOME%\caches\npm"
+    NPM_CONFIG_USERCONFIG = "%PROG_HOME%\config\npm\user.npmrc"
     NVM_HOME = "%PROG_HOME%\tools\lang\nvm-1.1.5"
     NVM_SYMLINK = "%NODE_HOME%"
     NODE_ENV = "development"
