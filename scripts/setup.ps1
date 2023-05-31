@@ -42,8 +42,10 @@ Write-Host "HKLM\SOFTWARE\Microsoft\Command Processor\Autorun = ""p:\tools\misc\
 reg add "HKLM\SOFTWARE\Microsoft\Command Processor" /v "Autorun" /d "p:\tools\misc\autoexec.cmd" /f
 
 # For subst to work from these host drives their label needs to be cleared, but they can be visually re-programmed.
-substlabel C "System"
-substlabel P "Prog"
+substlabel C "512-3 System"
+substlabel P "512-4 Prog"
+substlabel X "1000-2 Data"
+substlabel Z "1000-1 Caches"
 
 Write-Host
 & .\env.ps1
@@ -96,8 +98,8 @@ Write-Host "Done with projects."
 
 Write-Host
 Write-Host "Setting up vitual drives..."
-substWithLabel B "TODO" "TODO"
-substWithLabel D "Data" "data"
+#substWithLabel B "TODO" "TODO"
+#substWithLabel D "Data" "data"
 substWithLabel T "Downloads" "$env:USERPROFILE\Downloads"
 subst
 Write-Host "Done with virtual drives."
