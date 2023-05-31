@@ -1,0 +1,17 @@
+<project>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>twisterrob-local-ftp</id>
+			<url>ftp://localhost/maven</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>2.10</version>
+			</extension>
+		</extensions>
+	</build>
+</project>

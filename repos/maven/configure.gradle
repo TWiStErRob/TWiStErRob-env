@@ -1,0 +1,39 @@
+import org.gradle.util.GradleVersion
+
+project.afterEvaluate {
+	if (!project.hasProperty('release')) { // -Prelease to build a release version
+		version += '-SNAPSHOT'
+	}
+}
+
+if (GradleVersion.current() < GradleVersion.version("6.0")) {
+	apply plugin: 'maven'
+	uploadArchives.repositories.mavenDeployer {
+		configuration = configurations.create('deployerJars')
+		configuration.dependencies.add dependencies.create('org.apache.maven.wagon:wagon-ftp:2.2')
+		repository(url: 'ftp://localhost/maven') {
+			authentication(userName: 'maven', password: '')
+		}
+	}
+} else {
+	apply plugin: 'maven-publish'
+	publishing {
+		repositories {
+			mavenLocal {
+				name = "maven"
+				url = file("p:\\repos\\maven").toURI()
+			}
+	//		maven {
+	//			name = "repos"
+	//			url = "sftp://localhost:22/maven"
+	//			credentials {
+	//				username "maven"
+	//				password ""
+	//			}
+	//		}
+		}
+	}
+	tasks.withType(GenerateModuleMetadata) {
+        enabled = false
+    }
+}
