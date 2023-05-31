@@ -92,7 +92,8 @@ $user = [ordered]@{
     JDK_9 = "%JAVA9_HOME%"
 
     KOTLIN_HOME = "%PROG_HOME%\tools\lang\kotlin-1.7.10"
-    KONAN_DATA_DIR = "Z:\caches\konan"
+    KOTLIN_MAIN_KTS_COMPILED_SCRIPTS_CACHE_DIR = "%PROG_HOME_LARGE%\caches\kotlin\main.kts.compiled.cache"
+    KONAN_DATA_DIR = "Z:\caches\kotlin\konan"
     RUBY_HOME = "%PROG_HOME%\tools\lang\ruby-2.5.3-x64-msys64"
     # likely Ruby 2.6.x default, use for previous versions
     RUBYOPT = "-Eutf-8"
