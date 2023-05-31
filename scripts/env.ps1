@@ -78,7 +78,7 @@ $user = [ordered]@{
     JAVA17_HOME = "%PROG_HOME%\tools\lang\java-17.0.5-x64-jdk"
     JAVA19_HOME = "%PROG_HOME%\tools\lang\java-19.0.1-x64-jdk"
     # for gradlew, mvn
-    JAVA_HOME = "%JAVA11_HOME%"
+    JAVA_HOME = "%JAVA17_HOME%"
     # Global Java settings for random `java` executions
     # (unofficial version: _JAVA_OPTIONS, but that doesn't allow -Xmx1G to be used from command line)
     # -Xmx to minimize 1/4 memory usage (8G out of 32G)
@@ -116,6 +116,7 @@ $user = [ordered]@{
     IDEA_JDK="%PROG_HOME%\tools\ide\idea\jbr"
     IDEA_PROPERTIES="%PROG_HOME%\config\intellij\idea\idea.properties"
     IDEA_VM_OPTIONS="%PROG_HOME%\config\intellij\idea\idea64.vmoptions"
+    STUDIO_JDK="%PROG_HOME%\tools\ide\android-studio\jbr"
     STUDIO_PROPERTIES="%PROG_HOME%\config\intellij\android\studio.properties"
     STUDIO_VM_OPTIONS="%PROG_HOME%\config\intellij\android\studio64.vmoptions"
 
