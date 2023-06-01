@@ -54,9 +54,12 @@ if (GradleVersion.version("6.2.2") < GradleVersion.current().baseVersion) {
 		if (actual == defaul && start == defaul && prop == null) {
 			// This is not possible to detect, as the default is not null, using a best effort implementation:
 			// it'll fail and override anyway if user explicitly launches `gradlew --warning-mode=summary`.
+			// Deprecated in Kotlin 1.5, starting from Gradle 8.0; for compatibility older, keeping the old method call.
+			@Suppress("DEPRECATION")
+			val overrideName = override.name.toLowerCase()
 			logger.lifecycle(
 					"${this@settings} has no Warning Mode specified, " +
-							"using a default fallback in init script: --warning-mode=${override.name.toLowerCase()}."
+							"using a default fallback in init script: --warning-mode=$overrideName."
 			)
 			DEPRECATED_FEATURE_HANDLER.warningMode = override
 			gradle.startParameter.warningMode = override
