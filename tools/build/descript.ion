@@ -1,3 +1,5 @@
 apache-maven-3.1.0 env.MVN_HOME
 proguard-5.2.1 https://sourceforge.net/projects/proguard/files/proguard/5.2/proguard5.2.1.zip/download
 gradle Linked to GRADLE_USER_HOME/wrapper/dists
+apache-maven-3.9.2-bin.zip https://dlcdn.apache.org/maven/maven-3/3.9.2/binaries/apache-maven-3.9.2-bin.zip
+apache-maven-3.9.2-src.zip https://dlcdn.apache.org/maven/maven-3/3.9.2/source/apache-maven-3.9.2-src.zip
