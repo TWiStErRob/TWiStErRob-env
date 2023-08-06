@@ -20,7 +20,14 @@ $user = [ordered]@{
     ANDROID_AVD_HOME = "%ANDROID_HOME%\.android\avd"
     ANDROID_USER_HOME = "%ANDROID_HOME%\.android\user"
     ANDROID_EMULATOR_HOME = "%ANDROID_HOME%\.android\emulator"
-    ANDROID_PREFS_ROOT = "%ANDROID_HOME%\.android\settings"
+    # DO NOT SET THIS, it conflicts inside AGP
+    # > com.android.prefs.AndroidLocationsException: Several environment variables and/or system properties contain different paths to the Android Preferences folder.
+    # > Please correct and use only one way to inject the preference location.
+    # > - ANDROID_PREFS_ROOT(environment variable): Z:\tools\sdk\android\.android\settings
+    # > - ANDROID_USER_HOME(environment variable): Z:\tools\sdk\android\.android\user
+    # > It is recommended to use ANDROID_USER_HOME as other methods are deprecated
+    # > at com.android.prefs.PathLocator.singlePathOf(AbstractAndroidLocations.kt:310)
+    #ANDROID_PREFS_ROOT = "%ANDROID_HOME%\.android\settings"
     # DO NOT SET THIS, it messes up AVD creation in latest AS (EE).
     #ANDROID_SDK_HOME = "%ANDROID_HOME%\.android\legacy"
     ANDROID_NDK_HOME = "%ANDROID_HOME%\ndk\25.1.8937393"
