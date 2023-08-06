@@ -20,6 +20,7 @@ $user = [ordered]@{
     ANDROID_AVD_HOME = "%ANDROID_HOME%\.android\avd"
     ANDROID_USER_HOME = "%ANDROID_HOME%\.android\user"
     ANDROID_EMULATOR_HOME = "%ANDROID_HOME%\.android\emulator"
+    ANDROID_PREFS_ROOT = "%ANDROID_HOME%\.android\settings"
     # DO NOT SET THIS, it messes up AVD creation in latest AS (EE).
     #ANDROID_SDK_HOME = "%ANDROID_HOME%\.android\legacy"
     ANDROID_NDK_HOME = "%ANDROID_HOME%\ndk\25.1.8937393"
