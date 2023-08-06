@@ -78,6 +78,7 @@ $user = [ordered]@{
     # 17+ is fine licence-wise
     JAVA17_HOME = "%PROG_HOME%\tools\lang\java-17.0.5-x64-jdk"
     JAVA19_HOME = "%PROG_HOME%\tools\lang\java-19.0.1-x64-jdk"
+    JAVA20_HOME = "%PROG_HOME%\tools\lang\java-20.0.2-x64-jdk"
     # for gradlew, mvn
     JAVA_HOME = "%JAVA17_HOME%"
     # Global Java settings for random `java` executions
