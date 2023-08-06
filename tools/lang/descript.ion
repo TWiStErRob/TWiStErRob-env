@@ -39,4 +39,6 @@ java-11.0.2-x64-zulu zulu11.52.13-ca-jdk11.0.13-win_x64.zip from https://www.azu
 java-19.0.1-x64-jdk https://download.oracle.com/java/19/latest/jdk-19_windows-x64_bin.zip
 java-17.0.5-x64-jdk https://download.oracle.com/java/17/latest/jdk-17_windows-x64_bin.zip
 python-3.11.1-embed-amd64 https://www.python.org/ftp/python/3.11.1/python-3.11.1-embed-amd64.zip
-python-3.11.1-amd64 https://www.python.org/ftp/python/3.11.1/python-3.11.1-amd64.exe\n\nInstalled, copied, uninstall, deleted all __pycache__ folders, ran `python -m pip install --upgrade --force-reinstall pip`Â
+python-3.11.1-amd64 https://www.python.org/ftp/python/3.11.1/python-3.11.1-amd64.exe\n\nInstalled, copied, uninstall, deleted all __pycache__ folders, ran `python -m pip install --upgrade --force-reinstall pip`
+ruby-2.7.8-x64-mingw32 https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.8-1/rubyinstaller-2.7.8-1-x64.7z
+java-20.0.2-x64-jdk https://download.oracle.com/java/20/latest/jdk-20_windows-x64_bin.zip
