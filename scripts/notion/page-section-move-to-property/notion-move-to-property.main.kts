@@ -3,7 +3,7 @@
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
 @file:DependsOn("com.github.seratch:notion-sdk-jvm-core:1.7.2")
-@file:DependsOn("com.github.seratch:notion-sdk-jvm-okhttp4:1.7.2")
+@file:DependsOn("com.github.seratch:notion-sdk-jvm-okhttp4:1.9.0")
 
 import notion.api.v1.NotionClient
 import notion.api.v1.http.OkHttp4Client
