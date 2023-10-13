@@ -3,8 +3,8 @@
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
 // TODEL https://youtrack.jetbrains.com/issue/KT-47384 cannot use kotlinx-serialization...
-@file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
-@file:DependsOn("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0")
+@file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
+@file:DependsOn("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.3")
 @file:DependsOn("com.github.seratch:notion-sdk-jvm-core:1.9.0")
 @file:DependsOn("com.github.seratch:notion-sdk-jvm-okhttp4:1.9.0")
 
