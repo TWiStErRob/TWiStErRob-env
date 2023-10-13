@@ -272,7 +272,7 @@ jobs:
 
       - name: "Run detekt."
         env:
-          DETEKT_VERSION: '1.22.0'
+          DETEKT_VERSION: '1.23.1'
         run: |
           curl --silent --show-error --location --remote-name \
               https://github.com/detekt/detekt/releases/download/v${DETEKT_VERSION?}/detekt-cli-${DETEKT_VERSION?}.zip
@@ -331,7 +331,7 @@ jobs:
         if: success() || failure()
         env:
           # Use https://github.com/psastras/sarif-rs
-          SHELLCHECK_SARIF_VERSION: '0.3.5'
+          SHELLCHECK_SARIF_VERSION: '0.4.2'
         run: |
           curl --silent --show-error --location --remote-name \
               "https://github.com/psastras/sarif-rs/releases/download/shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}/shellcheck-sarif-x86_64-unknown-linux-gnu"
@@ -346,7 +346,7 @@ jobs:
         if: success() || failure()
         env:
           # Use https://github.com/psastras/sarif-rs
-          SARIF_FMT_VERSION: '0.3.5'
+          SARIF_FMT_VERSION: '0.4.2'
         run: |
           curl --silent --show-error --location --remote-name \
               "https://github.com/psastras/sarif-rs/releases/download/sarif-fmt-v${SARIF_FMT_VERSION?}/sarif-fmt-x86_64-unknown-linux-gnu"
