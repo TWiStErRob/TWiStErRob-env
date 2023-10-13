@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/git/merged-branches
@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/project-manage-draft-issues
@@ -48,7 +48,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/repository-convention
@@ -61,7 +61,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/user-contribs
@@ -77,7 +77,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/notion/import-data
@@ -95,7 +95,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/notion/page-section-move-to-property
@@ -108,7 +108,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Prepare test data."
         working-directory: scripts/special/pst-maildir-imap
@@ -172,7 +172,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Create test repository."
         working-directory: scripts/special/svn2git-migration
@@ -268,7 +268,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Run detekt."
         env:
@@ -308,7 +308,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Run shellcheck."
         env:
@@ -374,7 +374,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Run PSScriptAnalyzer."
         uses: microsoft/psscriptanalyzer-action@v1.1
