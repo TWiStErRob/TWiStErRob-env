@@ -43,3 +43,4 @@ python-3.11.1-amd64 https://www.python.org/ftp/python/3.11.1/python-3.11.1-amd64
 ruby-2.7.8-x64-mingw32 https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.8-1/rubyinstaller-2.7.8-1-x64.7z
 java-20.0.2-x64-jdk https://download.oracle.com/java/20/latest/jdk-20_windows-x64_bin.zip
 nvm-1.1.11 https://github.com/coreybutler/nvm-windows/releases/download/1.1.11/nvm-noinstall.zip
+kotlin-1.9.10 https://github.com/JetBrains/kotlin/releases/download/v1.9.10/kotlin-compiler-1.9.10.zip
