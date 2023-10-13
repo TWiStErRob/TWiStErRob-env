@@ -1,6 +1,8 @@
 ## Data gathering
 
-1. https://www.siliconmilkroundabout.com/api/companies-attending?event_id=23
+1. Open https://www.siliconmilkroundabout.com/companies and search `var app_config`,
+   it'll have `event_id:`. Use that to save `companies-attending_event_id=<event_id>.json` from:  
+   https://www.siliconmilkroundabout.com/api/companies-attending?event_id=<event_id>
     ```json5
     //...,
     {
@@ -23,7 +25,7 @@
     ```shell
     jq ".[].companyid" "companies-attending_event_id=23.json" > data/urls.txt
     ```
-3. Search: `\d+` and Replace:  
+3. Search: `\d+` and Replace in `data/urls.txt`:  
     ```
     https://www.siliconmilkroundabout.com/api/get/jobs?id=$0
     https://www.siliconmilkroundabout.com/api/get/company/social?id=$0
@@ -58,10 +60,15 @@
     ```
 6. Interpretation  
    See [`Mappings` in kts](companies-attending.main.kts).
-7. Conversion + create structure in Notion.  
-   See [`main` in kts](companies-attending.main.kts)
-8. Import:
+   Review `val Mappings.attending` based on `companies-attending.json`'s `attending` fields.
+7. Convert to table (csv).  
+   See [`main` in kts](companies-attending.main.kts).
    ```shell
-   kotlinc -script notion-import-csv.main.kts 3b67125767d645e6afc742cfcb93740f siliconmilkroundabout-2022-november/companies-attending.csv
-   kotlinc -script notion-import-csv.main.kts a632ce36b32f4d898b90b2720300e301 siliconmilkroundabout-2022-november/companies-attending-jobs.csv
+   kotlinc -script companies-attending.main.kts
+   ```
+8. Import to Notion:
+   Create two databases in Notion with the properties as listed in the CSV files.
+   ```shell
+   kotlinc -script notion-import-csv.main.kts <database-id1> companies-attending.csv
+   kotlinc -script notion-import-csv.main.kts <database-id2> companies-attending-jobs.csv
    ```

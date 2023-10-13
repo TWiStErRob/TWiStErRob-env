@@ -28,7 +28,7 @@ fun main(vararg args: String) {
 	companies
 		.map { c ->
 			println("Processing ${c.companyid}: ${c.name}")
-			val social: Social.SocialUrls = jsonMapper.readValue<List<Social>>(File("data/social\uF03Fid=${c.companyid}.json"))
+			val social: Social.SocialUrls = jsonMapper.readValue<List<Social>>(File("data/social\uF03Fid=${c.companyid}"))
 				.map { it.social_urls.clean() }
 				.single()
 			val socials =
@@ -36,8 +36,7 @@ fun main(vararg args: String) {
 			val stands = c.stand_numbers.joinToString(",")
 			val jobtags = c.jobtags
 				.filter { it.approved }
-				.takeIf { it.size < 90 }
-				.let { it ?: emptyList<Company.JobTag>().also { println("Too many tags for ${c.companyid}") } }
+				.distinct()
 				.joinToString(",") { it.name.trim() }
 			val attending = c.attending
 				.filterValues { it }
@@ -58,7 +57,7 @@ fun main(vararg args: String) {
 		.let { File("companies-attending.csv").writeText(it) }
 	companies
 		.flatMap { c ->
-			val jobs: List<Job> = jsonMapper.readValue(File("data/jobs\uF03Fid=${c.companyid}.json"))
+			val jobs: List<Job> = jsonMapper.readValue(File("data/jobs\uF03Fid=${c.companyid}"))
 			jobs.map { j ->
 				println("Processing ${c.companyid}: ${c.name} - ${j.id}: ${j.title}")
 				val cat = Mappings.jobRoleName[j.primary_category_tag_id] ?: "Unknown ${j.primary_category_tag_id}"
@@ -185,7 +184,7 @@ data class Job(
 	val hybrid: Boolean,
 	val bonus: Boolean,
 	val equity: Boolean,
-	val job_type: String,
+	val job_type: String?,
 	val job_location: String,
 	val tags: String,
 )
@@ -214,7 +213,8 @@ object Mappings {
 	 * jq -s "[.[][].job_type] | unique | sort" jobs*.json
 	 * ```
 	 */
-	val jobTypes: Map<String, String> = mapOf(
+	val jobTypes: Map<String?, String> = mapOf(
+		null to "Unknown",
 		"contract" to "Contract",
 		"full_time" to "Full-time",
 		"part_time" to "Part-time",
@@ -312,8 +312,10 @@ object Mappings {
 	 * ```
 	 */
 	val attending: Map<Int, String> = mapOf(
-		65 to "Saturday",
-		66 to "Sunday",
-		67 to "Nextgen",
+		65 to "Saturday", // 2022 November
+		66 to "Sunday", // 2022 November
+		67 to "Nextgen", // 2022 November
+		68 to "Saturday", // 2023 May
+		69 to "Sunday", // 2023 May
 	)
 }
