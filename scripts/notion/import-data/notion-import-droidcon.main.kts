@@ -169,9 +169,9 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speak
 	val newPages = newSpeakersNames.associateWith { speakerName ->
 		val details = speakerDetails.getValue(speakerName)
 		val (company, role) = when {
-			"""( at |@|, )""".toRegex().findAll(details.tagLine).count() > 1 -> {
+			"""( at |@|, )""".toRegex().findAll(details.tagLine).count() > 1 ->
 				null to details.tagLine
-			}
+
 			" at " in details.tagLine -> {
 				val (role, company) = details.tagLine.split(" at ")
 				company.trim() to role.trim()
@@ -184,9 +184,8 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speak
 				val (role, company) = details.tagLine.split("@")
 				company.trim() to role.trim()
 			}
-			else -> {
+			else ->
 				null to details.tagLine
-			}
 		}
 		fun Speaker.link(linkType: String): PageProperty? =
 			this.links.singleOrNull { it.linkType == linkType }?.let { PageProperty(url = it.url) }

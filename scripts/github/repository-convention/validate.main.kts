@@ -179,17 +179,15 @@ fun JsonArray.adorn(source: JsonObject): JsonArray =
 			when (target.getString("op")) {
 				JsonPatch.Operation.REPLACE.operationName(),
 				JsonPatch.Operation.REMOVE.operationName(),
-				-> {
+				->
 					Json.createObjectBuilder(target)
 						.remove("value") // Remove and re-add so "original" is inserted before.
 						.add("original", source.getValue(target.getString("path")))
 						.run { if (target.containsKey("value")) add("value", target["value"]) else this }
 						.build()
-				}
 
-				else -> {
+				else ->
 					target
-				}
 			}
 		}
 
