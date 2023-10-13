@@ -3,9 +3,17 @@ on:
   push:
     branches:
       - '**'
+
 concurrency:
   group: ${{ github.ref == 'refs/heads/main' && format('ci-map-main-{0}', github.sha) || format('ci-map-{0}', github.ref) }}
   cancel-in-progress: true
+
+env:
+  # -Xallow-any-scripts-in-source-roots: https://youtrack.jetbrains.com/issue/KT-62575
+  # -Werror: be strict
+  # -progressive: use latest features
+  KOTLINC: kotlinc -Xallow-any-scripts-in-source-roots -Werror -progressive
+
 jobs:
 
   git-merged-branches:
@@ -18,10 +26,7 @@ jobs:
 
       - name: "Compile .main.kts."
         working-directory: scripts/git/merged-branches
-        run: |
-          ls -la
-          kotlinc -version
-          kotlinc find-merged-branches.main.kts
+        run: $KOTLINC find-merged-branches.main.kts
 
 
   github-draft-issues:
@@ -34,7 +39,7 @@ jobs:
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/project-manage-draft-issues
-        run: kotlinc manage-draft-issues.main.kts
+        run: $KOTLINC manage-draft-issues.main.kts
 
 
   github-repository-convention:
@@ -47,7 +52,7 @@ jobs:
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/repository-convention
-        run: kotlinc validate.main.kts
+        run: $KOTLINC validate.main.kts
 
 
   github-user-contribs:
@@ -61,7 +66,7 @@ jobs:
       - name: "Compile .main.kts."
         working-directory: scripts/github/user-contribs
         run: >
-          kotlinc
+          $KOTLINC
           get.main.kts
           summarize.main.kts
 
@@ -77,7 +82,7 @@ jobs:
       - name: "Compile .main.kts."
         working-directory: scripts/notion/import-data
         run: >
-          kotlinc
+          $KOTLINC
           notion-import-csv.main.kts
           notion-import-dev-summit.main.kts
           notion-import-droidcon.main.kts
@@ -94,7 +99,7 @@ jobs:
 
       - name: "Compile .main.kts."
         working-directory: scripts/notion/page-section-move-to-property
-        run: kotlinc notion-move-to-property.main.kts
+        run: $KOTLINC notion-move-to-property.main.kts
 
 
   pst-maildir:
