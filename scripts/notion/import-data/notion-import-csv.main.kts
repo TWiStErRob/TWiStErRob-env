@@ -238,15 +238,14 @@ fun String.parseReferencedIds(pages: List<Page>): List<String> {
 		// 0123456789abcdef0123456789abcdef
 		// 0123456789abcdef0123456789abcdef,0123456789abcdef0123456789abcdef
 		// https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef,https://www.notion.so/Page-Title-0123456789abcdef0123456789abcdef
-		this.matches("""^((https://www.notion.so/([^,]*)-)?[0-9a-f]{32},?)+$""".toRegex()) -> {
+		this.matches("""^((https://www.notion.so/([^,]*)-)?[0-9a-f]{32},?)+$""".toRegex()) ->
 			this.split(",").map { it.trim().takeLast(32) }
-		}
-		pages.any { it.title == this } -> {
+
+		pages.any { it.title == this } ->
 			listOf(findPage(this).id)
-		}
-		else -> {
+
+		else ->
 			this.split(",").map { findPage(it).id }
-		}
 	}
 }
 
@@ -309,22 +308,20 @@ fun Database.property(name: String): DatabaseProperty? {
 	val prop = properties[name]
 	val special = name == "icon"
 	return when {
-		prop == null && special -> {
+		prop == null && special ->
 			null
-		}
-		prop == null && !special -> {
+
+		prop == null && !special ->
 			error(
 				"No property named '${name}' in database, pick one of ${properties.keys}.\n" +
 						"If the column you're missing is a Relation, make sure the referenced Database also has the Connection."
 			)
-		}
-		prop != null && special -> {
-			error("Property name '${name}' is reserved for special use.")
-		}
 
-		else -> {
+		prop != null && special ->
+			error("Property name '${name}' is reserved for special use.")
+
+		else ->
 			prop
-		}
 	}
 }
 
