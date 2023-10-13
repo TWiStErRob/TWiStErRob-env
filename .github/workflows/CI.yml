@@ -18,7 +18,10 @@ jobs:
 
       - name: "Compile .main.kts."
         working-directory: scripts/git/merged-branches
-        run: kotlinc find-merged-branches.main.kts
+        run: |
+          ls -la
+          kotlinc -version
+          kotlinc find-merged-branches.main.kts
 
 
   github-draft-issues:
