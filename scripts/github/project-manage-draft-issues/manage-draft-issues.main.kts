@@ -2,11 +2,11 @@
 // Note: normally these dependencies are listed without a -jvm suffix,
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
-@file:DependsOn("io.ktor:ktor-client-java-jvm:2.1.2")
-@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:2.1.2")
-@file:DependsOn("io.ktor:ktor-client-logging-jvm:2.1.2")
-@file:DependsOn("io.ktor:ktor-client-auth-jvm:2.1.2")
-@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.1.2")
+@file:DependsOn("io.ktor:ktor-client-java-jvm:2.1.3")
+@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:2.1.3")
+@file:DependsOn("io.ktor:ktor-client-logging-jvm:2.1.3")
+@file:DependsOn("io.ktor:ktor-client-auth-jvm:2.1.3")
+@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.1.3")
 @file:DependsOn("com.jayway.jsonpath:json-path:2.7.0")
 
 import Manage_draft_issues_main.GitHubDAO.FieldType
