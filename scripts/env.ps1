@@ -7,8 +7,6 @@ $user = [ordered]@{
     # base for programming stuff
     PROG_HOME="P:"
     PROG_HOME_LARGE="Z:"
-    # needed for my gradle plugin
-    RELEASE_HOME = "%PROG_HOME%\repos\release"
     # command line utility collection
     TOOLS_HOME = "%PROG_HOME%\tools\misc"
     GIT_HOME = "%PROG_HOME%\tools\vcs\git"
