@@ -25,6 +25,8 @@ I have a complex environment setup on Windows, this repository shall contain thi
  * [Notion](scripts/notion)
    * [import-data](scripts/notion/import-data) Import data from JSON and CSV into Notion Databases.
    * [move-to-property](scripts/notion/page-section-move-to-property) Move a page section to a property of the page.
+ * [Google](scripts/google)
+   * [gmail-play-reviews](scripts/google/gmail-play-reviews) Load reviews from emails.
 
 ## License
 Unlicense, see [.github/LICENSE](.github/LICENSE).
