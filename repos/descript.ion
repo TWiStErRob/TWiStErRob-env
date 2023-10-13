@@ -1,0 +1,1 @@
+maven mklink p:\tools\xampp\htdocs\maven p:\repos\maven && echo it is available as http://localhost/maven/

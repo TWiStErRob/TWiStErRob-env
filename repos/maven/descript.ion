@@ -1,0 +1,2 @@
+configure.gradle in build.gradle: apply from: 'http://localhost/maven/configure.gradle'
+settings.xml mklink c:\Users\TWiStEr\.m2\settings.xml p:\repos\maven\settings.xml

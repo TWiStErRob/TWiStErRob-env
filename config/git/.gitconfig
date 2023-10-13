@@ -1,13 +1,27 @@
 [user]
-	name = Róbert Papp (TWiStErRob)
+	name = RÃ³bert Papp (TWiStErRob)
 	email = papp.robert.s@gmail.com
-	signingkey = p:\\secrets\\github\\github_rsa.pub
-[push]
-	default = simple
+	signingkey = P:\\secrets\\github\\github_rsa.pub
+
 [alias]
 	uncommit = reset HEAD^
+	pushf = push --force-with-lease --force-if-includes
+	tagcommit = rev-list -n 1
+
+[fetch]
+	prune = true
+[pull]
+	rebase = true
+	ff = only
+[rebase]
+	autoSquash = true
+	autoStash = false
+	missingCommitsCheck = warn
+[push]
+	default = simple
+
 [core]
-	editor = 'p:\\tools\\misc\\notepad++\\notepad++.exe' -multiInst -notabbar -nosession -noPlugin
+	editor = 'P:\\tools\\misc\\notepad++\\notepad++.exe' -multiInst -notabbar -nosession -noPlugin
 	autocrlf = false
 	safecrlf = warn
 	#eol = lf
@@ -25,6 +39,6 @@
 [gpg]
 	format = ssh
 [gpg "ssh"]
-	allowedSignersFile = p:\\config\\git\\allowedSignersFile
+	allowedSignersFile = P:\\config\\git\\allowedSignersFile
 [safe]
 	directory = P:/

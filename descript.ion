@@ -1,1 +1,2 @@
 .gradle Prevent creating .gradle folder, let's see what fails.
+tmp Prevent creating tmp folder, let's see what fails.

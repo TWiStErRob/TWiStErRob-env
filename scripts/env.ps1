@@ -7,8 +7,6 @@ $user = [ordered]@{
     # base for programming stuff
     PROG_HOME="P:"
     PROG_HOME_LARGE="Z:"
-    # needed for my gradle plugin
-    RELEASE_HOME = "%PROG_HOME%\repos\release"
     # command line utility collection
     TOOLS_HOME = "%PROG_HOME%\tools\misc"
     GIT_HOME = "%PROG_HOME%\tools\vcs\git"
@@ -20,6 +18,14 @@ $user = [ordered]@{
     ANDROID_AVD_HOME = "%ANDROID_HOME%\.android\avd"
     ANDROID_USER_HOME = "%ANDROID_HOME%\.android\user"
     ANDROID_EMULATOR_HOME = "%ANDROID_HOME%\.android\emulator"
+    # DO NOT SET THIS, it conflicts inside AGP
+    # > com.android.prefs.AndroidLocationsException: Several environment variables and/or system properties contain different paths to the Android Preferences folder.
+    # > Please correct and use only one way to inject the preference location.
+    # > - ANDROID_PREFS_ROOT(environment variable): Z:\tools\sdk\android\.android\settings
+    # > - ANDROID_USER_HOME(environment variable): Z:\tools\sdk\android\.android\user
+    # > It is recommended to use ANDROID_USER_HOME as other methods are deprecated
+    # > at com.android.prefs.PathLocator.singlePathOf(AbstractAndroidLocations.kt:310)
+    #ANDROID_PREFS_ROOT = "%ANDROID_HOME%\.android\settings"
     # DO NOT SET THIS, it messes up AVD creation in latest AS (EE).
     #ANDROID_SDK_HOME = "%ANDROID_HOME%\.android\legacy"
     ANDROID_NDK_HOME = "%ANDROID_HOME%\ndk\25.1.8937393"
@@ -53,17 +59,19 @@ $user = [ordered]@{
     #-PSNAPSHOT_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2 -PRELEASE_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2
     GRADLE_ARGS = "--stacktrace"
     # Global Gradle JVM options, JAVA_OPTS would also work, but that probably conflicts with other programs (maven?)
-    GRADLE_OPTS = "-Xmx512M"
+    GRADLE_OPTS = "-Xmx512M -Djdk.tls.client.protocols=TLSv1.2"
     # relocate Gradle directory from ~/.gradle
     GRADLE_USER_HOME = "%PROG_HOME_LARGE%\caches\gradle"
-    HEROKU_HOME = "%PROG_HOME%\tools\vcs\heroku"
     MVN_HOME = "%PROG_HOME%\tools\build\apache-maven-3.8.6"
     # NodeJS / NPM / NVM
     NODE_HOME = "%ProgramFiles%\nodejs"
     NPM_CONFIG_CACHE = "%PROG_HOME%\caches\npm"
-    NVM_HOME = "%PROG_HOME%\tools\lang\nvm-1.1.5"
+    NPM_CONFIG_USERCONFIG = "%PROG_HOME%\config\npm\user.npmrc"
+    NVM_HOME = "%PROG_HOME%\tools\lang\nvm-1.1.11"
     NVM_SYMLINK = "%NODE_HOME%"
     NODE_ENV = "development"
+    # Heroku -- must be after NODE_HOME because it overrides node.exe
+    HEROKU_HOME = "%PROG_HOME%\tools\vcs\heroku"
 
     JAVA5_HOME = "%PROG_HOME%\tools\lang\java-1.5.0_22-x64-jdk"
     JAVA6_HOME = "%PROG_HOME%\tools\lang\java-1.6.0_45-x64-jdk"
@@ -77,8 +85,9 @@ $user = [ordered]@{
     # 17+ is fine licence-wise
     JAVA17_HOME = "%PROG_HOME%\tools\lang\java-17.0.5-x64-jdk"
     JAVA19_HOME = "%PROG_HOME%\tools\lang\java-19.0.1-x64-jdk"
+    JAVA20_HOME = "%PROG_HOME%\tools\lang\java-20.0.2-x64-jdk"
     # for gradlew, mvn
-    JAVA_HOME = "%JAVA11_HOME%"
+    JAVA_HOME = "%JAVA17_HOME%"
     # Global Java settings for random `java` executions
     # (unofficial version: _JAVA_OPTIONS, but that doesn't allow -Xmx1G to be used from command line)
     # -Xmx to minimize 1/4 memory usage (8G out of 32G)
@@ -91,9 +100,10 @@ $user = [ordered]@{
     JDK_18 = "%JAVA8_HOME%"
     JDK_9 = "%JAVA9_HOME%"
 
-    KOTLIN_HOME = "%PROG_HOME%\tools\lang\kotlin-1.7.10"
-    KONAN_DATA_DIR = "Z:\caches\konan"
-    RUBY_HOME = "%PROG_HOME%\tools\lang\ruby-2.5.3-x64-msys64"
+    KOTLIN_HOME = "%PROG_HOME%\tools\lang\kotlin-1.9.10"
+    KOTLIN_MAIN_KTS_COMPILED_SCRIPTS_CACHE_DIR = "%PROG_HOME_LARGE%\caches\kotlin\main.kts.compiled.cache"
+    KONAN_DATA_DIR = "Z:\caches\kotlin\konan"
+    RUBY_HOME = "%PROG_HOME%\tools\lang\ruby-2.7.8-x64-mingw32"
     # likely Ruby 2.6.x default, use for previous versions
     RUBYOPT = "-Eutf-8"
 
@@ -115,6 +125,7 @@ $user = [ordered]@{
     IDEA_JDK="%PROG_HOME%\tools\ide\idea\jbr"
     IDEA_PROPERTIES="%PROG_HOME%\config\intellij\idea\idea.properties"
     IDEA_VM_OPTIONS="%PROG_HOME%\config\intellij\idea\idea64.vmoptions"
+    STUDIO_JDK="%PROG_HOME%\tools\ide\android-studio\jbr"
     STUDIO_PROPERTIES="%PROG_HOME%\config\intellij\android\studio.properties"
     STUDIO_VM_OPTIONS="%PROG_HOME%\config\intellij\android\studio64.vmoptions"
 

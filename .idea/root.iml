@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://P:">
+      <excludeFolder url="file://P:/.git" />
+      <excludeFolder url="file://P:/.github" />
+      <excludeFolder url="file://P:/.idea" />
+      <excludeFolder url="file://P:/backups" />
+      <excludeFolder url="file://P:/caches" />
+      <excludeFolder url="file://P:/config" />
+      <excludeFolder url="file://P:/data" />
+      <excludeFolder url="file://P:/downloads" />
+      <excludeFolder url="file://P:/global" />
+      <excludeFolder url="file://P:/projects" />
+      <excludeFolder url="file://P:/repos" />
+      <excludeFolder url="file://P:/scripts" />
+      <excludeFolder url="file://P:/secrets" />
+      <excludeFolder url="file://P:/temp" />
+      <excludeFolder url="file://P:/tools" />
+      <excludeFolder url="file://P:/web" />
+      <excludeFolder url="file://P:/TODO_nobackup" />
+      <excludeFolder url="file://P:/TODO_prog" />
+      <excludeFolder url="file://P:/System Volume Information" />
+      <excludeFolder url="file://P:/$RECYCLE.BIN" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
