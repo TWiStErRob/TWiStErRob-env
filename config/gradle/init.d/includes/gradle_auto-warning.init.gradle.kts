@@ -34,7 +34,9 @@ gradle.beforeSettings settings@{ // this: Settings
 		val overrideName = override.name.toLowerCase()
 		logger.lifecycle(
 			"${this@settings} has no Warning Mode specified, " +
-					"using a default fallback in init script: --warning-mode=$overrideName, adjust gradle.properties:\n\torg.gradle.warning.mode=fail\n\torg.gradle.jvmargs=-Dorg.gradle.deprecation.trace=true"
+					"using a default fallback in init script: --warning-mode=$overrideName, adjust gradle.properties:\n" +
+					"\torg.gradle.warning.mode=fail\n" +
+					"\torg.gradle.jvmargs=-Dorg.gradle.deprecation.trace=true"
 		)
 		DEPRECATED_FEATURE_HANDLER.warningMode = override
 		gradle.startParameter.warningMode = override
