@@ -7,7 +7,7 @@
 @file:DependsOn("io.ktor:ktor-client-logging-jvm:2.1.2")
 @file:DependsOn("io.ktor:ktor-client-auth-jvm:2.1.2")
 @file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.1.2")
-@file:DependsOn("com.jayway.jsonpath:json-path:2.7.0")
+@file:DependsOn("com.jayway.jsonpath:json-path:2.8.0")
 
 import Manage_draft_issues_main.GitHubDAO.FieldType
 import Manage_draft_issues_main.GitHubDAO.ProjectItemField
