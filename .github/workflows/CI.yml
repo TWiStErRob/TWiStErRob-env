@@ -3,9 +3,17 @@ on:
   push:
     branches:
       - '**'
+
 concurrency:
-  group: ${{ github.ref == 'refs/heads/master' && format('ci-map-master-{0}', github.sha) || format('ci-map-{0}', github.ref) }}
+  group: ${{ github.ref == 'refs/heads/main' && format('ci-map-main-{0}', github.sha) || format('ci-map-{0}', github.ref) }}
   cancel-in-progress: true
+
+env:
+  # -Xallow-any-scripts-in-source-roots: https://youtrack.jetbrains.com/issue/KT-62575
+  # -Werror: be strict
+  # -progressive: use latest features
+  KOTLINC: kotlinc -Xallow-any-scripts-in-source-roots -Werror -progressive
+
 jobs:
 
   git-merged-branches:
@@ -18,7 +26,7 @@ jobs:
 
       - name: "Compile .main.kts."
         working-directory: scripts/git/merged-branches
-        run: kotlinc find-merged-branches.main.kts
+        run: $KOTLINC find-merged-branches.main.kts
 
 
   github-draft-issues:
@@ -31,7 +39,7 @@ jobs:
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/project-manage-draft-issues
-        run: kotlinc manage-draft-issues.main.kts
+        run: $KOTLINC manage-draft-issues.main.kts
 
 
   github-repository-convention:
@@ -44,7 +52,7 @@ jobs:
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/repository-convention
-        run: kotlinc validate.main.kts
+        run: $KOTLINC validate.main.kts
 
 
   github-user-contribs:
@@ -58,7 +66,7 @@ jobs:
       - name: "Compile .main.kts."
         working-directory: scripts/github/user-contribs
         run: >
-          kotlinc
+          $KOTLINC
           get.main.kts
           summarize.main.kts
 
@@ -74,11 +82,11 @@ jobs:
       - name: "Compile .main.kts."
         working-directory: scripts/notion/import-data
         run: >
-          kotlinc
+          $KOTLINC
           notion-import-csv.main.kts
           notion-import-dev-summit.main.kts
           notion-import-droidcon.main.kts
-          siliconmilkroundabout-2022-november/companies-attending.main.kts
+          siliconmilkroundabout/companies-attending.main.kts
 
 
   notion-move-to-property:
@@ -91,7 +99,7 @@ jobs:
 
       - name: "Compile .main.kts."
         working-directory: scripts/notion/page-section-move-to-property
-        run: kotlinc notion-move-to-property.main.kts
+        run: $KOTLINC notion-move-to-property.main.kts
 
 
   pst-maildir:
@@ -264,7 +272,7 @@ jobs:
 
       - name: "Run detekt."
         env:
-          DETEKT_VERSION: '1.22.0'
+          DETEKT_VERSION: '1.23.1'
         run: |
           curl --silent --show-error --location --remote-name \
               https://github.com/detekt/detekt/releases/download/v${DETEKT_VERSION?}/detekt-cli-${DETEKT_VERSION?}.zip
@@ -323,7 +331,7 @@ jobs:
         if: success() || failure()
         env:
           # Use https://github.com/psastras/sarif-rs
-          SHELLCHECK_SARIF_VERSION: '0.3.5'
+          SHELLCHECK_SARIF_VERSION: '0.4.2'
         run: |
           curl --silent --show-error --location --remote-name \
               "https://github.com/psastras/sarif-rs/releases/download/shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}/shellcheck-sarif-x86_64-unknown-linux-gnu"
@@ -338,7 +346,7 @@ jobs:
         if: success() || failure()
         env:
           # Use https://github.com/psastras/sarif-rs
-          SARIF_FMT_VERSION: '0.3.5'
+          SARIF_FMT_VERSION: '0.4.2'
         run: |
           curl --silent --show-error --location --remote-name \
               "https://github.com/psastras/sarif-rs/releases/download/sarif-fmt-v${SARIF_FMT_VERSION?}/sarif-fmt-x86_64-unknown-linux-gnu"

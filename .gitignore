@@ -5,5 +5,8 @@
 /scripts/.idea/
 /scripts/temp/
 
+# Ignore temporary folders.
+temp/
+
 # dir: `<SYMLINKD> downloads [C:\Users\TWiStEr\Downloads]` is not a directory.
 /downloads
