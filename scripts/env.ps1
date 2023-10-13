@@ -64,15 +64,16 @@ $user = [ordered]@{
     GRADLE_OPTS = "-Xmx512M -Djdk.tls.client.protocols=TLSv1.2"
     # relocate Gradle directory from ~/.gradle
     GRADLE_USER_HOME = "%PROG_HOME_LARGE%\caches\gradle"
-    HEROKU_HOME = "%PROG_HOME%\tools\vcs\heroku"
     MVN_HOME = "%PROG_HOME%\tools\build\apache-maven-3.8.6"
     # NodeJS / NPM / NVM
     NODE_HOME = "%ProgramFiles%\nodejs"
     NPM_CONFIG_CACHE = "%PROG_HOME%\caches\npm"
     NPM_CONFIG_USERCONFIG = "%PROG_HOME%\config\npm\user.npmrc"
-    NVM_HOME = "%PROG_HOME%\tools\lang\nvm-1.1.5"
+    NVM_HOME = "%PROG_HOME%\tools\lang\nvm-1.1.11"
     NVM_SYMLINK = "%NODE_HOME%"
     NODE_ENV = "development"
+    # Heroku -- must be after NODE_HOME because it overrides node.exe
+    HEROKU_HOME = "%PROG_HOME%\tools\vcs\heroku"
 
     JAVA5_HOME = "%PROG_HOME%\tools\lang\java-1.5.0_22-x64-jdk"
     JAVA6_HOME = "%PROG_HOME%\tools\lang\java-1.6.0_45-x64-jdk"
