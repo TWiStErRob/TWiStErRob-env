@@ -10,7 +10,7 @@ if (GradleVersion.current() < GradleVersion.version("6.0")) {
 	apply plugin: 'maven'
 	uploadArchives.repositories.mavenDeployer {
 		configuration = configurations.create('deployerJars')
-		configuration.dependencies.add dependencies.create('org.apache.maven.wagon:wagon-ftp:2.12')
+		configuration.dependencies.add dependencies.create('org.apache.maven.wagon:wagon-ftp:3.5.3')
 		repository(url: 'ftp://localhost/maven') {
 			authentication(userName: 'maven', password: '')
 		}
