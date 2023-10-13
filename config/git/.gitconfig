@@ -6,6 +6,7 @@
 [alias]
 	uncommit = reset HEAD^
 	pushf = push --force-with-lease --force-if-includes
+	tagcommit = rev-list -n 1
 
 [fetch]
 	prune = true
