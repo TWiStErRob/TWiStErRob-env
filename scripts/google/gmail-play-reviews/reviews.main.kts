@@ -20,6 +20,7 @@ import com.google.api.services.gmail.Gmail
 import com.google.api.services.gmail.GmailScopes
 import com.google.api.services.gmail.model.Message
 import java.io.File
+import java.io.PrintWriter
 
 main()
 
@@ -33,27 +34,42 @@ fun main() {
 		.build()
 
 	val userId = "me"
+	val messages = service.loadMessages(userId)
+	val reviews = parse(messages).toList()
+	File("reviews-from-gmail.csv").printWriter().use { output ->
+		save(reviews, output)
+	}
+}
 
-	val messages = service
+fun Gmail.loadMessages(userId: String): Sequence<Message> {
+	/** 2016-2019 */
+	val noReply = "noreply-play-developer-console@google.com"
+
+	/** 2019-2023 */
+	val noDashReply = "no-reply-play-developer-console@google.com"
+	val subjectPrefix = "A user has written a new review for"
+
+	return this
 		.users()
 		.messages()
 		.list(userId)
-		// 2016-2019: noreply, 2019-2023: no-reply
-		.setQ("from:(noreply-play-developer-console@google.com OR no-reply-play-developer-console@google.com) subject:\"A user has written a new review for\" ")
+		.setQ("from:(${noReply} OR ${noDashReply}) subject:\"${subjectPrefix}\"")
 		.setMaxResults(1000)
 		.execute()
 		.messages
-	println("Messages: ${messages.size}")
-
-	val reviews = messages
+		.also { println("Messages: ${it.size}") }
 		.asSequence()
 		.map { message ->
-			service
+			this
 				.users()
 				.messages()
 				.get(userId, message.id)
 				.execute()
 		}
+}
+
+fun parse(messages: Sequence<Message>): Sequence<Pair<ParsedMessage, Review>> =
+	messages
 		.map { message -> message.parse() }
 		.map { message -> message to runCatching { message.asReview() } }
 		.onEach { println(it.second) }
@@ -72,20 +88,18 @@ fun main() {
 				},
 			)
 		}
-		.toList()
 
-	File("reviews-from-gmail.csv").printWriter().use { output ->
-		reviews.forEach { (message, review) ->
-			output.printf(
-				"%s,\"%s\",%s,%s,%d,\"%s\"\n",
-				review.app,
-				review.date,
-				review.id,
-				message.id,
-				review.stars,
-				review.text.replace("\"", "\"\"")
-			)
-		}
+fun save(reviews: List<Pair<ParsedMessage, Review>>, output: PrintWriter) {
+	reviews.forEach { (message, review) ->
+		output.printf(
+			"%s,\"%s\",%s,%s,%d,\"%s\"\n",
+			review.app,
+			review.date,
+			review.id,
+			message.id,
+			review.stars,
+			review.text.replace("\"", "\"\"")
+		)
 	}
 }
 
@@ -126,8 +140,8 @@ data class Review(
 fun ParsedMessage.asReview(): Review {
 	val newReviewId = Regex("""<https://play\.google\.com/console/.*\?reviewId=([0-9a-f-]+)&corpus=PUBLIC_REVIEWS>""")
 		.find(bodyPlain)?.groupValues?.get(1)
-	val newOldReviewId =
-		Regex("""<https://play\.google\.com/console/.*\?reviewId=(gp:[a-zA-Z0-9_-]+)&corpus=PUBLIC_REVIEWS(&donotshowonboarding)?>""")
+	@Suppress("MaxLineLength")
+	val newOldReviewId = Regex("""<https://play\.google\.com/console/.*\?reviewId=(gp:[a-zA-Z0-9_-]+)&corpus=PUBLIC_REVIEWS(&donotshowonboarding)?>""")
 			.find(bodyPlain)?.groupValues?.get(1)
 	val oldReviewId = Regex("""<https://play\.google\.com/apps/publish.*&reviewid=(gp:[a-zA-Z0-9_-]+)>""")
 		.find(bodyPlain)?.groupValues?.get(1)
