@@ -273,7 +273,7 @@ jobs:
       - name: "Run Gradle build."
         working-directory: config/gradle/init.d/test
         env:
-          GRADLE_USER_HOME: config/gradle
+          GRADLE_USER_HOME: ${{ github.workspace }}/config/gradle
         run: |
           ./gradlew
 
