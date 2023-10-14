@@ -6,7 +6,7 @@
 @file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.3")
 @file:DependsOn("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.3")
 @file:DependsOn("com.github.seratch:notion-sdk-jvm-core:1.7.2")
-@file:DependsOn("com.github.seratch:notion-sdk-jvm-okhttp4:1.7.2")
+@file:DependsOn("com.github.seratch:notion-sdk-jvm-okhttp4:1.9.0")
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
