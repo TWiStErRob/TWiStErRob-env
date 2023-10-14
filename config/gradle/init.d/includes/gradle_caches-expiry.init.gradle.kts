@@ -6,7 +6,7 @@
 
 gradle.beforeSettings {
 	caches {
-		releasedWrappers { setRemoveUnusedEntriesAfterDays(3 * 365) }
+		releasedWrapper { setRemoveUnusedEntriesAfterDays(3 * 365) }
 		snapshotWrappers { setRemoveUnusedEntriesAfterDays(180) }
 		downloadedResources { setRemoveUnusedEntriesAfterDays(365) }
 		createdResources { setRemoveUnusedEntriesAfterDays(365) }
