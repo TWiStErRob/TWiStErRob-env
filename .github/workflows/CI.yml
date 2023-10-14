@@ -102,6 +102,19 @@ jobs:
         run: $KOTLINC notion-move-to-property.main.kts
 
 
+  lastpass2google:
+    name: "🔨 Build / Special / LastPass 2 Google migration"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v4
+
+      - name: "Compile .main.kts."
+        working-directory: scripts/special/lastpass2google-migration
+        run: $KOTLINC pass.main.kts
+
+
   pst-maildir:
     name:  "🔨 Build & Check / PST to Maildir migration"
     runs-on: ubuntu-latest
