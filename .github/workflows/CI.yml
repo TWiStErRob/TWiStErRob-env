@@ -70,6 +70,19 @@ jobs:
           get.main.kts
           summarize.main.kts
 
+  
+  google-play-reviews:
+    name: "🔨 Build / Google / GMail / Google Play Store reviews"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v4
+
+      - name: "Compile .main.kts."
+        working-directory: scripts/google/gmail-play-reviews
+        run: $KOTLINC reviews.main.kts
+
 
   notion-import-data:
     name: "🔨 Build / Notion / Import Data"
@@ -100,6 +113,19 @@ jobs:
       - name: "Compile .main.kts."
         working-directory: scripts/notion/page-section-move-to-property
         run: $KOTLINC notion-move-to-property.main.kts
+
+
+  lastpass2google:
+    name: "🔨 Build / Special / LastPass 2 Google migration"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v4
+
+      - name: "Compile .main.kts."
+        working-directory: scripts/special/lastpass2google-migration
+        run: $KOTLINC pass.main.kts
 
 
   pst-maildir:
