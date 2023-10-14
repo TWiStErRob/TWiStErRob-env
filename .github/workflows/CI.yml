@@ -262,6 +262,22 @@ jobs:
           path: ${{ github.workspace }}/scripts/special/svn2git-migration/workdir/
 
 
+  gradle-init:
+    name:  "🔨 Build / Gradle init scripts"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v4
+
+      - name: "Run Gradle build."
+        working-directory: config/gradle/init.d/test
+        env:
+          GRADLE_USER_HOME: ${{ github.workspace }}/config/gradle
+        run: |
+          ./gradlew
+
+
   detekt:
     name: "🔍 Static Checks / Detekt"
     runs-on: ubuntu-latest
