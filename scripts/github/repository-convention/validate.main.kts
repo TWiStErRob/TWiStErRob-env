@@ -2,14 +2,14 @@
 // Note: normally these dependencies are listed without a -jvm suffix,
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
-@file:DependsOn("javax.json:javax.json-api:1.1.2")
-@file:DependsOn("org.glassfish:javax.json:1.1.2")
-@file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.0")
-@file:DependsOn("io.ktor:ktor-client-java-jvm:2.1.2")
-@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:2.1.2")
-@file:DependsOn("io.ktor:ktor-client-logging-jvm:2.1.2")
-@file:DependsOn("io.ktor:ktor-client-auth-jvm:2.1.2")
-@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.1.2")
+@file:DependsOn("javax.json:javax.json-api:1.1.4")
+@file:DependsOn("org.glassfish:javax.json:1.1.4")
+@file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.9.1")
+@file:DependsOn("io.ktor:ktor-client-java-jvm:2.3.5")
+@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:2.3.5")
+@file:DependsOn("io.ktor:ktor-client-logging-jvm:2.3.5")
+@file:DependsOn("io.ktor:ktor-client-auth-jvm:2.3.5")
+@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.3.5")
 @file:DependsOn("tech.tablesaw:tablesaw-core:0.43.1")
 
 import Validate_main.JsonX.asSafeString
