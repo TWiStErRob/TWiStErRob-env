@@ -23,12 +23,12 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/files/duplicates
         run: >
-          kotlinc
+          $KOTLINC
           match_groups.main.kts
           render_groups.main.kts
 
