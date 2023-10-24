@@ -44,3 +44,4 @@ ruby-2.7.8-x64-mingw32 https://github.com/oneclick/rubyinstaller2/releases/downl
 java-20.0.2-x64-jdk https://download.oracle.com/java/20/latest/jdk-20_windows-x64_bin.zip
 nvm-1.1.11 https://github.com/coreybutler/nvm-windows/releases/download/1.1.11/nvm-noinstall.zip
 kotlin-1.9.10 https://github.com/JetBrains/kotlin/releases/download/v1.9.10/kotlin-compiler-1.9.10.zip
+java-21.0.1-x64-openjdk https://jdk.java.net/21/ -> https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-21.0.1_windows-x64_bin.zip
