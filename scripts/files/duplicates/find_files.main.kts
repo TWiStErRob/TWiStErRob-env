@@ -29,7 +29,7 @@ fun main(args: Array<String>) {
 		candidates.find { candidate ->
 			try {
 				IOUtils.contentEquals(file.inputStream(), candidate.inputStream())
-			} catch (ex: Throwable) {
+			} catch (ex: IOException) {
 				throw IOException("Cannot process ${candidate} vs ${file}", ex)
 			}
 		}
