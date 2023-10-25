@@ -1,0 +1,25 @@
+create repository www.twisterrob.net-jobs.git
+end repository
+
+match /Web/www.twisterrob.net/_jobs/
+	# r1724 is the folder creation with some basic (safe) data.
+	min revision 1724
+	repository www.twisterrob.net-jobs.git
+	branch master
+	# Removed in r1731, moved in https://github.com/TWiStErRob/twisterrob.github.io/issues/27
+    max revision 1730
+	prefix /
+end match
+
+match /Web/www.twisterrob.net/sources/jobs/
+	# r1731 is the commit where contents of _jobs were moved here.
+    min revision 1731
+	repository www.twisterrob.net-jobs.git
+	# Removed in r3376, moved in https://github.com/TWiStErRob/twisterrob.github.io/issues/27
+    max revision 3375
+	branch master
+	# This will ensure that the contents will be continuously committed in the root of the repo.
+	prefix /
+end match
+
+include ignore.rules

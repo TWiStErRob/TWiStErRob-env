@@ -6,7 +6,7 @@ match /Web/Tests/
 	# Created in r2645.
 	min revision 2645
 	# Last changed in r2656.
-	# Removed in r3304.
+	# Removed in r3304, moved in https://github.com/TWiStErRob/net.twisterrob.healthcheck/issues/11
 	max revision 2656
 	repository net.twisterrob.healthcheck.git
 	branch master

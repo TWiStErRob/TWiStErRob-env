@@ -12,30 +12,13 @@ git pull -r
 
 cd svn2git
 docker build -t svn2git . # 2-4 minutes, ~200 MB download, 641MB space
-
-cd ..
-docker build -t svn2git-work . # 1-2 minutes, ~30 MB download, 715MB space
 ```
-
-<details><summary>GPG error: KEYEXPIRED</summary>
-
-If `svn2git` image building fails with:
-```
-W: GPG error: http://deb.debian.org jessie-updates InRelease: The following signatures were invalid: KEYEXPIRED 1668891673
-W: GPG error: http://deb.debian.org jessie Release: The following signatures were invalid: KEYEXPIRED 1668891673
-WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts.
-E: There are problems and -y was used without --force-yes
-```
-Edit `Dockerfile`: replace `debian:8.11` with `debian:buster`.
-(Buster is a newer version of Debian, and the last one that has `libqt4-dev` package.)
-
-</details>
 
 ## Run bash inside Docker
 Run on host in `.`:
 ```bash
 set SVN_REPO=P:\repos\svn
-docker run --rm -it -v %CD%\conf:/tmp/conf -v %CD%\workdir:/workdir -v %SVN_REPO%:/tmp/svn svn2git-work bash
+docker run --rm -it -v %CD%\conf:/tmp/conf -v %CD%\workdir:/workdir -v %SVN_REPO%:/tmp/svn svn2git bash
 ```
 
 ## Repo content cleanup
