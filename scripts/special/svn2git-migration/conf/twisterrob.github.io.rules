@@ -1,0 +1,39 @@
+create repository twisterrob.github.io.git
+end repository
+
+match /Web/www.twisterrob.net/_jobs/
+	# r1724 is the folder creation with some basic (safe) data.
+	min revision 1724
+	repository twisterrob.github.io.git
+	# r1729 is the first commit that contains not safe data.
+	max revision 1728
+	branch master
+	prefix /_jobs/
+end match
+
+match /Web/www.twisterrob.net/_jobs/
+	# r1729 is the first commit that contains not safe data.
+	min revision 1729
+	# r1731 is the commit where contents were moved, from here on *.md is svn:ignore'd.
+	max revision 1731
+	action ignore
+end match
+
+match /Web/www.twisterrob.net/sources/jobs/
+	# r1731 is the commit where contents of _jobs were moved here.
+	min revision 1731
+	action ignore
+end match
+
+match /Web/www.twisterrob.net/
+	# r1721 is the folder creation (empty) and r1722 is the initial import based on feeling-responsive.
+	min revision 1721
+	repository twisterrob.github.io.git
+	# Removed in r3376, moved in https://github.com/TWiStErRob/twisterrob.github.io/issues/27
+	max revision 3375
+	branch master
+	prefix /
+end match
+
+
+include ignore.rules
