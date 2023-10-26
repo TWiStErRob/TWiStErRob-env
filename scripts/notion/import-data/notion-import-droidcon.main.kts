@@ -32,6 +32,16 @@ import java.time.format.DateTimeFormatter
 @Suppress("SpreadOperator")
 main(*args)
 
+object Constants {
+	const val DROIDCON_LONDON_PAGE = "d771f424bc914d1089b1705c5042f129"
+	const val TARGET_DATABASE = "d6d80a4765fe470dbae06fd5cd3d3f41"
+	const val AUTHORS_DATABASE = "aecb82387adf4d7fa6816b791b0a579c"
+	const val TOPICS_DATABASE = "a05a1b8d8eed43a1bc2e684b9fae50e0"
+	const val BIO_HEADING = "Bio at DroidCon 2023"
+	val SESSIONS_FILE = File("droidcon-2023-london/sessions.json")
+	val SPEAKERS_FILE = File("droidcon-2023-london/speakers.json")
+}
+
 @Suppress("LongMethod")
 fun main(vararg args: String) {
 	check(args.isEmpty()) { "No arguments expected." }
@@ -41,13 +51,13 @@ fun main(vararg args: String) {
 		configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 	}
 	val sessions = jsonMapper
-		.readValue<List<Group>>(File("droidcon-2022-london/sessions.json"))
+		.readValue<List<Group>>(Constants.SESSIONS_FILE)
 		.single()
 		.sessions
 		.let { remap(it) }
 	describe(sessions)
 	val speakers = jsonMapper
-		.readValue<List<Speaker>>(File("droidcon-2022-london/speakers.json"))
+		.readValue<List<Speaker>>(Constants.SPEAKERS_FILE)
 	describe(speakers)
 
 	val helpUrl = "https://www.notion.so/my-integrations"
@@ -55,7 +65,7 @@ fun main(vararg args: String) {
 		?: error("NOTION_TOKEN environment variable not set, copy secret from 'Internal Integration Token' at ${helpUrl}.")
 
 	NotionClient(token = secret).apply { httpClient = OkHttp4Client(connectTimeoutMillis = 30_000) }.use { client ->
-		val droidConLondon2022 = client.retrievePage("8b215fe74d6e4fbcabb88f96917b6092")
+		val droidConLondon = client.retrievePage(Constants.DROIDCON_LONDON_PAGE)
 		val jsonSpeakers = sessions
 			.flatMap { it.speakers }
 			.map { it.name }
@@ -69,18 +79,18 @@ fun main(vararg args: String) {
 		val speakerPages = ensureSpeakers(client, jsonSpeakers, speakers)
 		val topicPages = ensureTopics(client, jsonTags)
 		val existingSessions = client
-			.allPages("d6d80a4765fe470dbae06fd5cd3d3f41")
-			.filter { it.properties["Event"]!!.relation!!.singleOrNull()?.id == droidConLondon2022.id }
+			.allPages(Constants.TARGET_DATABASE)
+			.filter { it.properties["Event"]!!.relation!!.singleOrNull()?.id == droidConLondon.id }
 			.associateBy { it.title!! }
 		val typeOptions = client
-			.retrieveDatabase("d6d80a4765fe470dbae06fd5cd3d3f41")
+			.retrieveDatabase(Constants.TARGET_DATABASE)
 			.properties["Type"]!!.select!!.options!!
 		existingSessions.forEach { (title, page) ->
 			println("Found existing session: ${title} (${page.id})")
 		}
 		sessions.filter { it.title !in existingSessions }.forEach { session ->
 			client.createPage(
-				parent = PageParent.database("d6d80a4765fe470dbae06fd5cd3d3f41"),
+				parent = PageParent.database(Constants.TARGET_DATABASE),
 				properties = mapOf(
 					"title" to PageProperty(title = session.title.asRichText()),
 					"Date" to session.startsAt?.let { time ->
@@ -89,7 +99,7 @@ fun main(vararg args: String) {
 					"Length (minutes)" to session.duration?.let { duration ->
 						PageProperty(number = duration.toMinutes())
 					},
-					"Event" to PageProperty(relation = listOf(PageProperty.PageReference(droidConLondon2022.id))),
+					"Event" to PageProperty(relation = listOf(PageProperty.PageReference(droidConLondon.id))),
 					"Author(s)" to PageProperty(relation = session.speakers.map {
 						PageProperty.PageReference(speakerPages.getValue(it.name).id)
 					}),
@@ -163,7 +173,7 @@ fun NotionClient.allPages(databaseId: String): List<Page> =
 
 fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speakers: List<Speaker>): Map<String, Page> {
 	val speakerDetails = speakers.associateBy { it.fullName }
-	val speakerPages = client.allPages("aecb82387adf4d7fa6816b791b0a579c")
+	val speakerPages = client.allPages(Constants.AUTHORS_DATABASE)
 	val existingPages = speakerPages.associateBy { it.title ?: it.id }
 	val newSpeakersNames = wantedSpeakerNames - existingPages.keys
 	val newPages = newSpeakersNames.associateWith { speakerName ->
@@ -191,7 +201,7 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speak
 			this.links.singleOrNull { it.linkType == linkType }?.let { PageProperty(url = it.url) }
 
 		client.createPage(
-			parent = PageParent.database("aecb82387adf4d7fa6816b791b0a579c"),
+			parent = PageParent.database(Constants.AUTHORS_DATABASE),
 			icon = notion.api.v1.model.common.File(
 				type = FileType.External,
 				external = ExternalFileDetails(url = details.profilePicture.toString())
@@ -215,7 +225,7 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speak
 				),
 			).filterValues { it != null }.mapValues { it.value!! },
 			children = listOf(
-				HeadingOneBlock(heading1 = HeadingOneBlock.Element("Bio at DroidCon 2022".asRichText())),
+				HeadingOneBlock(heading1 = HeadingOneBlock.Element(Constants.BIO_HEADING.asRichText())),
 				ParagraphBlock(ParagraphBlock.Element(details.bio.asRichText())),
 			),
 		)
@@ -224,12 +234,12 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speak
 }
 
 fun ensureTopics(client: NotionClient, wantedTopicNames: List<String>): Map<String, Page> {
-	val topicPages = client.allPages("a05a1b8d8eed43a1bc2e684b9fae50e0")
+	val topicPages = client.allPages(Constants.TOPICS_DATABASE)
 	val existingPages = topicPages.associateBy { it.title ?: it.id }
 	val newTopicNames = wantedTopicNames - existingPages.keys
 	val newPages = newTopicNames.associateWith { topicName ->
 		client.createPage(
-			parent = PageParent.database("a05a1b8d8eed43a1bc2e684b9fae50e0"),
+			parent = PageParent.database(Constants.TOPICS_DATABASE),
 			properties = mapOf(
 				"title" to PageProperty(title = topicName.asRichText()),
 			),
