@@ -100,6 +100,7 @@ fun main(vararg args: String) {
 						PageProperty(number = duration.toMinutes())
 					},
 					"Event" to PageProperty(relation = listOf(PageProperty.PageReference(droidConLondon.id))),
+					"Track" to PageProperty(richText = session.room.asRichText()),
 					"Author(s)" to PageProperty(relation = session.speakers.map {
 						PageProperty.PageReference(speakerPages.getValue(it.name).id)
 					}),
@@ -129,6 +130,7 @@ data class Group(
 	data class Session(
 		val title: String,
 		val description: String?,
+		val room: String,
 		val startsAt: LocalDateTime?,
 		val endsAt: LocalDateTime?,
 		val speakers: List<Speaker>,
