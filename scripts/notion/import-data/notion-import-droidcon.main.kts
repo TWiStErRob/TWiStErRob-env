@@ -105,7 +105,7 @@ fun main(vararg args: String) {
 						PageProperty.PageReference(speakerPages.getValue(it.name).id)
 					}),
 					"Topics" to PageProperty(relation = session.categories.single { it.name == "Tags" }.categoryItems.map {
-						PageProperty.PageReference(topicPages.getValue(it.name).id)
+						PageProperty.PageReference(topicPages.getValue(remapTopic(it.name)).id)
 					}),
 					"Type" to PageProperty(select = typeOptions.single {
 						it.name == when (session.format) {
@@ -240,7 +240,8 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speak
 fun ensureTopics(client: NotionClient, wantedTopicNames: List<String>): Map<String, Page> {
 	val topicPages = client.allPages(Constants.TOPICS_DATABASE)
 	val existingPages = topicPages.associateBy { it.title ?: it.id }
-	val newTopicNames = wantedTopicNames - existingPages.keys
+	val mappedTopics = wantedTopicNames.map(::remapTopic)
+	val newTopicNames = mappedTopics - existingPages.keys
 	val newPages = newTopicNames.associateWith { topicName ->
 		client.createPage(
 			parent = PageParent.database(Constants.TOPICS_DATABASE),
@@ -311,6 +312,16 @@ fun remap(sessions: List<Group.Session>): List<Group.Session> =
 		session.copy(
 			categories = others + tags
 		)
+	}
+
+fun remapTopic(name: String): String =
+	when (name) {
+		"Coroutines" -> "Kotlin Coroutines"
+		"UI/UX" -> "UX Design"
+		"Modern Android Development" -> "Modern Android Development (MAD)"
+		"Foldables" -> "Form Factors - Foldables"
+		"Design" -> "UI Design"
+		else -> name
 	}
 
 @Suppress("NestedLambdaShadowedImplicitParameter")
