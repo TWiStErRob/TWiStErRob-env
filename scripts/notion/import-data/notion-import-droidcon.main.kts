@@ -101,7 +101,7 @@ fun main(vararg args: String) {
 					},
 					"Event" to PageProperty(relation = listOf(PageProperty.PageReference(droidConLondon.id))),
 					"Track" to PageProperty(richText = session.room.asRichText()),
-					"Author(s)" to PageProperty(relation = session.speakers.map {
+					"Speaker(s)" to PageProperty(relation = session.speakers.map {
 						PageProperty.PageReference(speakerPages.getValue(it.name).id)
 					}),
 					"Topics" to PageProperty(relation = session.categories.single { it.name == "Tags" }.categoryItems.map {
@@ -112,6 +112,8 @@ fun main(vararg args: String) {
 							"Lightning talk" -> "Lightning Talk"
 							"Session" -> "Talk"
 							"Workshop" -> "Workshop"
+							"Keynote" -> "Keynote"
+							"panel" -> "Panel"
 							else -> error("Unknown format: ${session.format}")
 						}
 					}),
