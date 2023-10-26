@@ -114,7 +114,9 @@ fun main(vararg args: String) {
 							else -> error("Unknown format: ${session.format}")
 						}
 					}),
-					"Abstract" to PageProperty(richText = session.description.asRichText()),
+					"Abstract" to session.description?.let { description ->
+						PageProperty(richText = description.asRichText())
+					},
 				).filterValues { it != null }.mapValues { it.value!! },
 			)
 		}
@@ -126,7 +128,7 @@ data class Group(
 ) {
 	data class Session(
 		val title: String,
-		val description: String,
+		val description: String?,
 		val startsAt: LocalDateTime?,
 		val endsAt: LocalDateTime?,
 		val speakers: List<Speaker>,
