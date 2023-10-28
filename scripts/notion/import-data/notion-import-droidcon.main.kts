@@ -34,6 +34,7 @@ main(*args)
 
 object Constants {
 	const val DROIDCON_LONDON_PAGE = "d771f424bc914d1089b1705c5042f129"
+	const val EVENT_TIME_ZONE = "Europe/London"
 	const val TARGET_DATABASE = "d6d80a4765fe470dbae06fd5cd3d3f41"
 	const val AUTHORS_DATABASE = "aecb82387adf4d7fa6816b791b0a579c"
 	const val TOPICS_DATABASE = "a05a1b8d8eed43a1bc2e684b9fae50e0"
@@ -100,6 +101,7 @@ fun main(vararg args: String) {
 								end = session.duration
 									?.let { length -> time + length }
 									?.let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) },
+								timeZone = Constants.EVENT_TIME_ZONE,
 							)
 						)
 					},
