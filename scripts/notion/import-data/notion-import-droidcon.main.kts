@@ -94,17 +94,13 @@ fun main(vararg args: String) {
 				parent = PageParent.database(Constants.TARGET_DATABASE),
 				properties = mapOf(
 					"title" to PageProperty(title = session.title.asRichText()),
-					"Date" to session.startsAt?.let { time ->
-						PageProperty(
-							date = PageProperty.Date(
-								start = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(time),
-								end = session.duration
-									?.let { length -> time + length }
-									?.let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) },
-								timeZone = Constants.EVENT_TIME_ZONE,
-							)
+					"Date" to PageProperty(
+						date = PageProperty.Date(
+							start = session.startsAt?.let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) },
+							end = session.endsAt?.let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) },
+							timeZone = Constants.EVENT_TIME_ZONE,
 						)
-					},
+					),
 					"Length (minutes)" to session.duration?.let { duration ->
 						PageProperty(number = duration.toMinutes())
 					},
