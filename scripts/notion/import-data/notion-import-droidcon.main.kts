@@ -94,7 +94,14 @@ fun main(vararg args: String) {
 				properties = mapOf(
 					"title" to PageProperty(title = session.title.asRichText()),
 					"Date" to session.startsAt?.let { time ->
-						PageProperty(date = PageProperty.Date(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(time)))
+						PageProperty(
+							date = PageProperty.Date(
+								start = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(time),
+								end = session.duration
+									?.let { length -> time + length }
+									?.let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) },
+							)
+						)
 					},
 					"Length (minutes)" to session.duration?.let { duration ->
 						PageProperty(number = duration.toMinutes())
