@@ -1,4 +1,4 @@
-// Iextractedependency: Java 11 (because ktor 2.x is compiled as Class 55)
+// Implicit dependency: Java 11 (because ktor 2.x is compiled as Class 55)
 // Note: normally these dependencies are listed without a -jvm suffix,
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
