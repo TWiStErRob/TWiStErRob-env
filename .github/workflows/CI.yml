@@ -102,6 +102,19 @@ jobs:
           siliconmilkroundabout/companies-attending.main.kts
 
 
+  notion-filter-content:
+    name: "🔨 Build / Notion / Filter Content"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v4
+
+      - name: "Compile .main.kts."
+        working-directory: scripts/notion/database-filter-page-content
+        run: $KOTLINC filter-content.main.kts
+
+
   notion-move-to-property:
     name: "🔨 Build / Notion / Move to Property"
     runs-on: ubuntu-latest
