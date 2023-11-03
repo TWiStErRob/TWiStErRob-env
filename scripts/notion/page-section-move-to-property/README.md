@@ -6,12 +6,12 @@ Note: at the moment all headings are treated equal.
 
 ## Examples
 
-Move "Abstract" section contents to property "Abstract.
+Move "Abstract" section contents to property "Abstract".
 ```shell
-kotlinc -script notion-move-to-property.kts 0123456789abcdef0123456789abcdef Abstract Abstract
+kotlinc -script notion-move-to-property.main.kts 0123456789abcdef0123456789abcdef Abstract Abstract
 ```
 
 Move "Bio at DroidCon 2022" section contents to property "Bio"
 ```shell
-kotlinc -script notion-move-to-property.kts 0123456789abcdef0123456789abcdef "Bio at DroidCon 2022" Bio
+kotlinc -script notion-move-to-property.main.kts 0123456789abcdef0123456789abcdef "Bio at DroidCon 2022" Bio
 ```
