@@ -20,9 +20,15 @@ import notion.api.v1.model.blocks.ParagraphBlock
 import notion.api.v1.model.common.ExternalFileDetails
 import notion.api.v1.model.common.FileType
 import notion.api.v1.model.common.PropertyType
+import notion.api.v1.model.databases.DatabaseProperty
+import notion.api.v1.model.databases.QueryResults
+import notion.api.v1.model.databases.query.filter.PropertyFilter
+import notion.api.v1.model.databases.query.filter.QueryTopLevelFilter
+import notion.api.v1.model.databases.query.filter.condition.RelationFilter
 import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
+import notion.api.v1.request.databases.QueryDatabaseRequest
 import java.io.File
 import java.net.URI
 import java.time.Duration
@@ -31,6 +37,17 @@ import java.time.format.DateTimeFormatter
 
 @Suppress("SpreadOperator")
 main(*args)
+
+object Constants {
+	const val COLLECTION_PAGE = "d771f424bc914d1089b1705c5042f129"
+	const val EVENT_TIME_ZONE = "Europe/London"
+	const val TARGET_DATABASE = "d6d80a4765fe470dbae06fd5cd3d3f41"
+	const val AUTHORS_DATABASE = "aecb82387adf4d7fa6816b791b0a579c"
+	const val TOPICS_DATABASE = "a05a1b8d8eed43a1bc2e684b9fae50e0"
+	const val BIO_HEADING = "Bio at DroidCon 2023"
+	val SESSIONS_FILE = File("droidcon-2023-london/sessions.json")
+	val SPEAKERS_FILE = File("droidcon-2023-london/speakers.json")
+}
 
 @Suppress("LongMethod")
 fun main(vararg args: String) {
@@ -41,13 +58,13 @@ fun main(vararg args: String) {
 		configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 	}
 	val sessions = jsonMapper
-		.readValue<List<Group>>(File("droidcon-2022-london/sessions.json"))
+		.readValue<List<Group>>(Constants.SESSIONS_FILE)
 		.single()
 		.sessions
 		.let { remap(it) }
 	describe(sessions)
 	val speakers = jsonMapper
-		.readValue<List<Speaker>>(File("droidcon-2022-london/speakers.json"))
+		.readValue<List<Speaker>>(Constants.SPEAKERS_FILE)
 	describe(speakers)
 
 	val helpUrl = "https://www.notion.so/my-integrations"
@@ -55,7 +72,7 @@ fun main(vararg args: String) {
 		?: error("NOTION_TOKEN environment variable not set, copy secret from 'Internal Integration Token' at ${helpUrl}.")
 
 	NotionClient(token = secret).apply { httpClient = OkHttp4Client(connectTimeoutMillis = 30_000) }.use { client ->
-		val droidConLondon2022 = client.retrievePage("8b215fe74d6e4fbcabb88f96917b6092")
+		val collectionPage = client.retrievePage(Constants.COLLECTION_PAGE)
 		val jsonSpeakers = sessions
 			.flatMap { it.speakers }
 			.map { it.name }
@@ -69,46 +86,60 @@ fun main(vararg args: String) {
 		val speakerPages = ensureSpeakers(client, jsonSpeakers, speakers)
 		val topicPages = ensureTopics(client, jsonTags)
 		val existingSessions = client
-			.allPages("d6d80a4765fe470dbae06fd5cd3d3f41")
-			.filter { it.properties["Event"]!!.relation!!.singleOrNull()?.id == droidConLondon2022.id }
+			.queryDatabaseAllPages(
+				Constants.TARGET_DATABASE,
+				filter = PropertyFilter("Event", relation = RelationFilter(contains = collectionPage.id)),
+			)
 			.associateBy { it.title!! }
 		val typeOptions = client
-			.retrieveDatabase("d6d80a4765fe470dbae06fd5cd3d3f41")
+			.retrieveDatabase(Constants.TARGET_DATABASE)
 			.properties["Type"]!!.select!!.options!!
 		existingSessions.forEach { (title, page) ->
 			println("Found existing session: ${title} (${page.id})")
 		}
 		sessions.filter { it.title !in existingSessions }.forEach { session ->
-			client.createPage(
-				parent = PageParent.database("d6d80a4765fe470dbae06fd5cd3d3f41"),
-				properties = mapOf(
-					"title" to PageProperty(title = session.title.asRichText()),
-					"Date" to session.startsAt?.let { time ->
-						PageProperty(date = PageProperty.Date(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(time)))
-					},
-					"Length (minutes)" to session.duration?.let { duration ->
-						PageProperty(number = duration.toMinutes())
-					},
-					"Event" to PageProperty(relation = listOf(PageProperty.PageReference(droidConLondon2022.id))),
-					"Author(s)" to PageProperty(relation = session.speakers.map {
-						PageProperty.PageReference(speakerPages.getValue(it.name).id)
-					}),
-					"Topics" to PageProperty(relation = session.categories.single { it.name == "Tags" }.categoryItems.map {
-						PageProperty.PageReference(topicPages.getValue(it.name).id)
-					}),
-					"Type" to PageProperty(select = typeOptions.single {
-						it.name == when (session.format) {
-							"Lightning talk" -> "Lightning Talk"
-							"Session" -> "Talk"
-							"Workshop" -> "Workshop"
-							else -> error("Unknown format: ${session.format}")
-						}
-					}),
-					"Abstract" to PageProperty(richText = session.description.asRichText()),
-				).filterValues { it != null }.mapValues { it.value!! },
-			)
+			client.createPageFor(session, collectionPage, speakerPages, topicPages, typeOptions)
 		}
 	}
+}
+
+fun NotionClient.createPageFor(
+	session: Group.Session,
+	collectionPage: Page,
+	speakerPages: Map<String, Page>,
+	topicPages: Map<String, Page>,
+	typeOptions: List<DatabaseProperty.Select.Option>
+) {
+	createPage(
+		parent = PageParent.database(Constants.TARGET_DATABASE),
+		properties = mapOf(
+			"title" to PageProperty(title = session.title.asRichText()),
+			"Date" to PageProperty(
+				date = PageProperty.Date(
+					start = session.startsAt?.let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) },
+					end = session.endsAt?.let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) },
+					timeZone = Constants.EVENT_TIME_ZONE,
+				)
+			),
+			"Length (minutes)" to session.duration?.let { duration ->
+				PageProperty(number = duration.toMinutes())
+			},
+			"Event" to PageProperty(relation = listOf(PageProperty.PageReference(collectionPage.id))),
+			"Track" to PageProperty(richText = session.room.asRichText()),
+			"Speaker(s)" to PageProperty(relation = session.speakers.map {
+				PageProperty.PageReference(speakerPages.getValue(it.name).id)
+			}),
+			"Topics" to PageProperty(relation = session.categories.single { it.name == "Tags" }.categoryItems.map {
+				PageProperty.PageReference(topicPages.getValue(remapTopic(it.name)).id)
+			}),
+			"Type" to PageProperty(select = remapFormat(session.format).let { format ->
+				typeOptions.single { it.name == format }
+			}),
+			"Abstract" to session.description?.let { description ->
+				PageProperty(richText = description.asRichText())
+			},
+		).filterValues { it != null }.mapValues { it.value!! },
+	)
 }
 
 data class Group(
@@ -116,7 +147,8 @@ data class Group(
 ) {
 	data class Session(
 		val title: String,
-		val description: String,
+		val description: String?,
+		val room: String,
 		val startsAt: LocalDateTime?,
 		val endsAt: LocalDateTime?,
 		val speakers: List<Speaker>,
@@ -156,14 +188,30 @@ data class Speaker(
 	)
 }
 
-fun NotionClient.allPages(databaseId: String): List<Page> =
-	generateSequence(queryDatabase(databaseId)) { results ->
-		results.nextCursor?.let { queryDatabase(databaseId, startCursor = it) }
-	}.flatMap { it.results }.toList()
+fun NotionClient.queryDatabaseAllPages(databaseId: String, filter: QueryTopLevelFilter? = null): List<Page> =
+	queryDatabaseAllPages(QueryDatabaseRequest(databaseId = databaseId, filter = filter))
+
+fun NotionClient.queryDatabaseAllPages(query: QueryDatabaseRequest): List<Page> =
+	generateSequence(queryDatabase(query)) { results ->
+		if (results.hasMore) {
+			queryDatabase(query.nextPageRequest(results))
+		} else {
+			null
+		}
+	}
+		.flatMap { it.results }
+		.toList()
+
+fun QueryDatabaseRequest.nextPageRequest(results: QueryResults): QueryDatabaseRequest =
+	QueryDatabaseRequest(
+		databaseId = this.databaseId,
+		startCursor = results.nextCursor,
+		pageSize = this.pageSize,
+	)
 
 fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speakers: List<Speaker>): Map<String, Page> {
 	val speakerDetails = speakers.associateBy { it.fullName }
-	val speakerPages = client.allPages("aecb82387adf4d7fa6816b791b0a579c")
+	val speakerPages = client.queryDatabaseAllPages(Constants.AUTHORS_DATABASE)
 	val existingPages = speakerPages.associateBy { it.title ?: it.id }
 	val newSpeakersNames = wantedSpeakerNames - existingPages.keys
 	val newPages = newSpeakersNames.associateWith { speakerName ->
@@ -191,7 +239,7 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speak
 			this.links.singleOrNull { it.linkType == linkType }?.let { PageProperty(url = it.url) }
 
 		client.createPage(
-			parent = PageParent.database("aecb82387adf4d7fa6816b791b0a579c"),
+			parent = PageParent.database(Constants.AUTHORS_DATABASE),
 			icon = notion.api.v1.model.common.File(
 				type = FileType.External,
 				external = ExternalFileDetails(url = details.profilePicture.toString())
@@ -215,7 +263,7 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speak
 				),
 			).filterValues { it != null }.mapValues { it.value!! },
 			children = listOf(
-				HeadingOneBlock(heading1 = HeadingOneBlock.Element("Bio at DroidCon 2022".asRichText())),
+				HeadingOneBlock(heading1 = HeadingOneBlock.Element(Constants.BIO_HEADING.asRichText())),
 				ParagraphBlock(ParagraphBlock.Element(details.bio.asRichText())),
 			),
 		)
@@ -224,12 +272,13 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speak
 }
 
 fun ensureTopics(client: NotionClient, wantedTopicNames: List<String>): Map<String, Page> {
-	val topicPages = client.allPages("a05a1b8d8eed43a1bc2e684b9fae50e0")
+	val topicPages = client.queryDatabaseAllPages(Constants.TOPICS_DATABASE)
 	val existingPages = topicPages.associateBy { it.title ?: it.id }
-	val newTopicNames = wantedTopicNames - existingPages.keys
+	val mappedTopics = wantedTopicNames.map(::remapTopic)
+	val newTopicNames = mappedTopics - existingPages.keys
 	val newPages = newTopicNames.associateWith { topicName ->
 		client.createPage(
-			parent = PageParent.database("a05a1b8d8eed43a1bc2e684b9fae50e0"),
+			parent = PageParent.database(Constants.TOPICS_DATABASE),
 			properties = mapOf(
 				"title" to PageProperty(title = topicName.asRichText()),
 			),
@@ -297,6 +346,26 @@ fun remap(sessions: List<Group.Session>): List<Group.Session> =
 		session.copy(
 			categories = others + tags
 		)
+	}
+
+fun remapTopic(name: String): String =
+	when (name) {
+		"Coroutines" -> "Kotlin Coroutines"
+		"UI/UX" -> "UX Design"
+		"Modern Android Development" -> "Modern Android Development (MAD)"
+		"Foldables" -> "Form Factors - Foldables"
+		"Design" -> "UI Design"
+		else -> name
+	}
+
+fun remapFormat(format: String): String =
+	when (format) {
+		"Lightning talk" -> "Lightning Talk"
+		"Session" -> "Talk"
+		"Workshop" -> "Workshop"
+		"Keynote" -> "Keynote"
+		"panel" -> "Panel"
+		else -> error("Unknown format: ${format}")
 	}
 
 @Suppress("NestedLambdaShadowedImplicitParameter")
