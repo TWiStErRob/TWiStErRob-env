@@ -21,9 +21,14 @@ import notion.api.v1.model.common.ExternalFileDetails
 import notion.api.v1.model.common.FileType
 import notion.api.v1.model.common.PropertyType
 import notion.api.v1.model.databases.DatabaseProperty
+import notion.api.v1.model.databases.QueryResults
+import notion.api.v1.model.databases.query.filter.PropertyFilter
+import notion.api.v1.model.databases.query.filter.QueryTopLevelFilter
+import notion.api.v1.model.databases.query.filter.condition.RelationFilter
 import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
+import notion.api.v1.request.databases.QueryDatabaseRequest
 import java.io.File
 import java.net.URI
 import java.time.Duration
@@ -81,8 +86,10 @@ fun main(vararg args: String) {
 		val speakerPages = ensureSpeakers(client, jsonSpeakers, speakers)
 		val topicPages = ensureTopics(client, jsonTags)
 		val existingSessions = client
-			.allPages(Constants.TARGET_DATABASE)
-			.filter { it.properties["Event"]!!.relation!!.singleOrNull()?.id == collectionPage.id }
+			.queryDatabaseAllPages(
+				Constants.TARGET_DATABASE,
+				filter = PropertyFilter("Event", relation = RelationFilter(contains = collectionPage.id)),
+			)
 			.associateBy { it.title!! }
 		val typeOptions = client
 			.retrieveDatabase(Constants.TARGET_DATABASE)
@@ -181,14 +188,30 @@ data class Speaker(
 	)
 }
 
-fun NotionClient.allPages(databaseId: String): List<Page> =
-	generateSequence(queryDatabase(databaseId)) { results ->
-		results.nextCursor?.let { queryDatabase(databaseId, startCursor = it) }
-	}.flatMap { it.results }.toList()
+fun NotionClient.queryDatabaseAllPages(databaseId: String, filter: QueryTopLevelFilter? = null): List<Page> =
+	queryDatabaseAllPages(QueryDatabaseRequest(databaseId = databaseId, filter = filter))
+
+fun NotionClient.queryDatabaseAllPages(query: QueryDatabaseRequest): List<Page> =
+	generateSequence(queryDatabase(query)) { results ->
+		if (results.hasMore) {
+			queryDatabase(query.nextPageRequest(results))
+		} else {
+			null
+		}
+	}
+		.flatMap { it.results }
+		.toList()
+
+fun QueryDatabaseRequest.nextPageRequest(results: QueryResults): QueryDatabaseRequest =
+	QueryDatabaseRequest(
+		databaseId = this.databaseId,
+		startCursor = results.nextCursor,
+		pageSize = this.pageSize,
+	)
 
 fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speakers: List<Speaker>): Map<String, Page> {
 	val speakerDetails = speakers.associateBy { it.fullName }
-	val speakerPages = client.allPages(Constants.AUTHORS_DATABASE)
+	val speakerPages = client.queryDatabaseAllPages(Constants.AUTHORS_DATABASE)
 	val existingPages = speakerPages.associateBy { it.title ?: it.id }
 	val newSpeakersNames = wantedSpeakerNames - existingPages.keys
 	val newPages = newSpeakersNames.associateWith { speakerName ->
@@ -249,7 +272,7 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speak
 }
 
 fun ensureTopics(client: NotionClient, wantedTopicNames: List<String>): Map<String, Page> {
-	val topicPages = client.allPages(Constants.TOPICS_DATABASE)
+	val topicPages = client.queryDatabaseAllPages(Constants.TOPICS_DATABASE)
 	val existingPages = topicPages.associateBy { it.title ?: it.id }
 	val mappedTopics = wantedTopicNames.map(::remapTopic)
 	val newTopicNames = mappedTopics - existingPages.keys
