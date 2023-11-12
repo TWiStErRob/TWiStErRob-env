@@ -20,6 +20,7 @@ import notion.api.v1.model.blocks.ParagraphBlock
 import notion.api.v1.model.common.ExternalFileDetails
 import notion.api.v1.model.common.FileType
 import notion.api.v1.model.common.PropertyType
+import notion.api.v1.model.databases.DatabaseProperty
 import notion.api.v1.model.pages.Page
 import notion.api.v1.model.pages.PageParent
 import notion.api.v1.model.pages.PageProperty
@@ -90,45 +91,48 @@ fun main(vararg args: String) {
 			println("Found existing session: ${title} (${page.id})")
 		}
 		sessions.filter { it.title !in existingSessions }.forEach { session ->
-			client.createPage(
-				parent = PageParent.database(Constants.TARGET_DATABASE),
-				properties = mapOf(
-					"title" to PageProperty(title = session.title.asRichText()),
-					"Date" to PageProperty(
-						date = PageProperty.Date(
-							start = session.startsAt?.let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) },
-							end = session.endsAt?.let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) },
-							timeZone = Constants.EVENT_TIME_ZONE,
-						)
-					),
-					"Length (minutes)" to session.duration?.let { duration ->
-						PageProperty(number = duration.toMinutes())
-					},
-					"Event" to PageProperty(relation = listOf(PageProperty.PageReference(droidConLondon.id))),
-					"Track" to PageProperty(richText = session.room.asRichText()),
-					"Speaker(s)" to PageProperty(relation = session.speakers.map {
-						PageProperty.PageReference(speakerPages.getValue(it.name).id)
-					}),
-					"Topics" to PageProperty(relation = session.categories.single { it.name == "Tags" }.categoryItems.map {
-						PageProperty.PageReference(topicPages.getValue(remapTopic(it.name)).id)
-					}),
-					"Type" to PageProperty(select = typeOptions.single {
-						it.name == when (session.format) {
-							"Lightning talk" -> "Lightning Talk"
-							"Session" -> "Talk"
-							"Workshop" -> "Workshop"
-							"Keynote" -> "Keynote"
-							"panel" -> "Panel"
-							else -> error("Unknown format: ${session.format}")
-						}
-					}),
-					"Abstract" to session.description?.let { description ->
-						PageProperty(richText = description.asRichText())
-					},
-				).filterValues { it != null }.mapValues { it.value!! },
-			)
+			client.createPageFor(session, droidConLondon, speakerPages, topicPages, typeOptions)
 		}
 	}
+}
+
+fun NotionClient.createPageFor(
+	session: Group.Session,
+	collectionPage: Page,
+	speakerPages: Map<String, Page>,
+	topicPages: Map<String, Page>,
+	typeOptions: List<DatabaseProperty.Select.Option>
+) {
+	createPage(
+		parent = PageParent.database(Constants.TARGET_DATABASE),
+		properties = mapOf(
+			"title" to PageProperty(title = session.title.asRichText()),
+			"Date" to PageProperty(
+				date = PageProperty.Date(
+					start = session.startsAt?.let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) },
+					end = session.endsAt?.let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) },
+					timeZone = Constants.EVENT_TIME_ZONE,
+				)
+			),
+			"Length (minutes)" to session.duration?.let { duration ->
+				PageProperty(number = duration.toMinutes())
+			},
+			"Event" to PageProperty(relation = listOf(PageProperty.PageReference(collectionPage.id))),
+			"Track" to PageProperty(richText = session.room.asRichText()),
+			"Speaker(s)" to PageProperty(relation = session.speakers.map {
+				PageProperty.PageReference(speakerPages.getValue(it.name).id)
+			}),
+			"Topics" to PageProperty(relation = session.categories.single { it.name == "Tags" }.categoryItems.map {
+				PageProperty.PageReference(topicPages.getValue(remapTopic(it.name)).id)
+			}),
+			"Type" to PageProperty(select = remapFormat(session.format).let { format ->
+				typeOptions.single { it.name == format }
+			}),
+			"Abstract" to session.description?.let { description ->
+				PageProperty(richText = description.asRichText())
+			},
+		).filterValues { it != null }.mapValues { it.value!! },
+	)
 }
 
 data class Group(
@@ -329,6 +333,16 @@ fun remapTopic(name: String): String =
 		"Foldables" -> "Form Factors - Foldables"
 		"Design" -> "UI Design"
 		else -> name
+	}
+
+fun remapFormat(format: String): String =
+	when (format) {
+		"Lightning talk" -> "Lightning Talk"
+		"Session" -> "Talk"
+		"Workshop" -> "Workshop"
+		"Keynote" -> "Keynote"
+		"panel" -> "Panel"
+		else -> error("Unknown format: ${format}")
 	}
 
 @Suppress("NestedLambdaShadowedImplicitParameter")
