@@ -34,7 +34,7 @@ import java.time.format.DateTimeFormatter
 main(*args)
 
 object Constants {
-	const val DROIDCON_LONDON_PAGE = "d771f424bc914d1089b1705c5042f129"
+	const val COLLECTION_PAGE = "d771f424bc914d1089b1705c5042f129"
 	const val EVENT_TIME_ZONE = "Europe/London"
 	const val TARGET_DATABASE = "d6d80a4765fe470dbae06fd5cd3d3f41"
 	const val AUTHORS_DATABASE = "aecb82387adf4d7fa6816b791b0a579c"
@@ -67,7 +67,7 @@ fun main(vararg args: String) {
 		?: error("NOTION_TOKEN environment variable not set, copy secret from 'Internal Integration Token' at ${helpUrl}.")
 
 	NotionClient(token = secret).apply { httpClient = OkHttp4Client(connectTimeoutMillis = 30_000) }.use { client ->
-		val droidConLondon = client.retrievePage(Constants.DROIDCON_LONDON_PAGE)
+		val collectionPage = client.retrievePage(Constants.COLLECTION_PAGE)
 		val jsonSpeakers = sessions
 			.flatMap { it.speakers }
 			.map { it.name }
@@ -82,7 +82,7 @@ fun main(vararg args: String) {
 		val topicPages = ensureTopics(client, jsonTags)
 		val existingSessions = client
 			.allPages(Constants.TARGET_DATABASE)
-			.filter { it.properties["Event"]!!.relation!!.singleOrNull()?.id == droidConLondon.id }
+			.filter { it.properties["Event"]!!.relation!!.singleOrNull()?.id == collectionPage.id }
 			.associateBy { it.title!! }
 		val typeOptions = client
 			.retrieveDatabase(Constants.TARGET_DATABASE)
@@ -91,7 +91,7 @@ fun main(vararg args: String) {
 			println("Found existing session: ${title} (${page.id})")
 		}
 		sessions.filter { it.title !in existingSessions }.forEach { session ->
-			client.createPageFor(session, droidConLondon, speakerPages, topicPages, typeOptions)
+			client.createPageFor(session, collectionPage, speakerPages, topicPages, typeOptions)
 		}
 	}
 }
