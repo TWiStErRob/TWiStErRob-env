@@ -37,6 +37,7 @@ match /Libraries/twister-lib-android/
 	# r686 is the initial import of twister-lib-android.
 	# It was first used in BLT in r690.
 	min revision 686
+	max revision 3342
 	repository net.twisterrob.travel.git
 	branch master
 	# svn:externals
@@ -47,6 +48,7 @@ match /Libraries/twister-lib-java/
 	# r685 is the initial import of twister-lib-java.
 	# It was first used in BLT in r691.
 	min revision 685
+	max revision 3342
 	repository net.twisterrob.travel.git
 	branch master
 	# svn:externals
