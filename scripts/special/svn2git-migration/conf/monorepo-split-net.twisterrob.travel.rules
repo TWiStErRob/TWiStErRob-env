@@ -8,15 +8,36 @@ match /Projects/Better London Travel/
 	# but immediately renamed to /Projects/Better London Travel/ in 547.
 	# r2025 is the first public release on Google Play Store.
 	min revision 548
+	# r3341 was the last change
+	# r3377 moved in https://github.com/TWiStErRob/net.twisterrob.travel/issues/2
+    max revision 3341
 	repository net.twisterrob.travel.git
 	branch master
 	prefix /
+end match
+
+match /Projects/Better London Travel/(PullToRefresh|libs/ActionBar-PullToRefresh-0.8-library|libs/ActionBar-PullToRefresh-0.8-appcompat)/
+	# r718 added the library as external:
+	# https://github.com/chrisbanes/ActionBar-PullToRefresh/tags/v0.8 PullToRefresh
+	# r789 moved the external to /libs:
+	# https://github.com/chrisbanes/ActionBar-PullToRefresh/tags/v0.8/library ActionBar-PullToRefresh-0.8-library
+    # https://github.com/chrisbanes/ActionBar-PullToRefresh/tags/v0.8/extras/actionbarcompat ActionBar-PullToRefresh-0.8-appcompat
+	# r1948 removed the PullToRefresh related externals from /libs.
+	# r2025 is the first (and only at the moment) release of Better London Travel.
+	# So, instead of tracking these binary files, it's going to be ignored.
+	action ignore
+	#min revision 718
+	#max revision 789
+	#repository net.twisterrob.travel.git
+	#branch master
+	#prefix /PullToRefresh/
 end match
 
 match /Libraries/twister-lib-android/
 	# r686 is the initial import of twister-lib-android.
 	# It was first used in BLT in r690.
 	min revision 686
+	max revision 3342
 	repository net.twisterrob.travel.git
 	branch master
 	# svn:externals
@@ -27,6 +48,7 @@ match /Libraries/twister-lib-java/
 	# r685 is the initial import of twister-lib-java.
 	# It was first used in BLT in r691.
 	min revision 685
+	max revision 3342
 	repository net.twisterrob.travel.git
 	branch master
 	# svn:externals
@@ -47,6 +69,13 @@ match /Libraries/android_google-play-services_lib/
 	#repository net.twisterrob.travel.git
 	#branch master
 	#prefix /libs/android_google-play-services_lib/
+end match
+
+match /Libraries/android_google-play-services_lib_froyo/
+	# r788 imported the library first along with android_google-play-services_lib.
+	# Couldn't find any svn:externals reference to this folder.
+	action ignore
+	#min revision 788
 end match
 
 match /Libraries/android_support-v7_appcompat/

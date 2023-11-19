@@ -30,6 +30,7 @@ match /Libraries/twister-lib-android/
 	# It was first used in Inventory in r1127, when it was initially imported.
 	# Before that, it was only used in Better London Travel.
 	min revision 686
+	max revision 3342
 	repository net.twisterrob.inventory.git
 	branch master
 	# svn:externals
@@ -41,6 +42,7 @@ match /Libraries/twister-lib-java/
 	# It was first used in Inventory in r1127, when it was initially imported.
 	# Before that, it was only used in Better London Travel.
 	min revision 685
+	max revision 3342
 	repository net.twisterrob.inventory.git
 	branch master
 	# svn:externals

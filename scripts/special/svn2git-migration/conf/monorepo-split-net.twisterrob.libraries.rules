@@ -6,6 +6,11 @@ match /Libraries/twister-lib-android/
 	# It was first used in Better London Travel in r690.
 	# It was first used in Inventory in r1127, when it was initially imported.
 	min revision 686
+	# r3342 was the last change
+	# r3343 removed external reference from Inventory
+	# r3377 removed external reference from Better London Travel
+	# r3378	moved as part of https://github.com/TWiStErRob/net.twisterrob.inventory/issues/171
+	max revision 3342
 	repository net.twisterrob.libraries.git
 	branch master
 	# svn:externals
@@ -17,10 +22,23 @@ match /Libraries/twister-lib-java/
 	# It was first used in Better London Travel in r691.
 	# It was first used in Inventory in r1127, when it was initially imported.
 	min revision 685
+	# r3342 was the last change
+	# r3343 removed external reference from Inventory
+	# r3377 removed external reference from Better London Travel
+	# r3378	moved as part of https://github.com/TWiStErRob/net.twisterrob.inventory/issues/171
+	max revision 3342
 	repository net.twisterrob.libraries.git
 	branch master
 	# svn:externals
 	prefix /twister-lib-java/
+end match
+
+match /Libraries/twister-lib-android/maven/
+	# Noticed it too late, the project already evolved, but historically there was an external in this repo.
+	# r688 added the external reference: https://github.com/mosabua/maven-android-sdk-deployer/trunk
+	# At the time, it likely referenced this commit:
+	# https://github.com/simpligility/maven-android-sdk-deployer/tree/ac28677a4d35e8482c2ab5688288bf7ad2e57f23
+	action ignore
 end match
 
 
