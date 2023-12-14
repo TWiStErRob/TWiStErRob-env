@@ -349,7 +349,7 @@ jobs:
           path: ${{ github.workspace }}/detekt.*
 
       - name: "Publish 'Code scanning results / detekt'."
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: success() || failure()
         with:
           sarif_file: ${{ github.workspace }}/detekt.sarif
@@ -416,7 +416,7 @@ jobs:
 
       - name: "Publish 'Code scanning results / shellcheck'."
         if: success() || failure()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ github.workspace }}/shellcheck.sarif
 
@@ -447,6 +447,6 @@ jobs:
 
       - name: "Publish 'Code scanning results / PSScriptAnalyzer'."
         if: success() || failure()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ github.workspace }}/PSScriptAnalyzer.sarif
