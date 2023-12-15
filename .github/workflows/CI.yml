@@ -199,7 +199,7 @@ jobs:
 
       - name: "Upload 'pst2maildir test' artifact."
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'pst2maildir test'
           path: ${{ github.workspace }}/scripts/special/pst-maildir-imap/test/
@@ -293,7 +293,7 @@ jobs:
 
       - name: "Upload 'svn2git test' artifact."
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'svn2git test'
           path: ${{ github.workspace }}/scripts/special/svn2git-migration/workdir/
@@ -343,7 +343,7 @@ jobs:
 
       - name: "Upload 'Detekt Results' artifact."
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'Detekt Results'
           path: ${{ github.workspace }}/detekt.*
@@ -409,7 +409,7 @@ jobs:
 
       - name: "Upload 'ShellCheck Results' artifact."
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'ShellCheck Results'
           path: ${{ github.workspace }}/shellcheck.*
@@ -440,7 +440,7 @@ jobs:
 
       - name: "Upload 'PSScriptAnalyzer Results' artifact."
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'PSScriptAnalyzer Results'
           path: ${{ github.workspace }}/PSScriptAnalyzer.*
