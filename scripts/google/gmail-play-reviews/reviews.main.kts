@@ -3,7 +3,7 @@
 
 @file:Repository("https://repo1.maven.org/maven2/")
 @file:DependsOn("com.google.api-client:google-api-client:2.2.0")
-@file:DependsOn("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+@file:DependsOn("com.google.oauth-client:google-oauth-client-jetty:1.35.0")
 @file:DependsOn("com.google.apis:google-api-services-gmail:v1-rev20231218-2.0.0")
 
 import com.google.api.client.auth.oauth2.Credential
