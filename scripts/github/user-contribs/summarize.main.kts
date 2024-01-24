@@ -5,7 +5,7 @@
 @file:DependsOn("com.fasterxml.jackson.core:jackson-databind:2.16.1")
 @file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
 @file:DependsOn("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.1")
-@file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.10.1")
+@file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
 
 import Summarize_main.ContributionsResponse.ContributorActivity
 import Summarize_main.ContributionsResponse.ContributorActivity.WeeklyContributions
