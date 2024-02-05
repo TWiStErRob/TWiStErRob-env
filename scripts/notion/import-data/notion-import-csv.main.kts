@@ -202,6 +202,7 @@ fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Pa
 		PropertyType.LastEditedTime -> PageProperty(lastEditedTime = value)
 		PropertyType.LastEditedBy -> PageProperty(lastEditedBy = client.retrieveUser(value))
 		PropertyType.PropertyItem -> TODO()
+		PropertyType.UniqueId -> PageProperty(uniqueId = value)
 	}
 }
 
@@ -301,6 +302,7 @@ val PropertyType.associatedProperty: KProperty1<PageProperty, Any?>
 		PropertyType.CreatedBy -> PageProperty::createdBy
 		PropertyType.LastEditedTime -> PageProperty::lastEditedTime
 		PropertyType.LastEditedBy -> PageProperty::lastEditedBy
+		PropertyType.UniqueId -> PageProperty::uniqueId
 		PropertyType.PropertyItem -> error("Who dis? ${this}")
 	}
 
