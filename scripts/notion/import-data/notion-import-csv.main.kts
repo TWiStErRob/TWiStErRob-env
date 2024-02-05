@@ -3,8 +3,8 @@
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
 @file:DependsOn("com.opencsv:opencsv:5.9")
-@file:DependsOn("com.github.seratch:notion-sdk-jvm-core:1.10.1")
-@file:DependsOn("com.github.seratch:notion-sdk-jvm-okhttp4:1.10.1")
+@file:DependsOn("com.github.seratch:notion-sdk-jvm-core:1.11.0")
+@file:DependsOn("com.github.seratch:notion-sdk-jvm-okhttp4:1.11.0")
 
 import com.opencsv.CSVReader
 import notion.api.v1.NotionClient
@@ -202,6 +202,7 @@ fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Pa
 		PropertyType.LastEditedTime -> PageProperty(lastEditedTime = value)
 		PropertyType.LastEditedBy -> PageProperty(lastEditedBy = client.retrieveUser(value))
 		PropertyType.PropertyItem -> TODO()
+		PropertyType.UniqueId -> PageProperty(uniqueId = PageProperty.UniqueId(prefix = value)) // TODO validate
 	}
 }
 
@@ -301,6 +302,7 @@ val PropertyType.associatedProperty: KProperty1<PageProperty, Any?>
 		PropertyType.CreatedBy -> PageProperty::createdBy
 		PropertyType.LastEditedTime -> PageProperty::lastEditedTime
 		PropertyType.LastEditedBy -> PageProperty::lastEditedBy
+		PropertyType.UniqueId -> PageProperty::uniqueId
 		PropertyType.PropertyItem -> error("Who dis? ${this}")
 	}
 
