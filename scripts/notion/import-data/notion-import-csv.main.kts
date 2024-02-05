@@ -202,7 +202,7 @@ fun DatabaseProperty.convert(client: NotionClient, value: String, pages: List<Pa
 		PropertyType.LastEditedTime -> PageProperty(lastEditedTime = value)
 		PropertyType.LastEditedBy -> PageProperty(lastEditedBy = client.retrieveUser(value))
 		PropertyType.PropertyItem -> TODO()
-		PropertyType.UniqueId -> PageProperty(uniqueId = value)
+		PropertyType.UniqueId -> PageProperty(uniqueId = PageProperty.UniqueId(prefix = value)) // TODO validate
 	}
 }
 
