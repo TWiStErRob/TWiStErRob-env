@@ -255,7 +255,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'pst2maildir test'
-          path: ${{ github.workspace }}/scripts/special/pst-maildir-imap/test/
+          if-no-files-found: error
+          path: scripts/special/pst-maildir-imap/test/
 
 
   svn2git-migration:
@@ -358,7 +359,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'svn2git test'
-          path: ${{ github.workspace }}/scripts/special/svn2git-migration/workdir/
+          if-no-files-found: error
+          path: scripts/special/svn2git-migration/workdir/
 
 
   gradle-init:
@@ -417,7 +419,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'Detekt Results'
-          path: ${{ github.workspace }}/detekt.*
+          if-no-files-found: error
+          path: detekt.*
 
       - name: "Publish 'Code scanning results / detekt'."
         uses: github/codeql-action/upload-sarif@v3
@@ -494,7 +497,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'ShellCheck Results'
-          path: ${{ github.workspace }}/shellcheck.*
+          if-no-files-found: error
+          path: shellcheck.*
 
       - name: "Publish 'Code scanning results / shellcheck'."
         if: ${{ success() || failure() }}
@@ -532,7 +536,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'PSScriptAnalyzer Results'
-          path: ${{ github.workspace }}/PSScriptAnalyzer.*
+          if-no-files-found: error
+          path: PSScriptAnalyzer.*
 
       - name: "Publish 'Code scanning results / PSScriptAnalyzer'."
         if: ${{ success() || failure() }}
