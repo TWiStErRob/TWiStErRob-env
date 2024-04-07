@@ -27,8 +27,11 @@ jobs:
 
   git-merged-branches:
     name: "🔨 Build / GIT / Merged Branches"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -41,8 +44,11 @@ jobs:
 
   github-draft-issues:
     name: "🔨 Build / GitHub / Draft Issues"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -55,8 +61,11 @@ jobs:
 
   github-repository-convention:
     name: "🔨 Build / GitHub / Repository Convention"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -69,8 +78,11 @@ jobs:
 
   github-user-contribs:
     name: "🔨 Build / GitHub / User Contributions"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -86,8 +98,11 @@ jobs:
   
   google-play-reviews:
     name: "🔨 Build / Google / GMail / Google Play Store reviews"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -100,8 +115,11 @@ jobs:
 
   notion-import-data:
     name: "🔨 Build / Notion / Import Data"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -119,8 +137,11 @@ jobs:
 
   notion-filter-content:
     name: "🔨 Build / Notion / Filter Content"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -133,8 +154,11 @@ jobs:
 
   notion-move-to-property:
     name: "🔨 Build / Notion / Move to Property"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -147,8 +171,11 @@ jobs:
 
   lastpass2google:
     name: "🔨 Build / Special / LastPass 2 Google migration"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -162,6 +189,9 @@ jobs:
   pst-maildir:
     name:  "🔨 Build & Check / PST to Maildir migration"
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
 
     runs-on: ubuntu-latest
     defaults:
@@ -231,6 +261,10 @@ jobs:
   svn2git-migration:
     name:  "🔨 Build & Check / SVN to GIT migration"
     timeout-minutes: 5
+
+    permissions:
+      # actions/checkout
+      contents: read
 
     runs-on: ubuntu-latest
     defaults:
@@ -329,8 +363,11 @@ jobs:
 
   gradle-init:
     name:  "🔨 Build / Gradle init scripts"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -345,8 +382,13 @@ jobs:
 
   detekt:
     name: "🔍 Static Checks / Detekt"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+      # github/codeql-action/upload-sarif
+      security-events: write
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -387,6 +429,12 @@ jobs:
   shellcheck:
     name: "🔍 Static Checks / ShellCheck"
     timeout-minutes: 5
+
+    permissions:
+      # actions/checkout
+      contents: read
+      # github/codeql-action/upload-sarif
+      security-events: write
 
     runs-on: ubuntu-latest
     defaults:
@@ -457,8 +505,15 @@ jobs:
 
   psscriptanalyzer:
     name: "🔍 Static Checks / PSScriptAnalyzer"
-    runs-on: windows-latest
     timeout-minutes: 5
+
+    permissions:
+      # actions/checkout
+      contents: read
+      # github/codeql-action/upload-sarif
+      security-events: write
+
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
