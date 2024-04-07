@@ -213,8 +213,8 @@ jobs:
       - name: "Find user."
         id: id
         run: |
-          echo "uid=$(id --user)" >> $GITHUB_OUTPUT
-          echo "gid=$(id --group)" >> $GITHUB_OUTPUT
+          echo "uid=$(id --user)" >> "${GITHUB_OUTPUT}"
+          echo "gid=$(id --group)" >> "${GITHUB_OUTPUT}"
 
       - name: "Run test migration in container."
         uses: addnab/docker-run-action@v3
@@ -283,7 +283,7 @@ jobs:
           cd workdir
           
           svnadmin create test-repository
-          echo "SVN_REPO=$(pwd)/test-repository" >> $GITHUB_ENV
+          echo "SVN_REPO=$(pwd)/test-repository" >> "${GITHUB_ENV}"
           
           svn co file://$(pwd)/test-repository test-checkout
           cd test-checkout
