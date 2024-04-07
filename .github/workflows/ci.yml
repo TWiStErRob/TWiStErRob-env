@@ -1,8 +1,6 @@
 name: CI
 on:
   push:
-    branches:
-      - '**'
 
 concurrency:
   group: ${{ github.ref == 'refs/heads/main' && format('ci-map-main-{0}', github.sha) || format('ci-map-{0}', github.ref) }}
@@ -16,55 +14,80 @@ env:
 
 jobs:
 
+  validate:
+    name: "🦺 Validation"
+    uses: TWiStErRob/github-workflows/.github/workflows/validate.yml@v3
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+
   git-merged-branches:
     name: "🔨 Build / GIT / Merged Branches"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/git/merged-branches
+        shell: bash
         run: $KOTLINC find-merged-branches.main.kts
 
 
   github-draft-issues:
     name: "🔨 Build / GitHub / Draft Issues"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/project-manage-draft-issues
+        shell: bash
         run: $KOTLINC manage-draft-issues.main.kts
 
 
   github-repository-convention:
     name: "🔨 Build / GitHub / Repository Convention"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/repository-convention
+        shell: bash
         run: $KOTLINC validate.main.kts
 
 
   github-user-contribs:
     name: "🔨 Build / GitHub / User Contributions"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/user-contribs
+        shell: bash
         run: >
           $KOTLINC
           get.main.kts
@@ -73,27 +96,35 @@ jobs:
   
   google-play-reviews:
     name: "🔨 Build / Google / GMail / Google Play Store reviews"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/google/gmail-play-reviews
+        shell: bash
         run: $KOTLINC reviews.main.kts
 
 
   notion-import-data:
     name: "🔨 Build / Notion / Import Data"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/notion/import-data
+        shell: bash
         run: >
           $KOTLINC
           notion-import-csv.main.kts
@@ -104,47 +135,67 @@ jobs:
 
   notion-filter-content:
     name: "🔨 Build / Notion / Filter Content"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/notion/database-filter-page-content
+        shell: bash
         run: $KOTLINC filter-content.main.kts
 
 
   notion-move-to-property:
     name: "🔨 Build / Notion / Move to Property"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/notion/page-section-move-to-property
+        shell: bash
         run: $KOTLINC notion-move-to-property.main.kts
 
 
   lastpass2google:
     name: "🔨 Build / Special / LastPass 2 Google migration"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
       - name: "Compile .main.kts."
         working-directory: scripts/special/lastpass2google-migration
+        shell: bash
         run: $KOTLINC pass.main.kts
 
 
   pst-maildir:
     name:  "🔨 Build & Check / PST to Maildir migration"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -160,8 +211,8 @@ jobs:
       - name: "Find user."
         id: id
         run: |
-          echo "uid=$(id --user)" >> $GITHUB_OUTPUT
-          echo "gid=$(id --group)" >> $GITHUB_OUTPUT
+          echo "uid=$(id --user)" >> "${GITHUB_OUTPUT}"
+          echo "gid=$(id --group)" >> "${GITHUB_OUTPUT}"
 
       - name: "Run test migration in container."
         uses: addnab/docker-run-action@v3
@@ -187,7 +238,7 @@ jobs:
           find Inbox/cur/ -type f -exec head "{}" \;
 
       - name: "Prepare 'pst2maildir test' artifact."
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         working-directory: scripts/special/pst-maildir-imap/test
         run: |
           # Compress Inbox/ because it contains strange characters in the filenames.
@@ -198,17 +249,27 @@ jobs:
           tar -f pst2maildir-inbox.tar -c Inbox/ --remove-files
 
       - name: "Upload 'pst2maildir test' artifact."
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: 'pst2maildir test'
-          path: ${{ github.workspace }}/scripts/special/pst-maildir-imap/test/
+          if-no-files-found: error
+          path: scripts/special/pst-maildir-imap/test/
 
 
   svn2git-migration:
     name:  "🔨 Build & Check / SVN to GIT migration"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+
+    permissions:
+      # actions/checkout
+      contents: read
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -220,7 +281,7 @@ jobs:
           cd workdir
           
           svnadmin create test-repository
-          echo "SVN_REPO=$(pwd)/test-repository" >> $GITHUB_ENV
+          echo "SVN_REPO=$(pwd)/test-repository" >> "${GITHUB_ENV}"
           
           svn co file://$(pwd)/test-repository test-checkout
           cd test-checkout
@@ -292,33 +353,42 @@ jobs:
           diff expected-git-log.txt actual-git-log.txt
 
       - name: "Upload 'svn2git test' artifact."
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: 'svn2git test'
-          path: ${{ github.workspace }}/scripts/special/svn2git-migration/workdir/
+          if-no-files-found: error
+          path: scripts/special/svn2git-migration/workdir/
 
 
   gradle-init:
     name:  "🔨 Build / Gradle init scripts"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
       - name: "Run Gradle build."
-        working-directory: config/gradle/init.d/test
         env:
           GRADLE_USER_HOME: ${{ github.workspace }}/config/gradle
-        run: |
-          ./gradlew
+        working-directory: config/gradle/init.d/test
+        shell: bash
+        run: ./gradlew
 
 
   detekt:
     name: "🔍 Static Checks / Detekt"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+      # github/codeql-action/upload-sarif
+      security-events: write
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -326,6 +396,7 @@ jobs:
       - name: "Run detekt."
         env:
           DETEKT_VERSION: '1.23.1'
+        shell: bash
         run: |
           curl --silent --show-error --location --remote-name \
               https://github.com/detekt/detekt/releases/download/v${DETEKT_VERSION?}/detekt-cli-${DETEKT_VERSION?}.zip
@@ -334,7 +405,7 @@ jobs:
           ./detekt-cli-*/bin/detekt-cli \
               --all-rules \
               --max-issues 0 \
-              --base-path ${{ github.workspace }} \
+              --base-path "${GITHUB_WORKSPACE}" \
               --report sarif:detekt.sarif \
               --report txt:detekt.txt \
               --report html:detekt.html \
@@ -342,23 +413,35 @@ jobs:
               --report md:detekt.md \
 
       - name: "Upload 'Detekt Results' artifact."
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: 'Detekt Results'
-          path: ${{ github.workspace }}/detekt.*
+          if-no-files-found: error
+          path: detekt.*
 
       - name: "Publish 'Code scanning results / detekt'."
         uses: github/codeql-action/upload-sarif@v3
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         with:
           sarif_file: ${{ github.workspace }}/detekt.sarif
 
 
   shellcheck:
     name: "🔍 Static Checks / ShellCheck"
-    runs-on: ubuntu-latest
     timeout-minutes: 5
+
+    permissions:
+      # actions/checkout
+      contents: read
+      # github/codeql-action/upload-sarif
+      security-events: write
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -374,14 +457,14 @@ jobs:
           "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --version
           
           # `shellcheck **.{sh}`, but without globbing.
-          find ${{ github.workspace }} -type f \( -name '*.sh' \) \
+          find "${GITHUB_WORKSPACE}" -type f \( -name '*.sh' \) \
               -exec "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --enable=all --severity=style --shell=sh --check-sourced --external-sources --format=json {} + \
               > shellcheck.json
           
           # The previous command will fail if violations are found, careful putting more commands here.
 
       - name: "Convert shellcheck JSON output to SARIF."
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         env:
           # Use https://github.com/psastras/sarif-rs
           SHELLCHECK_SARIF_VERSION: '0.4.2'
@@ -391,12 +474,12 @@ jobs:
           chmod +x shellcheck-sarif-x86_64-unknown-linux-gnu
           
           # Relativize paths in the shellcheck JSON output, so in turn the SARIF output is relative too.
-          sed --in-place --expression='s!"file":"${{ github.workspace }}/!"file":"!g' shellcheck.json
+          sed --in-place --expression="s#\"file\":\"${GITHUB_WORKSPACE}/#\"file\":\"#g" shellcheck.json
           
           ./shellcheck-sarif-x86_64-unknown-linux-gnu < shellcheck.json > shellcheck.sarif
 
       - name: "Pretty-print SARIF output."
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         env:
           # Use https://github.com/psastras/sarif-rs
           SARIF_FMT_VERSION: '0.4.2'
@@ -408,14 +491,15 @@ jobs:
           ./sarif-fmt-x86_64-unknown-linux-gnu < shellcheck.sarif | tee shellcheck.sarif.txt
 
       - name: "Upload 'ShellCheck Results' artifact."
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: 'ShellCheck Results'
-          path: ${{ github.workspace }}/shellcheck.*
+          if-no-files-found: error
+          path: shellcheck.*
 
       - name: "Publish 'Code scanning results / shellcheck'."
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ github.workspace }}/shellcheck.sarif
@@ -423,8 +507,15 @@ jobs:
 
   psscriptanalyzer:
     name: "🔍 Static Checks / PSScriptAnalyzer"
-    runs-on: windows-latest
     timeout-minutes: 5
+
+    permissions:
+      # actions/checkout
+      contents: read
+      # github/codeql-action/upload-sarif
+      security-events: write
+
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -439,14 +530,15 @@ jobs:
           excludeRule: '"PSAvoidUsingWriteHost"'
 
       - name: "Upload 'PSScriptAnalyzer Results' artifact."
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: 'PSScriptAnalyzer Results'
-          path: ${{ github.workspace }}/PSScriptAnalyzer.*
+          if-no-files-found: error
+          path: PSScriptAnalyzer.*
 
       - name: "Publish 'Code scanning results / PSScriptAnalyzer'."
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ github.workspace }}/PSScriptAnalyzer.sarif
