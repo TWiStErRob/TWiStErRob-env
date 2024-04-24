@@ -2,7 +2,7 @@
 // Postman collection https://www.postman.com/api-evangelist/workspace/google/collection/35240-0d073c40-6ad8-43d0-8baf-8ee3606819e0
 
 @file:Repository("https://repo1.maven.org/maven2/")
-@file:DependsOn("com.google.api-client:google-api-client:2.4.0")
+@file:DependsOn("com.google.api-client:google-api-client:2.4.1")
 @file:DependsOn("com.google.oauth-client:google-oauth-client-jetty:1.35.0")
 @file:DependsOn("com.google.apis:google-api-services-gmail:v1-rev20231218-2.0.0")
 
