@@ -385,6 +385,7 @@ jobs:
         # Explicitly not using the wrapper, want to test different versions.
         run: gradle
     strategy:
+      fail-fast: false
       matrix:
         gradle:
           - '5.6.4'
