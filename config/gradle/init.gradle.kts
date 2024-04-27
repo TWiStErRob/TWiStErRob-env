@@ -15,5 +15,8 @@ if (GradleVersion.version("6.2.2") <= GradleVersion.current().baseVersion) {
 }
 
 if (GradleVersion.version("8.0") <= GradleVersion.current().baseVersion) {
-	apply(from = "init.d/includes/gradle_caches-expiry.init.gradle.kts")
+	apply(from = "init.d/includes/gradle_caches-expiry.80.init.gradle.kts")
+}
+if (GradleVersion.version("8.8") <= GradleVersion.current().baseVersion) {
+	apply(from = "init.d/includes/gradle_caches-expiry.88.init.gradle.kts")
 }
