@@ -93,7 +93,7 @@ jobs:
           get.main.kts
           summarize.main.kts
 
-  
+
   google-play-reviews:
     name: "🔨 Build / Google / GMail / Google Play Store reviews"
     timeout-minutes: 5
@@ -185,7 +185,7 @@ jobs:
 
 
   pst-maildir:
-    name:  "🔨 Build & Check / PST to Maildir migration"
+    name: "🔨 Build & Check / PST to Maildir migration"
     timeout-minutes: 5
     permissions:
       # actions/checkout
@@ -258,7 +258,7 @@ jobs:
 
 
   svn2git-migration:
-    name:  "🔨 Build & Check / SVN to GIT migration"
+    name: "🔨 Build & Check / SVN to GIT migration"
     timeout-minutes: 5
 
     permissions:
@@ -362,7 +362,7 @@ jobs:
 
 
   gradle-init:
-    name:  "🔨 Build / Gradle init scripts"
+    name: "🔨 Build / Gradle init scripts"
     timeout-minutes: 5
     permissions:
       # actions/checkout
