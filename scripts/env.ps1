@@ -52,9 +52,9 @@ $user = [ordered]@{
 
     GCLOUD_HOME = "%PROG_HOME%\tools\sdk\google-cloud-sdk"
     # set up a Gradle for global things
-    GRADLE7_HOME = "%PROG_HOME%\tools\build\gradle\gradle-7.6-all\9f832ih6bniajn45pbmqhk2cw\gradle-7.6"
-    GRADLE8_HOME = "%PROG_HOME%\tools\build\gradle\gradle-8.0.1-all\aro4hu1c3oeioove7l0i4i14o\gradle-8.0.1"
-    GRADLE_HOME = "%GRADLE7_HOME%"
+    GRADLE7_HOME = "%PROG_HOME%\tools\build\gradle\gradle-7.6.4-all\69w292fwwbbevpookp42lrbux\gradle-7.6.4"
+    GRADLE8_HOME = "%PROG_HOME%\tools\build\gradle\gradle-8.7-all\aan3ydargesu18aqyqjwhr3pc\gradle-8.7"
+    GRADLE_HOME = "%GRADLE8_HOME%"
     # Global Gradle arguments to be passed to `gradle`/`gradlew`
     #-PSNAPSHOT_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2 -PRELEASE_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2
     GRADLE_ARGS = "--stacktrace"
@@ -77,7 +77,7 @@ $user = [ordered]@{
     JAVA6_HOME = "%PROG_HOME%\tools\lang\java-1.6.0_45-x64-jdk"
     JAVA7_HOME = "%PROG_HOME%\tools\lang\java-1.7.0_80-x64-jdk"
     JAVA8_HOME = "%PROG_HOME%\tools\lang\java-1.8.0_201-x64-jdk"
-    JAVA8_HOME_32 = "%PROG_HOME%\tools\lang\java-1.8.0_121-x86-jdk"
+    JAVA8_HOME_32 = "%PROG_HOME%\tools\lang\java-1.8.0_201-x86-jdk"
     JAVA9_HOME = "%PROG_HOME%\tools\lang\java-9.0.1_11-x64-jdk"
     JAVA10_HOME = "%PROG_HOME%\tools\lang\java-10.0.2-x64-jdk"
     # BEWARE: after 11 Oracle JDKs are commercially licenced, not free
@@ -104,7 +104,12 @@ $user = [ordered]@{
     KOTLIN_HOME = "%PROG_HOME%\tools\lang\kotlin-1.9.10"
     KOTLIN_MAIN_KTS_COMPILED_SCRIPTS_CACHE_DIR = "%PROG_HOME_LARGE%\caches\kotlin\main.kts.compiled.cache"
     KONAN_DATA_DIR = "Z:\caches\kotlin\konan"
-    RUBY_HOME = "%PROG_HOME%\tools\lang\ruby-2.7.8-x64-mingw32"
+
+    RUBY2_HOME = "%PROG_HOME%\tools\lang\ruby-2.7.8-x64-mingw32"
+    RUBY32_HOME = "%PROG_HOME%\tools\lang\ruby-3.2.2-1-x64"
+    RUBY33_HOME = "%PROG_HOME%\tools\lang\ruby-3.3.1-1-x64"
+    RUBY3_HOME = "%RUBY33_HOME%"
+    RUBY_HOME = "%RUBY3_HOME%"
     # likely Ruby 2.6.x default, use for previous versions
     RUBYOPT = "-Eutf-8"
 
@@ -158,20 +163,20 @@ $paths = @(
         # gitk
         "%GIT_HOME%\cmd",
         "%BUNCH_HOME%\bin",
-        # Android
+        # Android (Names listed below are in form `Name Of SDK Component: relevant, commands`.)
         "%TOOLS_HOME%\android",
-        # apkanalyzer, avdmanager, lint, retrace, sdkmanager
+        # Android SDK Command-line Tools (latest): apkanalyzer, avdmanager, lint, retrace, sdkmanager
         "%ANDROID_HOME%\cmdline-tools\latest\bin",
-        # emulator
+        # Android Emulator: emulator
         "%ANDROID_HOME%\emulator",
-        # emulator, monitor, android
-        "%ANDROID_HOME%\tools",
-        # uiautomatorviewer, avdmanager, lint, monkeyrunner, sdkmanager, uiautomatorviewer
-        "%ANDROID_HOME%\tools\bin",
-        # adb, fastboot, hprof-conv, sqlite3
+        # Android SDK Platform-Tools: adb, fastboot, hprof-conv, sqlite3
         "%ANDROID_HOME%\platform-tools",
-        # d8, aapt, aapt2, aidl, dexdump, zipalign, apksigner
-        "%ANDROID_HOME%\build-tools\33.0.1",
+        # Android SDK Build-Tools: d8, aapt, aapt2, aidl, dexdump, zipalign, apksigner
+        "%ANDROID_HOME%\build-tools\34.0.0",
+        # Android SDK Tools (Obsolete): emulator, monitor, android
+        "%ANDROID_HOME%\tools",
+        # Android SDK Tools (Obsolete): uiautomatorviewer, avdmanager, lint, monkeyrunner, sdkmanager, uiautomatorviewer
+        "%ANDROID_HOME%\tools\bin",
         # Clouds
         "%GCLOUD_HOME%\bin",
         "%HEROKU_HOME%\bin",
