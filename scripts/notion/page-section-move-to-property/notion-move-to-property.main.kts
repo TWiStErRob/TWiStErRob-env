@@ -2,8 +2,8 @@
 // Note: normally these dependencies are listed without a -jvm suffix,
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
-@file:DependsOn("com.github.seratch:notion-sdk-jvm-core:1.11.0")
-@file:DependsOn("com.github.seratch:notion-sdk-jvm-okhttp4:1.11.0")
+@file:DependsOn("com.github.seratch:notion-sdk-jvm-core:1.11.1")
+@file:DependsOn("com.github.seratch:notion-sdk-jvm-okhttp4:1.11.1")
 
 import notion.api.v1.NotionClient
 import notion.api.v1.http.OkHttp4Client
