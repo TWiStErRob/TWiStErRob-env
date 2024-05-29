@@ -10,7 +10,7 @@ env:
   # -Xallow-any-scripts-in-source-roots: https://youtrack.jetbrains.com/issue/KT-62575
   # -Werror: be strict
   # -progressive: use latest features
-  KOTLINC: kotlinc -Xallow-any-scripts-in-source-roots -Werror -progressive
+  KOTLINC: kotlinc -Xallow-any-scripts-in-source-roots -Werror -progressive -Xuse-fir-lt=false
 
 jobs:
 
