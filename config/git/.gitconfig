@@ -42,3 +42,5 @@
 	allowedSignersFile = P:\\config\\git\\allowedSignersFile
 [safe]
 	directory = P:/
+[stash]
+	showPatch = true
