@@ -3,7 +3,7 @@ on:
   push:
 
 concurrency:
-  group: ${{ github.ref == 'refs/heads/main' && format('ci-map-main-{0}', github.sha) || format('ci-map-{0}', github.ref) }}
+  group: ${{ format('{0}-{1}-{2}', github.workflow, github.ref, github.ref == 'refs/heads/main' && github.sha || 'HEAD') }}
   cancel-in-progress: true
 
 env:
@@ -402,14 +402,14 @@ jobs:
           - '7.6.4'
           - '8.0.2'
           - '8.7'
-          - '8.8-rc-1'
+          - '8.8'
 
 
   detekt:
     name: "🔍 Static Checks / Detekt"
     timeout-minutes: 5
     permissions:
-      # actions/checkout
+      # actions/checkout, gh release download
       contents: read
       # github/codeql-action/upload-sarif
       security-events: write
@@ -420,14 +420,16 @@ jobs:
 
       - name: "Run detekt."
         env:
+          # Use https://github.com/detekt/detekt
           DETEKT_VERSION: '1.23.1'
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          curl --silent --show-error --location --remote-name \
-              https://github.com/detekt/detekt/releases/download/v${DETEKT_VERSION?}/detekt-cli-${DETEKT_VERSION?}.zip
-          unzip "detekt-cli-*.zip"
-          ./detekt-cli-*/bin/detekt-cli --version
-          ./detekt-cli-*/bin/detekt-cli \
+          gh release download "v${DETEKT_VERSION?}" --repo detekt/detekt --pattern "detekt-cli-*.zip" --output detekt-cli.zip
+          unzip "detekt-cli.zip"
+          detekt="./detekt-cli-${DETEKT_VERSION?}/bin/detekt-cli"
+          "${detekt}" --version
+          "${detekt}" \
               --all-rules \
               --max-issues 0 \
               --base-path "${GITHUB_WORKSPACE}" \
@@ -457,7 +459,7 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      # actions/checkout
+      # actions/checkout, gh release download
       contents: read
       # github/codeql-action/upload-sarif
       security-events: write
@@ -475,15 +477,16 @@ jobs:
         env:
           # Use https://github.com/koalaman/shellcheck
           SHELLCHECK_VERSION: '0.9.0'
+          GH_TOKEN: ${{ github.token }}
         run: |
-          curl --silent --show-error --location --remote-name \
-              "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION?}/shellcheck-v${SHELLCHECK_VERSION?}.linux.x86_64.tar.xz"
-          tar --extract --xz --verbose --file="shellcheck-v${SHELLCHECK_VERSION?}.linux.x86_64.tar.xz"
-          "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --version
+          gh release download "v${SHELLCHECK_VERSION?}" --repo koalaman/shellcheck --pattern "shellcheck-v*.linux.x86_64.tar.xz"
+          tar --extract --xz --verbose --file shellcheck-v*.linux.x86_64.tar.xz
+          shellcheck="./shellcheck-v${SHELLCHECK_VERSION?}/shellcheck"
+          "${shellcheck}" --version
           
           # `shellcheck **.{sh}`, but without globbing.
           find "${GITHUB_WORKSPACE}" -type f \( -name '*.sh' \) \
-              -exec "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --enable=all --severity=style --shell=sh --check-sourced --external-sources --format=json {} + \
+              -exec "${shellcheck}" --enable=all --severity=style --shell=sh --check-sourced --external-sources --format=json {} + \
               > shellcheck.json
           
           # The previous command will fail if violations are found, careful putting more commands here.
@@ -493,27 +496,27 @@ jobs:
         env:
           # Use https://github.com/psastras/sarif-rs
           SHELLCHECK_SARIF_VERSION: '0.4.2'
+          GH_TOKEN: ${{ github.token }}
         run: |
-          curl --silent --show-error --location --remote-name \
-              "https://github.com/psastras/sarif-rs/releases/download/shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}/shellcheck-sarif-x86_64-unknown-linux-gnu"
-          chmod +x shellcheck-sarif-x86_64-unknown-linux-gnu
+          gh release download "shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}" --repo psastras/sarif-rs --pattern "shellcheck-sarif-x86_64-unknown-linux-gnu" --output shellcheck-sarif
+          chmod +x shellcheck-sarif
           
           # Relativize paths in the shellcheck JSON output, so in turn the SARIF output is relative too.
           sed --in-place --expression="s#\"file\":\"${GITHUB_WORKSPACE}/#\"file\":\"#g" shellcheck.json
           
-          ./shellcheck-sarif-x86_64-unknown-linux-gnu < shellcheck.json > shellcheck.sarif
+          ./shellcheck-sarif < shellcheck.json > shellcheck.sarif
 
       - name: "Pretty-print SARIF output."
         if: ${{ success() || failure() }}
         env:
           # Use https://github.com/psastras/sarif-rs
           SARIF_FMT_VERSION: '0.4.2'
+          GH_TOKEN: ${{ github.token }}
         run: |
-          curl --silent --show-error --location --remote-name \
-              "https://github.com/psastras/sarif-rs/releases/download/sarif-fmt-v${SARIF_FMT_VERSION?}/sarif-fmt-x86_64-unknown-linux-gnu"
-          chmod +x sarif-fmt-x86_64-unknown-linux-gnu
+          gh release download "sarif-fmt-v${SARIF_FMT_VERSION?}" --repo psastras/sarif-rs --pattern "sarif-fmt-x86_64-unknown-linux-gnu" --output sarif-fmt
+          chmod +x sarif-fmt
           
-          ./sarif-fmt-x86_64-unknown-linux-gnu < shellcheck.sarif | tee shellcheck.sarif.txt
+          ./sarif-fmt < shellcheck.sarif | tee shellcheck.sarif.txt
 
       - name: "Upload 'ShellCheck Results' artifact."
         if: ${{ success() || failure() }}
