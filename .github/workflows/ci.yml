@@ -10,8 +10,12 @@ env:
   # -Xallow-any-scripts-in-source-roots: https://youtrack.jetbrains.com/issue/KT-62575
   # -Werror: be strict
   # -progressive: use latest features
-  # -language-version=1.9: https://youtrack.jetbrains.com/issue/KT-68681
-  KOTLINC: kotlinc -Xallow-any-scripts-in-source-roots -Werror -progressive -language-version=1.9
+  # TODEL https://youtrack.jetbrains.com/issue/KT-68681
+  # -language-version=1.9: workaround to keep working on GHA without installation of specific Kotlin version.
+  # TODO turn progressive back on, it was disabled due to to the below workaround.
+  # warning: '-progressive' is meaningful only for the latest language version (2.0), while this build uses 1.9
+  # Compiler behavior in such mode is undefined; please, consider moving to the latest stable version or turning off progressive mode.
+  KOTLINC: kotlinc -Xallow-any-scripts-in-source-roots -Werror -language-version=1.9
 
 jobs:
 
@@ -470,7 +474,7 @@ jobs:
       - name: "Run shellcheck."
         env:
           # Use https://github.com/koalaman/shellcheck
-          SHELLCHECK_VERSION: '0.10.0'
+          SHELLCHECK_VERSION: '0.9.0'
         run: |
           curl --silent --show-error --location --remote-name \
               "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION?}/shellcheck-v${SHELLCHECK_VERSION?}.linux.x86_64.tar.xz"
