@@ -409,7 +409,7 @@ jobs:
     name: "🔍 Static Checks / Detekt"
     timeout-minutes: 5
     permissions:
-      # actions/checkout
+      # actions/checkout, gh release download
       contents: read
       # github/codeql-action/upload-sarif
       security-events: write
@@ -422,6 +422,7 @@ jobs:
         env:
           # Use https://github.com/detekt/detekt
           DETEKT_VERSION: '1.23.1'
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           gh release download "v${DETEKT_VERSION?}" --repo detekt/detekt --pattern "detekt-cli-*.zip" --output detekt-cli.zip
@@ -458,7 +459,7 @@ jobs:
     timeout-minutes: 5
 
     permissions:
-      # actions/checkout
+      # actions/checkout, gh release download
       contents: read
       # github/codeql-action/upload-sarif
       security-events: write
@@ -476,6 +477,7 @@ jobs:
         env:
           # Use https://github.com/koalaman/shellcheck
           SHELLCHECK_VERSION: '0.9.0'
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download "v${SHELLCHECK_VERSION?}" --repo koalaman/shellcheck --pattern "shellcheck-v*.linux.x86_64.tar.xz"
           tar --extract --xz --verbose --file="shellcheck-v*.linux.x86_64.tar.xz"
@@ -494,6 +496,7 @@ jobs:
         env:
           # Use https://github.com/psastras/sarif-rs
           SHELLCHECK_SARIF_VERSION: '0.4.2'
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download "shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}" --repo psastras/sarif-rs --pattern "shellcheck-sarif-x86_64-unknown-linux-gnu" --output shellcheck-sarif
           chmod +x shellcheck-sarif
@@ -508,6 +511,7 @@ jobs:
         env:
           # Use https://github.com/psastras/sarif-rs
           SARIF_FMT_VERSION: '0.4.2'
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download "sarif-fmt-v${SARIF_FMT_VERSION?}" --repo psastras/sarif-rs --pattern "sarif-fmt-x86_64-unknown-linux-gnu" --output sarif-fmt
           chmod +x sarif-fmt
