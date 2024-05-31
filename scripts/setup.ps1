@@ -64,7 +64,7 @@ New-SymLink "p:\web\twisterrob.net\root" "p:\web\twisterrob.net\000webhost.net\f
 # Dead because it's a VHDX file now.
 # New-SymLink "p:\data\ubuntu" "c:\Users\TWiStEr\AppData\Local\Packages\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\LocalState\rootfs"
 
-New-SymLink "%ProgramFiles%\nodejs" "P:\tools\lang\nvm-1.1.5\v14.17.6"
+New-SymLink "%ProgramFiles%\nodejs" "%NVM_HOME%\v20.11.0"
 
 Write-Host "Done with links."
 

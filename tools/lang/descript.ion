@@ -37,3 +37,4 @@ nvm-1.1.11 https://github.com/coreybutler/nvm-windows/releases/download/1.1.11/n
 kotlin-1.9.10 https://github.com/JetBrains/kotlin/releases/download/v1.9.10/kotlin-compiler-1.9.10.zip
 java-21.0.1-x64-openjdk https://jdk.java.net/21/ -> https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-21.0.1_windows-x64_bin.zip
 ruby-3.3.1-1-x64 https://rubyinstaller.org/downloads/ -> https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.1-1/rubyinstaller-3.3.1-1-x64.7z\n\nThen inside\n * bin folder: ridk install\n * choose 3 (MSYS2 and MINGW)\n * this downloads\n * starts installer (and fails in the background), complete installation anyways to msys64 folder inside Ruby folder\n * choose 3 again\n * wait\n * CTRL+C to completeÂ
+kotlin-2.0.0 https://github.com/JetBrains/kotlin/releases/download/v2.0.0/kotlin-compiler-2.0.0.zip
