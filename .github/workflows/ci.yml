@@ -420,14 +420,15 @@ jobs:
 
       - name: "Run detekt."
         env:
+          # Use https://github.com/detekt/detekt
           DETEKT_VERSION: '1.23.1'
         shell: bash
         run: |
-          curl --silent --show-error --location --remote-name \
-              https://github.com/detekt/detekt/releases/download/v${DETEKT_VERSION?}/detekt-cli-${DETEKT_VERSION?}.zip
-          unzip "detekt-cli-*.zip"
-          ./detekt-cli-*/bin/detekt-cli --version
-          ./detekt-cli-*/bin/detekt-cli \
+          gh release download "v${DETEKT_VERSION?}" --repo detekt/detekt --pattern "detekt-cli-*.zip" --output detekt-cli.zip
+          unzip "detekt-cli.zip"
+          detekt-cli="./detekt-cli-${DETEKT_VERSION?}/bin/detekt-cli"
+          "${detekt-cli}" --version
+          "${detekt-cli}" \
               --all-rules \
               --max-issues 0 \
               --base-path "${GITHUB_WORKSPACE}" \
@@ -476,14 +477,14 @@ jobs:
           # Use https://github.com/koalaman/shellcheck
           SHELLCHECK_VERSION: '0.9.0'
         run: |
-          curl --silent --show-error --location --remote-name \
-              "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION?}/shellcheck-v${SHELLCHECK_VERSION?}.linux.x86_64.tar.xz"
-          tar --extract --xz --verbose --file="shellcheck-v${SHELLCHECK_VERSION?}.linux.x86_64.tar.xz"
-          "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --version
+          gh release download "v${SHELLCHECK_VERSION?}" --repo koalaman/shellcheck --pattern "shellcheck-v*.linux.x86_64.tar.xz"
+          tar --extract --xz --verbose --file="shellcheck-v*.linux.x86_64.tar.xz"
+          shellcheck="./shellcheck-v${SHELLCHECK_VERSION?}/shellcheck"
+          "${shellcheck}" --version
           
           # `shellcheck **.{sh}`, but without globbing.
           find "${GITHUB_WORKSPACE}" -type f \( -name '*.sh' \) \
-              -exec "./shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --enable=all --severity=style --shell=sh --check-sourced --external-sources --format=json {} + \
+              -exec "${shellcheck}" --enable=all --severity=style --shell=sh --check-sourced --external-sources --format=json {} + \
               > shellcheck.json
           
           # The previous command will fail if violations are found, careful putting more commands here.
@@ -494,14 +495,13 @@ jobs:
           # Use https://github.com/psastras/sarif-rs
           SHELLCHECK_SARIF_VERSION: '0.4.2'
         run: |
-          curl --silent --show-error --location --remote-name \
-              "https://github.com/psastras/sarif-rs/releases/download/shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}/shellcheck-sarif-x86_64-unknown-linux-gnu"
-          chmod +x shellcheck-sarif-x86_64-unknown-linux-gnu
+          gh release download "shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}" --repo psastras/sarif-rs --pattern "shellcheck-sarif-x86_64-unknown-linux-gnu" --output shellcheck-sarif
+          chmod +x shellcheck-sarif
           
           # Relativize paths in the shellcheck JSON output, so in turn the SARIF output is relative too.
           sed --in-place --expression="s#\"file\":\"${GITHUB_WORKSPACE}/#\"file\":\"#g" shellcheck.json
           
-          ./shellcheck-sarif-x86_64-unknown-linux-gnu < shellcheck.json > shellcheck.sarif
+          ./shellcheck-sarif < shellcheck.json > shellcheck.sarif
 
       - name: "Pretty-print SARIF output."
         if: ${{ success() || failure() }}
@@ -509,11 +509,10 @@ jobs:
           # Use https://github.com/psastras/sarif-rs
           SARIF_FMT_VERSION: '0.4.2'
         run: |
-          curl --silent --show-error --location --remote-name \
-              "https://github.com/psastras/sarif-rs/releases/download/sarif-fmt-v${SARIF_FMT_VERSION?}/sarif-fmt-x86_64-unknown-linux-gnu"
-          chmod +x sarif-fmt-x86_64-unknown-linux-gnu
+          gh release download "sarif-fmt-v${SARIF_FMT_VERSION?}" --repo psastras/sarif-rs --pattern "sarif-fmt-x86_64-unknown-linux-gnu" --output sarif-fmt
+          chmod +x sarif-fmt
           
-          ./sarif-fmt-x86_64-unknown-linux-gnu < shellcheck.sarif | tee shellcheck.sarif.txt
+          ./sarif-fmt < shellcheck.sarif | tee shellcheck.sarif.txt
 
       - name: "Upload 'ShellCheck Results' artifact."
         if: ${{ success() || failure() }}

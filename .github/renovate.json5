@@ -1,6 +1,56 @@
 {
-	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": [
+	$schema: "https://docs.renovatebot.com/renovate-schema.json",
+	extends: [
 		"local>TWiStErRob/renovate-config",
+	],
+	customManagers: [
+		{
+			description: "Update ShellCheck CLI from GitHub Releases.",
+			customType: "regex",
+			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
+			datasourceTemplate: "github-releases",
+			depNameTemplate: "detekt/detekt",
+			matchStrings: [
+				"DETEKT_VERSION: '(?<currentValue>.*?)'"
+			],
+			extractVersionTemplate: "^v(?<version>.*)$",
+			versioningTemplate: "semver",
+		},
+		{
+			description: "Update ShellCheck CLI from GitHub Releases.",
+			customType: "regex",
+			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
+			datasourceTemplate: "github-releases",
+			depNameTemplate: "koalaman/shellcheck",
+			matchStrings: [
+				"SHELLCHECK_VERSION: '(?<currentValue>.*?)'"
+			],
+			extractVersionTemplate: "^v(?<version>.*)$",
+			versioningTemplate: "semver",
+		},
+		{
+			description: "Update ShellCheck CLI from GitHub Releases.",
+			customType: "regex",
+			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
+			datasourceTemplate: "github-releases",
+			depNameTemplate: "psastras/sarif-rs",
+			matchStrings: [
+				"SHELLCHECK_SARIF_VERSION: '(?<currentValue>.*?)'"
+			],
+			extractVersionTemplate: "^shellcheck-sarif-v(?<version>.*)$",
+			versioningTemplate: "semver",
+		},
+		{
+			description: "Update ShellCheck CLI from GitHub Releases.",
+			customType: "regex",
+			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
+			datasourceTemplate: "github-releases",
+			depNameTemplate: "psastras/sarif-rs",
+			matchStrings: [
+				"SARIF_FMT_VERSION: '(?<currentValue>.*?)'"
+			],
+			extractVersionTemplate: "^sarif-fmt-v(?<version>.*)$",
+			versioningTemplate: "semver",
+		}
 	],
 }
