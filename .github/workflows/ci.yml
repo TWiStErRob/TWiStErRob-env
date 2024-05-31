@@ -427,9 +427,9 @@ jobs:
         run: |
           gh release download "v${DETEKT_VERSION?}" --repo detekt/detekt --pattern "detekt-cli-*.zip" --output detekt-cli.zip
           unzip "detekt-cli.zip"
-          detekt-cli="./detekt-cli-${DETEKT_VERSION?}/bin/detekt-cli"
-          "${detekt-cli}" --version
-          "${detekt-cli}" \
+          detekt="./detekt-cli-${DETEKT_VERSION?}/bin/detekt-cli"
+          "${detekt}" --version
+          "${detekt}" \
               --all-rules \
               --max-issues 0 \
               --base-path "${GITHUB_WORKSPACE}" \
