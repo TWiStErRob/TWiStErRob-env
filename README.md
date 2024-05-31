@@ -15,6 +15,7 @@ I have a complex environment setup on Windows, this repository shall contain thi
    * [svn2git-migration](scripts/special/svn2git-migration) A script to migrate from an SVN monorepo into git repository(s).
    * [local-intellij](scripts/special/local-intellij) How to start Android Studio (IntelliJ IDEA) without a trace in a specific directory.
    * [pst-maildir-imap](scripts/special/pst-maildir-imap) A process to convert a .pst file to Maildir format and then sync with an IMAP server.
+   * [bitrise-mermaid](scripts/special/bitrise-mermaid) Convert Bitrise configuration to Mermaid diagram.
  * [Git](scripts/git)
    * [github-away](scripts/git/github-away) How to set up GitHub and git on a foreign machine.
    * [merged-branches](scripts/git/merged-branches) Find squashed branches from `git log`.
