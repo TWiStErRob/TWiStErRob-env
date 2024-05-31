@@ -52,7 +52,7 @@ $user = [ordered]@{
 
     GCLOUD_HOME = "%PROG_HOME%\tools\sdk\google-cloud-sdk"
     # set up a Gradle for global things
-    GRADLE7_HOME = "%PROG_HOME%\tools\build\gradle\gradle-7.6.4-all\69w292fwwbbevpookp42lrbux\gradle-7.6.4"
+    GRADLE7_HOME = "%PROG_HOME%\tools\build\gradle\gradle-7.6.4-bin\eq47ircvekz8t0m2yd28ebfsh\gradle-7.6.4"
     GRADLE8_HOME = "%PROG_HOME%\tools\build\gradle\gradle-8.7-all\aan3ydargesu18aqyqjwhr3pc\gradle-8.7"
     GRADLE_HOME = "%GRADLE8_HOME%"
     # Global Gradle arguments to be passed to `gradle`/`gradlew`
@@ -101,7 +101,9 @@ $user = [ordered]@{
     JDK_18 = "%JAVA8_HOME%"
     JDK_9 = "%JAVA9_HOME%"
 
-    KOTLIN_HOME = "%PROG_HOME%\tools\lang\kotlin-1.9.10"
+    KOTLIN_19_HOME = "%PROG_HOME%\tools\lang\kotlin-1.9.10"
+    KOTLIN_20_HOME = "%PROG_HOME%\tools\lang\kotlin-2.0.0"
+    KOTLIN_HOME = "%KOTLIN_20_HOME%"
     KOTLIN_MAIN_KTS_COMPILED_SCRIPTS_CACHE_DIR = "%PROG_HOME_LARGE%\caches\kotlin\main.kts.compiled.cache"
     KONAN_DATA_DIR = "Z:\caches\kotlin\konan"
 
