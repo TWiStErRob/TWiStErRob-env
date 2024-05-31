@@ -3,7 +3,7 @@ on:
   push:
 
 concurrency:
-  group: ${{ github.ref == 'refs/heads/main' && format('ci-map-main-{0}', github.sha) || format('ci-map-{0}', github.ref) }}
+  group: ${{ format('{0}-{1}-{2}', github.workflow, github.ref, github.ref == 'refs/heads/main' && github.sha || 'HEAD') }}
   cancel-in-progress: true
 
 env:
