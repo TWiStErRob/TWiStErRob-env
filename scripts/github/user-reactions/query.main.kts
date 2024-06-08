@@ -13,7 +13,7 @@
 @file:DependsOn("tech.tablesaw:tablesaw-core:0.43.1")
 
 import Query_main.JsonX.asBoolean
-import Query_main.JsonX.asString
+import Query_main.JsonX.asSafeString
 import Query_main.JsonX.getSafeString
 import Query_main.JsonX.prettyPrint
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -75,7 +75,7 @@ suspend fun main(vararg args: String) {
 		repos.map { repo ->
 			val nameWithOwner = repo.asJsonObject().getString("nameWithOwner")
 			val (owner, name) = nameWithOwner.split("/")
-			val issues = gitHub.getRepoIssues(name, owner)
+			val issues = gitHub.getRepoIssues(owner, name)
 				.map { it.getValue("/data/repository/issues/nodes").asJsonArray() }
 				.toList()
 				.flatMap { it.toList() }
@@ -140,21 +140,21 @@ fun processRepoIssues(issues: List<Issue>) {
 		}
 }
 
-suspend fun GitHub.getRepoIssues(name: String, owner: String): Flow<JsonObject> =
+suspend fun GitHub.getRepoIssues(owner: String, name: String): Flow<JsonObject> =
 	flow {
 		var cursor: String? = null
 		do {
-			val response = getIssues(name, owner, cursor).asJsonObject()
+			val response = getIssues(owner, name, cursor).asJsonObject()
 			emit(response)
-			cursor = response.getValue("/data/repository/issues/pageInfo/endCursor").asString()
+			cursor = response.getValue("/data/repository/issues/pageInfo/endCursor").asSafeString()
 			val hasNext = response.getValue("/data/repository/issues/pageInfo/hasNextPage").asBoolean()
 		} while (hasNext)
 	}
 
-suspend fun GitHub.getIssues(name: String, owner: String, page: String?): JsonValue {
-	val cache = File("cache/${owner}/${name}-${page}.issues.json").also { it.parentFile.mkdirs() }
+suspend fun GitHub.getIssues(owner: String, name: String, page: String?): JsonValue {
+	val cache = File("cache/${owner}/${name}/${page}.issues.json").also { it.parentFile.mkdirs() }
 	if (!cache.exists()) {
-		println("Fetching $name/$owner page $page")
+		println("Fetching $owner/$name page $page")
 		val issuesJson = this.issuesInRepo(owner, name, page)
 		val parsed = Json.createReader(StringReader(issuesJson)).use { it.readValue() }
 		parsed.asJsonObject() // Validate.
@@ -252,7 +252,7 @@ class GitHub : Closeable {
 					System.err.println(message)
 				}
 			}
-			level = LogLevel.ALL
+			level = LogLevel.HEADERS
 		}
 		defaultRequest {
 			url("https://api.github.com/")
