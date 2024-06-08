@@ -1,6 +1,5 @@
-query {
-    repository(owner: "cli", name: "cli") {
-        __typename
+query($owner: String!, $name: String!) {
+    repository(owner: $owner, name: $name) {
         url
         issues(
             first: 100,
@@ -9,6 +8,24 @@ query {
             nodes {
                 ...issueDetails
             }
+        }
+    }
+}
+
+fragment issueDetails on Node {
+    ... on UniformResourceLocatable { url }
+    ... on Issue { title, state }
+    ... on Discussion { title, isAnswered }
+    ... on Closable { closedAt }
+    ... on Comment { viewerDidAuthor, createdAt, updatedAt }
+    ... on Subscribable { viewerSubscription }
+    ... on Reactable {
+        reactionGroups {
+            content # Vote type
+            reactors {
+                totalCount
+            }
+            viewerHasReacted
         }
     }
 }

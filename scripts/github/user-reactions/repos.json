@@ -1,0 +1,13 @@
+{
+	"data": {
+		"organization": {
+			"repositories": {
+				"nodes": [
+					{
+						"nameWithOwner": "cli/cli"
+					}
+				]
+			}
+		}
+	}
+}
