@@ -1,0 +1,24 @@
+query {
+    repository(owner: "cli", name: "cli") {
+        __typename
+        url
+        issues(
+            first: 100,
+            filterBy: { viewerSubscribed: true },
+            orderBy: { field: CREATED_AT, direction: DESC },
+            states: [ OPEN ],
+        ) {
+            nodes {
+                url
+                title
+                author {
+                    login
+                }
+                reactionGroups {
+                    content
+                    viewerHasReacted
+                }
+            }
+        }
+    }
+}

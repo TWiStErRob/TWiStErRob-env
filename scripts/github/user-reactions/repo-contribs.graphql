@@ -1,0 +1,21 @@
+query {
+    user(login: "TWiStErRob") {
+        contributionsCollection(organizationID: "O_kgDOA48Fhw") {
+            issueContributions(first: 10) {
+                nodes {
+                    issue {
+                        url
+                        title
+                        reactionGroups {
+                            content
+                            reactors {
+                                totalCount
+                            }
+                            viewerHasReacted
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
