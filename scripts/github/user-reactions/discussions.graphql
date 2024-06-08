@@ -1,0 +1,10 @@
+query {
+    repository(owner: "community", name: "community") {
+        discussions(first: 100) {
+            nodes {
+                isAnswered
+                ...issueDetails
+            }
+        }
+    }
+}

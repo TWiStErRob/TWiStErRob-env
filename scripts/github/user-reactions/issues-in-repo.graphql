@@ -5,15 +5,9 @@ query {
         issues(
             first: 100,
             orderBy: { field: CREATED_AT, direction: DESC },
-            states: [ OPEN ],
         ) {
             nodes {
-                url
-                title
-                reactionGroups {
-                    content
-                    viewerHasReacted
-                }
+                ...issueDetails
             }
         }
     }
