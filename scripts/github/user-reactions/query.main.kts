@@ -12,6 +12,8 @@
 @file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.3.11")
 @file:DependsOn("tech.tablesaw:tablesaw-core:0.43.1")
 
+import Query_main.JsonX.asBoolean
+import Query_main.JsonX.asString
 import Query_main.JsonX.prettyPrint
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -35,6 +37,10 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.jackson.jackson
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.intellij.lang.annotations.Language
 import java.io.Closeable
@@ -50,6 +56,8 @@ import javax.json.JsonValue
 import javax.json.stream.JsonGenerator
 import kotlin.system.exitProcess
 
+println("Starting with ${args.contentToString()}")
+
 @Suppress("SpreadOperator")
 runBlocking(Dispatchers.Default) { main(*args) }
 
@@ -61,27 +69,47 @@ suspend fun main(vararg args: String) {
 	GitHub().use { gitHub ->
 		val reposResponse = Json.createReader(reposFile.reader()).use { it.readValue() }
 		val repos = reposResponse.asJsonObject().getValue("/data/organization/repositories/nodes").asJsonArray()
-		repos.forEach { repo ->
+		repos.map { repo ->
 			val nameWithOwner = repo.asJsonObject().getString("nameWithOwner")
-			val response = gitHub.processRepo(nameWithOwner)
-			val issues = response.asJsonObject().getValue("/data/repository/issues/nodes").asJsonArray()
-			issues.forEach { issueNode ->
-				val issue = issueNode.asJsonObject()
-				val title = issue.getString("title")
-				println(title)
-			}
+			val issues = gitHub.getRepoIssues(nameWithOwner)
+				.map { it.getValue("/data/repository/issues/nodes").asJsonArray() }
+				.toList()
+				.flatMap { it.toList() }
+			processRepoIssues(issues)
 		}
 	}
 }
 
-suspend fun GitHub.processRepo(nameWithOwner: String) : JsonValue {
+fun processRepoIssues(issues: List<JsonValue>) {
+	issues.forEach { issueNode ->
+		val issue = issueNode.asJsonObject()
+		val title = issue.getString("title")
+		println(title)
+	}
+}
+
+suspend fun GitHub.getRepoIssues(nameWithOwner: String): Flow<JsonObject> =
+	flow {
+		var cursor: String? = null
+		do {
+			val response = getIssues(nameWithOwner, cursor).asJsonObject()
+			emit(response)
+			cursor = response.getValue("/data/repository/issues/pageInfo/endCursor").asString()
+			val hasNext = response.getValue("/data/repository/issues/pageInfo/hasNextPage").asBoolean()
+			println("Processed $nameWithOwner page $cursor (more: $hasNext)")
+		} while (hasNext)
+	}
+
+suspend fun GitHub.getIssues(nameWithOwner: String, page: String?): JsonValue {
 	val (owner, name) = nameWithOwner.split("/")
-	val cache = File("cache/${owner}/${name}.issues.json").also { it.parentFile.mkdirs() }
+	val cache = File("cache/${owner}/${name}-${page}.issues.json").also { it.parentFile.mkdirs() }
 	if (!cache.exists()) {
-		val issuesJson = this.issuesInRepo(owner, name)
+		val issuesJson = this.issuesInRepo(owner, name, page)
 		val parsed = Json.createReader(StringReader(issuesJson)).use { it.readValue() }
 		parsed.asJsonObject() // Validate.
 		cache.writer().use { it.prettyPrint(parsed) }
+	} else {
+		println("Using cached issues for $nameWithOwner page $page from $cache")
 	}
 	return Json.createReader(cache.reader()).use { it.readValue() }
 }
@@ -100,6 +128,18 @@ object JsonX {
 
 	fun JsonObject.getSafeString(key: String): String? =
 		this[key]?.asSafeString()
+
+	fun JsonValue.asString(): String {
+		require(valueType == JsonValue.ValueType.STRING)
+		return (this as JsonString).string
+	}
+
+	fun JsonValue.asBoolean(): Boolean =
+		when (valueType) {
+			JsonValue.ValueType.TRUE -> true
+			JsonValue.ValueType.FALSE -> false
+			else -> error("Not a boolean: ${this}")
+		}
 
 	fun JsonValue.asSafeString(): String? =
 		if (valueType == JsonValue.ValueType.STRING) {
@@ -189,12 +229,13 @@ class GitHub : Closeable {
 	}
 }
 
-suspend fun GitHub.issuesInRepo(owner: String, name: String): String {
+suspend fun GitHub.issuesInRepo(owner: String, name: String, cursor: String?): String {
 	val response = graph(
 		query = File("issues-in-repo.graphql").readText(),
 		variables = mapOf(
 			"owner" to owner,
 			"name" to name,
+			"cursor" to cursor,
 		),
 	)
 	return response.bodyAsText().also { it.checkGraphQLError() }
