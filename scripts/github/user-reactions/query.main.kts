@@ -63,16 +63,8 @@ suspend fun main(vararg args: String) {
 		val repos = reposResponse.asJsonObject().getValue("/data/organization/repositories/nodes").asJsonArray()
 		repos.forEach { repo ->
 			val nameWithOwner = repo.asJsonObject().getString("nameWithOwner")
-			val (owner, name) = nameWithOwner.split("/")
-			val cache = File("cache/${owner}/${name}.issues.json").also { it.parentFile.mkdirs() }
-			if (!cache.exists()) {
-				val issuesJson = gitHub.issuesInRepo(owner, name)
-				val parsed = Json.createReader(StringReader(issuesJson)).use { it.readValue() }
-				parsed.asJsonObject() // Validate.
-				cache.writer().use { it.prettyPrint(parsed) }
-			}
-			val issuesResponse = Json.createReader(cache.reader()).use { it.readValue() }
-			val issues = issuesResponse.asJsonObject().getValue("/data/repository/issues/nodes").asJsonArray()
+			val response = gitHub.processRepo(nameWithOwner)
+			val issues = response.asJsonObject().getValue("/data/repository/issues/nodes").asJsonArray()
 			issues.forEach { issueNode ->
 				val issue = issueNode.asJsonObject()
 				val title = issue.getString("title")
@@ -80,6 +72,18 @@ suspend fun main(vararg args: String) {
 			}
 		}
 	}
+}
+
+suspend fun GitHub.processRepo(nameWithOwner: String) : JsonValue {
+	val (owner, name) = nameWithOwner.split("/")
+	val cache = File("cache/${owner}/${name}.issues.json").also { it.parentFile.mkdirs() }
+	if (!cache.exists()) {
+		val issuesJson = this.issuesInRepo(owner, name)
+		val parsed = Json.createReader(StringReader(issuesJson)).use { it.readValue() }
+		parsed.asJsonObject() // Validate.
+		cache.writer().use { it.prettyPrint(parsed) }
+	}
+	return Json.createReader(cache.reader()).use { it.readValue() }
 }
 
 object JsonX {
