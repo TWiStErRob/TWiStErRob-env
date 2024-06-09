@@ -4,10 +4,6 @@
 			"repositories": {
 				"nodes": [
 					{
-						"nameWithOwner": "community/community",
-						"url": "https://github.com/community/community"
-					},
-					{
 						"nameWithOwner": "cli/cli",
 						"url": "https://github.com/cli/cli"
 					},
@@ -286,6 +282,10 @@
 					{
 						"nameWithOwner": "actions/buildtypes",
 						"url": "https://github.com/actions/buildtypes"
+					},
+					{
+						"nameWithOwner": "community/community",
+						"url": "https://github.com/community/community"
 					}
 				]
 			}

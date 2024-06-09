@@ -91,11 +91,13 @@ data class Issue(
 	val title: String,
 	val url: String,
 	val closed: Boolean,
+	val author: String,
 	val mine: Boolean,
 	val createdAt: Instant,
 	val updatedAt: Instant,
 	val closedAt: Instant?,
 	val subscribed: String,
+	val votes: Int?,
 	val reactions: Map<String, Int>,
 	val myReactions: Set<String>,
 )
@@ -107,11 +109,13 @@ fun JsonValue.toIssue(): Issue {
 		title = issue.getString("title"),
 		url = issue.getString("url"),
 		closed = issue.getBoolean("closed"),
+		author = issue.getJsonObject("author").getString("login"),
 		mine = issue.getBoolean("viewerDidAuthor"),
 		createdAt = Instant.parse(issue.getString("createdAt")),
 		updatedAt = Instant.parse(issue.getString("updatedAt")),
 		closedAt = issue.getSafeString("closedAt")?.let { Instant.parse(it) },
 		subscribed = issue.getString("viewerSubscription"),
+		votes = if (issue.containsKey("upvoteCount")) issue.getInt("upvoteCount") else null,
 		reactions = reactionGroups
 			.associate { it.getString("content") to it.getJsonObject("reactors").getInt("totalCount") },
 		myReactions = reactionGroups
@@ -134,9 +138,11 @@ fun processRepoIssues(issues: List<Issue>, result: File) {
 				${issue.title}
 				  - ${issue.url}
 				  - ${listOfNotNull(stateString, subString, authorString, reactString).joinToString()}
+				  - Author: ${issue.author}
 				  - Created: ${issue.createdAt}
 				  - Updated: ${issue.updatedAt}
 				  - Closed: ${issue.closedAt}
+				  - Votes: ${issue.votes}
 				  - Reactions: ${issue.myReactions} ${issue.reactions}
 				""".trimIndent()
 			)
@@ -408,6 +414,7 @@ fun header(): String =
 		"Author",
 		"Subscribed",
 		"My Reactions",
+		"Votes",
 		"THUMBS_UP",
 		"THUMBS_DOWN",
 		"LAUGH",
@@ -426,9 +433,10 @@ fun Issue.toCsvLine(): String =
 		updatedAt.toString(),
 		closedAt?.toString() ?: "",
 		if (closed) "CLOSED" else "OPEN",
-		if (mine) "TWiStErRob" else "other",
+		author,
 		subscribed,
 		myReactions.joinToString(","),
+		votes.toString(),
 		(reactions["THUMBS_UP"] ?: 0).toString(),
 		(reactions["THUMBS_DOWN"] ?: 0).toString(),
 		(reactions["LAUGH"] ?: 0).toString(),
