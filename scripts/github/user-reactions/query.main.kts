@@ -82,7 +82,7 @@ suspend fun main(vararg args: String) {
 				.map { it.getValue("/data/repository/discussions/nodes").asJsonArray() }
 				.toList()
 				.flatMap { it.toList() }
-			processRepoIssues(issues.map { it.toIssue() } + discussions.map { it.toIssue() }, resultFile)
+			processRepoIssues(issues.map { it.toIssueSafe() } + discussions.map { it.toIssueSafe() }, resultFile)
 		}
 	}
 }
@@ -102,6 +102,13 @@ data class Issue(
 	val myReactions: Set<String>,
 )
 
+fun JsonValue.toIssueSafe(): Issue =
+	try {
+		toIssue()
+	} catch (@Suppress("detekt.TooGenericExceptionCaught") ex: Exception) {
+		throw IllegalArgumentException("Failed to parse issue: ${this}", ex)
+	}
+
 fun JsonValue.toIssue(): Issue {
 	val issue = asJsonObject()
 	val reactionGroups = issue.getJsonArray("reactionGroups").map { it.asJsonObject() }
@@ -109,7 +116,7 @@ fun JsonValue.toIssue(): Issue {
 		title = issue.getString("title"),
 		url = issue.getString("url"),
 		closed = issue.getBoolean("closed"),
-		author = issue.getJsonObject("author").getString("login"),
+		author = if (issue.isNull("author")) "ghost" else issue.getJsonObject("author").getString("login"),
 		mine = issue.getBoolean("viewerDidAuthor"),
 		createdAt = Instant.parse(issue.getString("createdAt")),
 		updatedAt = Instant.parse(issue.getString("updatedAt")),
