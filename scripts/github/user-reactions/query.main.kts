@@ -4,13 +4,11 @@
 @file:Repository("https://repo1.maven.org/maven2/")
 @file:DependsOn("javax.json:javax.json-api:1.1.4")
 @file:DependsOn("org.glassfish:javax.json:1.1.4")
-@file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
 @file:DependsOn("io.ktor:ktor-client-java-jvm:2.3.11")
 @file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:2.3.11")
 @file:DependsOn("io.ktor:ktor-client-logging-jvm:2.3.11")
 @file:DependsOn("io.ktor:ktor-client-auth-jvm:2.3.11")
 @file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.3.11")
-@file:DependsOn("tech.tablesaw:tablesaw-core:0.43.1")
 
 import Query_main.JsonX.asBoolean
 import Query_main.JsonX.asSafeString
@@ -69,6 +67,7 @@ suspend fun main(vararg args: String) {
 		usage()
 	}
 	val reposFile = File(args[0])
+	val resultFile = File(args[1]).absoluteFile.also { it.parentFile.mkdirs() }.apply { writeText(header()) }
 	GitHub().use { gitHub ->
 		val reposResponse = Json.createReader(reposFile.reader()).use { it.readValue() }
 		val repos = reposResponse.asJsonObject().getValue("/data/organization/repositories/nodes").asJsonArray()
@@ -83,7 +82,7 @@ suspend fun main(vararg args: String) {
 				.map { it.getValue("/data/repository/discussions/nodes").asJsonArray() }
 				.toList()
 				.flatMap { it.toList() }
-			processRepoIssues(issues.map { it.toIssue() } + discussions.map { it.toIssue() })
+			processRepoIssues(issues.map { it.toIssue() } + discussions.map { it.toIssue() }, resultFile)
 		}
 	}
 }
@@ -122,7 +121,7 @@ fun JsonValue.toIssue(): Issue {
 	)
 }
 
-fun processRepoIssues(issues: List<Issue>) {
+fun processRepoIssues(issues: List<Issue>, result: File) {
 	issues
 		.filter { it.mine || it.subscribed == "SUBSCRIBED" || it.myReactions.isNotEmpty() }
 		.forEach { issue ->
@@ -141,6 +140,7 @@ fun processRepoIssues(issues: List<Issue>) {
 				  - Reactions: ${issue.myReactions} ${issue.reactions}
 				""".trimIndent()
 			)
+			result.appendText(issue.toCsvLine())
 		}
 }
 
@@ -381,10 +381,11 @@ fun usage(): Nothing {
 	println(
 		"""
 			Usage:
-			 * kotlin query.main.kts <repos.json>
+			 * kotlin query.main.kts <repos.json> <output.csv>
 			
 			Parameters:
 			 * `<repos.json>`: file name of the JSON file containing repos-in-org response.
+			 * `<output.csv>`: file name of the CSV file that will be written (will overwrite!).
 			
 			Environment variables:
 			 * GITHUB_USER: login user name of the user who's running the script
@@ -395,3 +396,47 @@ fun usage(): Nothing {
 	)
 	exitProcess(1)
 }
+
+fun header(): String =
+	listOf(
+		"URL",
+		"Title",
+		"Created At",
+		"Updated At",
+		"Closed At",
+		"State",
+		"Author",
+		"Subscribed",
+		"My Reactions",
+		"THUMBS_UP",
+		"THUMBS_DOWN",
+		"LAUGH",
+		"HOORAY",
+		"CONFUSED",
+		"HEART",
+		"ROCKET",
+		"EYES",
+	).joinToString(separator = ",", postfix = "\n")
+
+fun Issue.toCsvLine(): String =
+	listOf(
+		url,
+		title,
+		createdAt.toString(),
+		updatedAt.toString(),
+		closedAt?.toString() ?: "",
+		if (closed) "CLOSED" else "OPEN",
+		if (mine) "TWiStErRob" else "other",
+		subscribed,
+		myReactions.joinToString(","),
+		(reactions["THUMBS_UP"] ?: 0).toString(),
+		(reactions["THUMBS_DOWN"] ?: 0).toString(),
+		(reactions["LAUGH"] ?: 0).toString(),
+		(reactions["HOORAY"] ?: 0).toString(),
+		(reactions["CONFUSED"] ?: 0).toString(),
+		(reactions["HEART"] ?: 0).toString(),
+		(reactions["ROCKET"] ?: 0).toString(),
+		(reactions["EYES"] ?: 0).toString(),
+	).joinToString(separator = ",", postfix = "\n") {
+		"\"" + it.replace("\"", "\"\"") + "\""
+	}
