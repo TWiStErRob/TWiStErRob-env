@@ -9,9 +9,10 @@ query  {
 }
 
 fragment issueDetails on Node {
-    ... on UniformResourceLocatable { url }
-    ... on Issue { title, state }
-    ... on Discussion { title, isAnswered }
+    ... on Issue { url, title, closed }
+    # REPORT state is not queryable for discussions, but can filter by?!
+    # REPORT Discussion is not UniformResourceLocatable even though has both fields.
+    ... on Discussion { url, title, closed }
     ... on Closable { closedAt }
     ... on Comment { viewerDidAuthor, createdAt, updatedAt }
     ... on Subscribable { viewerSubscription }

@@ -4,6 +4,10 @@
 			"repositories": {
 				"nodes": [
 					{
+						"nameWithOwner": "community/community",
+						"url": "https://github.com/community/community"
+					},
+					{
 						"nameWithOwner": "cli/cli",
 						"url": "https://github.com/cli/cli"
 					},

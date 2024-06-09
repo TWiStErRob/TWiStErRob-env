@@ -79,7 +79,11 @@ suspend fun main(vararg args: String) {
 				.map { it.getValue("/data/repository/issues/nodes").asJsonArray() }
 				.toList()
 				.flatMap { it.toList() }
-			processRepoIssues(issues.map { it.toIssue() })
+			val discussions = gitHub.getRepoDiscussions(owner, name)
+				.map { it.getValue("/data/repository/discussions/nodes").asJsonArray() }
+				.toList()
+				.flatMap { it.toList() }
+			processRepoIssues(issues.map { it.toIssue() } + discussions.map { it.toIssue() })
 		}
 	}
 }
@@ -87,11 +91,11 @@ suspend fun main(vararg args: String) {
 data class Issue(
 	val title: String,
 	val url: String,
-	val state: String,
+	val closed: Boolean,
 	val mine: Boolean,
-	val created: Instant,
-	val updated: Instant,
-	val closed: Instant?,
+	val createdAt: Instant,
+	val updatedAt: Instant,
+	val closedAt: Instant?,
 	val subscribed: String,
 	val reactions: Map<String, Int>,
 	val myReactions: Set<String>,
@@ -103,11 +107,11 @@ fun JsonValue.toIssue(): Issue {
 	return Issue(
 		title = issue.getString("title"),
 		url = issue.getString("url"),
-		state = issue.getString("state"),
+		closed = issue.getBoolean("closed"),
 		mine = issue.getBoolean("viewerDidAuthor"),
-		created = Instant.parse(issue.getString("createdAt")),
-		updated = Instant.parse(issue.getString("updatedAt")),
-		closed = issue.getSafeString("closedAt")?.let { Instant.parse(it) },
+		createdAt = Instant.parse(issue.getString("createdAt")),
+		updatedAt = Instant.parse(issue.getString("updatedAt")),
+		closedAt = issue.getSafeString("closedAt")?.let { Instant.parse(it) },
 		subscribed = issue.getString("viewerSubscription"),
 		reactions = reactionGroups
 			.associate { it.getString("content") to it.getJsonObject("reactors").getInt("totalCount") },
@@ -122,7 +126,7 @@ fun processRepoIssues(issues: List<Issue>) {
 	issues
 		.filter { it.mine || it.subscribed == "SUBSCRIBED" || it.myReactions.isNotEmpty() }
 		.forEach { issue ->
-			val stateString = issue.state.takeIf { it == "CLOSED" }
+			val stateString = if (issue.closed) "CLOSED" else null
 			val subString = issue.subscribed.takeIf { it != "SUBSCRIBED" }
 			val authorString = if (issue.mine) "AUTHOR" else null
 			val reactString = issue.myReactions.takeIf { it.isNotEmpty() }?.toString()
@@ -131,9 +135,9 @@ fun processRepoIssues(issues: List<Issue>) {
 				${issue.title}
 				  - ${issue.url}
 				  - ${listOfNotNull(stateString, subString, authorString, reactString).joinToString()}
-				  - Created: ${issue.created}
-				  - Updated: ${issue.updated}
-				  - Closed: ${issue.closed}
+				  - Created: ${issue.createdAt}
+				  - Updated: ${issue.updatedAt}
+				  - Closed: ${issue.closedAt}
 				  - Reactions: ${issue.myReactions} ${issue.reactions}
 				""".trimIndent()
 			)
@@ -154,8 +158,33 @@ suspend fun GitHub.getRepoIssues(owner: String, name: String): Flow<JsonObject> 
 suspend fun GitHub.getIssues(owner: String, name: String, page: String?): JsonValue {
 	val cache = File("cache/${owner}/${name}/${page}.issues.json").also { it.parentFile.mkdirs() }
 	if (!cache.exists()) {
-		println("Fetching $owner/$name page $page")
+		println("Fetching $owner/$name issues page $page")
 		val issuesJson = this.issuesInRepo(owner, name, page)
+		val parsed = Json.createReader(StringReader(issuesJson)).use { it.readValue() }
+		parsed.asJsonObject() // Validate.
+		cache.writer().use { it.prettyPrint(parsed) }
+	} else {
+		println("Using $cache")
+	}
+	return Json.createReader(cache.reader()).use { it.readValue() }
+}
+
+suspend fun GitHub.getRepoDiscussions(owner: String, name: String): Flow<JsonObject> =
+	flow {
+		var cursor: String? = null
+		do {
+			val response = getDiscussions(owner, name, cursor).asJsonObject()
+			emit(response)
+			cursor = response.getValue("/data/repository/discussions/pageInfo/endCursor").asSafeString()
+			val hasNext = response.getValue("/data/repository/discussions/pageInfo/hasNextPage").asBoolean()
+		} while (hasNext)
+	}
+
+suspend fun GitHub.getDiscussions(owner: String, name: String, page: String?): JsonValue {
+	val cache = File("cache/${owner}/${name}/${page}.discussions.json").also { it.parentFile.mkdirs() }
+	if (!cache.exists()) {
+		println("Fetching $owner/$name discussions page $page")
+		val issuesJson = this.discussionsInRepo(owner, name, page)
 		val parsed = Json.createReader(StringReader(issuesJson)).use { it.readValue() }
 		parsed.asJsonObject() // Validate.
 		cache.writer().use { it.prettyPrint(parsed) }
@@ -287,7 +316,7 @@ class GitHub : Closeable {
 
 suspend fun GitHub.issuesInRepo(owner: String, name: String, cursor: String?): String {
 	val response = graph(
-		query = File("issues-in-repo.graphql").readText(),
+		query = File("repo-issues.graphql").readText() + issueDetailsFragment,
 		variables = mapOf(
 			"owner" to owner,
 			"name" to name,
@@ -296,6 +325,23 @@ suspend fun GitHub.issuesInRepo(owner: String, name: String, cursor: String?): S
 	)
 	return response.bodyAsText().also { it.checkGraphQLError() }
 }
+
+suspend fun GitHub.discussionsInRepo(owner: String, name: String, cursor: String?): String {
+	val response = graph(
+		query = File("repo-discussions.graphql").readText() + issueDetailsFragment,
+		variables = mapOf(
+			"owner" to owner,
+			"name" to name,
+			"cursor" to cursor,
+		),
+	)
+	return response.bodyAsText().also { it.checkGraphQLError() }
+}
+
+val issueDetailsFragment
+	get() = System.lineSeparator() + File("issueDetails.graphql")
+		.readText()
+		.replace(Regex("""^query\s*\{\n.*?\n\}\n""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)), "")
 
 fun String.checkGraphQLError() {
 	val jackson = jacksonObjectMapper().apply {
