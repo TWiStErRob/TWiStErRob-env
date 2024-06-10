@@ -12,7 +12,7 @@ fragment issueDetails on Node {
     ... on Issue { url, title, closed }
     # REPORT state is not queryable for discussions, but can filter by?!
     # REPORT Discussion is not UniformResourceLocatable even though has both fields.
-    ... on Discussion { url, title, closed, upvoteCount }
+    ... on Discussion { url, title, closed, upvoteCount, viewerHasUpvoted }
     ... on Closable { closedAt }
     ... on Comment { author { login }, viewerDidAuthor, createdAt, updatedAt }
     ... on Subscribable { viewerSubscription }

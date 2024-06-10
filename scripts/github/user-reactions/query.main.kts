@@ -97,7 +97,6 @@ data class Issue(
 	val updatedAt: Instant,
 	val closedAt: Instant?,
 	val subscribed: String,
-	val votes: Int?,
 	val reactions: Map<String, Int>,
 	val myReactions: Set<String>,
 )
@@ -112,6 +111,8 @@ fun JsonValue.toIssueSafe(): Issue =
 fun JsonValue.toIssue(): Issue {
 	val issue = asJsonObject()
 	val reactionGroups = issue.getJsonArray("reactionGroups").map { it.asJsonObject() }
+	val voted = if (issue.containsKey("viewerHasUpvoted")) issue.getBoolean("viewerHasUpvoted") else null
+	val voteCount = if (issue.containsKey("upvoteCount")) issue.getInt("upvoteCount") else null
 	return Issue(
 		title = issue.getString("title"),
 		url = issue.getString("url"),
@@ -122,13 +123,14 @@ fun JsonValue.toIssue(): Issue {
 		updatedAt = Instant.parse(issue.getString("updatedAt")),
 		closedAt = issue.getSafeString("closedAt")?.let { Instant.parse(it) },
 		subscribed = issue.getString("viewerSubscription"),
-		votes = if (issue.containsKey("upvoteCount")) issue.getInt("upvoteCount") else null,
 		reactions = reactionGroups
-			.associate { it.getString("content") to it.getJsonObject("reactors").getInt("totalCount") },
+			.associate { it.getString("content") to it.getJsonObject("reactors").getInt("totalCount") }
+				+ (if (voteCount != null) mapOf("UPVOTE" to voteCount) else emptyMap()),
 		myReactions = reactionGroups
 			.filter { it.getBoolean("viewerHasReacted") }
 			.map { it.getString("content") }
 			.toSet()
+				+ (if (voted == true) setOf("UPVOTE") else emptySet()),
 	)
 }
 
@@ -149,7 +151,6 @@ fun processRepoIssues(issues: List<Issue>, result: File) {
 				  - Created: ${issue.createdAt}
 				  - Updated: ${issue.updatedAt}
 				  - Closed: ${issue.closedAt}
-				  - Votes: ${issue.votes}
 				  - Reactions: ${issue.myReactions} ${issue.reactions}
 				""".trimIndent()
 			)
@@ -421,7 +422,7 @@ fun header(): String =
 		"Author",
 		"Subscribed",
 		"My Reactions",
-		"Votes",
+		"UPVOTE",
 		"THUMBS_UP",
 		"THUMBS_DOWN",
 		"LAUGH",
@@ -443,7 +444,7 @@ fun Issue.toCsvLine(): String =
 		author,
 		subscribed,
 		myReactions.joinToString(","),
-		votes.toString(),
+		(reactions["UPVOTE"] ?: "").toString(),
 		(reactions["THUMBS_UP"] ?: 0).toString(),
 		(reactions["THUMBS_DOWN"] ?: 0).toString(),
 		(reactions["LAUGH"] ?: 0).toString(),
