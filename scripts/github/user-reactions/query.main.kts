@@ -85,7 +85,8 @@ suspend fun main(vararg args: String) {
 data class Issue(
 	val title: String,
 	val url: String,
-	val closed: Boolean,
+	val state: String,
+	val answered: Boolean?,
 	val author: String,
 	val mine: Boolean,
 	val createdAt: Instant,
@@ -111,7 +112,9 @@ fun JsonValue.toIssue(): Issue {
 	return Issue(
 		title = issue.getString("title"),
 		url = issue.getString("url"),
-		closed = issue.getBoolean("closed"),
+		state = if (issue.getBoolean("closed")) "CLOSED" else "OPEN",
+		answered = if (issue.containsKey("isAnswered") && !issue.isNull("isAnswered"))
+			issue.getBoolean("isAnswered") else null,
 		// author can be null, e.g. https://github.com/cli/cli/issues/7824
 		author = if (issue.isNull("author")) "ghost" else issue.getJsonObject("author").getString("login"),
 		mine = issue.getBoolean("viewerDidAuthor"),
@@ -134,7 +137,7 @@ fun processRepoIssues(issues: List<Issue>, result: File) {
 	issues
 		.filter { it.mine || it.subscribed == "SUBSCRIBED" || it.myReactions.isNotEmpty() }
 		.forEach { issue ->
-			val stateString = if (issue.closed) "CLOSED" else null
+			val stateString = issue.state.takeIf { it != "OPEN" }
 			val subString = issue.subscribed.takeIf { it != "SUBSCRIBED" }
 			val authorString = if (issue.mine) "AUTHOR" else null
 			val reactString = issue.myReactions.takeIf { it.isNotEmpty() }?.toString()
@@ -381,7 +384,7 @@ fun String.checkGraphQLError() {
 						//		"locations": [ { "line": 30, "column": 22 } ],
 						//		"message": "Not Found"
 						// }
-						|| (it.type == "NOT_FOUND" && it.path.orEmpty().lastOrNull() == "author") 
+						|| (it.type == "NOT_FOUND" && it.path.orEmpty().lastOrNull() == "author")
 			}) {
 			return
 		}
@@ -438,6 +441,7 @@ fun header(): String =
 		"Updated At",
 		"Closed At",
 		"State",
+		"Answered",
 		"Author",
 		"Subscribed",
 		"My Reactions",
@@ -459,7 +463,8 @@ fun Issue.toCsvLine(): String =
 		createdAt.toString(),
 		updatedAt.toString(),
 		closedAt?.toString() ?: "",
-		if (closed) "CLOSED" else "OPEN",
+		state,
+		answered?.toString() ?: "",
 		author,
 		subscribed,
 		myReactions.joinToString(","),
