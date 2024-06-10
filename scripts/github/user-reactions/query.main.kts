@@ -75,14 +75,9 @@ suspend fun main(vararg args: String) {
 			val nameWithOwner = repo.asJsonObject().getString("nameWithOwner")
 			val (owner, name) = nameWithOwner.split("/")
 			val issues = gitHub.getRepoIssues(owner, name)
-				.map { it.getValue("/data/repository/issues/nodes").asJsonArray() }
-				.toList()
-				.flatMap { it.toList() }
 			val discussions = gitHub.getRepoDiscussions(owner, name)
-				.map { it.getValue("/data/repository/discussions/nodes").asJsonArray() }
-				.toList()
-				.flatMap { it.toList() }
-			processRepoIssues(issues.map { it.toIssueSafe() } + discussions.map { it.toIssueSafe() }, resultFile)
+			val allIssues = issues.map { it.toIssueSafe() } + discussions.map { it.toIssueSafe() }
+			processRepoIssues(allIssues, resultFile)
 		}
 	}
 }
@@ -117,6 +112,7 @@ fun JsonValue.toIssue(): Issue {
 		title = issue.getString("title"),
 		url = issue.getString("url"),
 		closed = issue.getBoolean("closed"),
+		// author can be null, e.g. https://github.com/cli/cli/issues/7824
 		author = if (issue.isNull("author")) "ghost" else issue.getJsonObject("author").getString("login"),
 		mine = issue.getBoolean("viewerDidAuthor"),
 		createdAt = Instant.parse(issue.getString("createdAt")),
@@ -158,19 +154,25 @@ fun processRepoIssues(issues: List<Issue>, result: File) {
 		}
 }
 
-suspend fun GitHub.getRepoIssues(owner: String, name: String): Flow<JsonObject> =
+suspend fun GitHub.getRepoIssues(owner: String, name: String): List<JsonValue> =
+	fetchRepoIssues(owner, name)
+		.map { it.getValue("/data/repository/issues/nodes").asJsonArray() }
+		.toList()
+		.flatMap { it.toList() }
+
+suspend fun GitHub.fetchRepoIssues(owner: String, name: String): Flow<JsonObject> =
 	flow {
 		var cursor: String? = null
 		do {
-			val response = getIssues(owner, name, cursor).asJsonObject()
+			val response = fetchIssues(owner, name, cursor).asJsonObject()
 			emit(response)
 			cursor = response.getValue("/data/repository/issues/pageInfo/endCursor").asSafeString()
 			val hasNext = response.getValue("/data/repository/issues/pageInfo/hasNextPage").asBoolean()
 		} while (hasNext)
 	}
 
-suspend fun GitHub.getIssues(owner: String, name: String, page: String?): JsonValue {
-	val cache = File("cache/${owner}/${name}/${page}.issues.json").also { it.parentFile.mkdirs() }
+suspend fun GitHub.fetchIssues(owner: String, name: String, page: String?): JsonValue {
+	val cache = File("cache/${owner}/${name}/issues/${page}.json").also { it.parentFile.mkdirs() }
 	if (!cache.exists()) {
 		println("Fetching $owner/$name issues page $page")
 		val issuesJson = this.issuesInRepo(owner, name, page)
@@ -183,19 +185,25 @@ suspend fun GitHub.getIssues(owner: String, name: String, page: String?): JsonVa
 	return Json.createReader(cache.reader()).use { it.readValue() }
 }
 
-suspend fun GitHub.getRepoDiscussions(owner: String, name: String): Flow<JsonObject> =
+suspend fun GitHub.getRepoDiscussions(owner: String, name: String): List<JsonValue> =
+	fetchRepoDiscussions(owner, name)
+		.map { it.getValue("/data/repository/discussions/nodes").asJsonArray() }
+		.toList()
+		.flatMap { it.toList() }
+
+suspend fun GitHub.fetchRepoDiscussions(owner: String, name: String): Flow<JsonObject> =
 	flow {
 		var cursor: String? = null
 		do {
-			val response = getDiscussions(owner, name, cursor).asJsonObject()
+			val response = fetchDiscussions(owner, name, cursor).asJsonObject()
 			emit(response)
 			cursor = response.getValue("/data/repository/discussions/pageInfo/endCursor").asSafeString()
 			val hasNext = response.getValue("/data/repository/discussions/pageInfo/hasNextPage").asBoolean()
 		} while (hasNext)
 	}
 
-suspend fun GitHub.getDiscussions(owner: String, name: String, page: String?): JsonValue {
-	val cache = File("cache/${owner}/${name}/${page}.discussions.json").also { it.parentFile.mkdirs() }
+suspend fun GitHub.fetchDiscussions(owner: String, name: String, page: String?): JsonValue {
+	val cache = File("cache/${owner}/${name}/discussions/${page}.json").also { it.parentFile.mkdirs() }
 	if (!cache.exists()) {
 		println("Fetching $owner/$name discussions page $page")
 		val issuesJson = this.discussionsInRepo(owner, name, page)
@@ -365,11 +373,21 @@ fun String.checkGraphQLError() {
 	if (response.errors != null) {
 		if (response.errors.all {
 				it.message.matches("""^Could not resolve to an Environment with the name github-pages\.$""".toRegex())
+						// author { login } is impossible to resolve, because it's an SSO-hidden user:
+						// https://github.com/orgs/community/discussions/23080
+						// {
+						//		"type": "NOT_FOUND",
+						//		"path": ["repository", "discussions", "nodes", 87, "author"],
+						//		"locations": [ { "line": 30, "column": 22 } ],
+						//		"message": "Not Found"
+						// }
+						|| (it.type == "NOT_FOUND" && it.path.orEmpty().lastOrNull() == "author") 
 			}) {
 			return
 		}
 		fun ErrorResponse.Error.asString(): String =
 			run { "${type ?: "UNKNOWN"}@${locations?.joinToString { "${it.line}:${it.column}" }} ${message}" }
+		println(this)
 		error("GraphQL error:\n${response.errors.joinToString("\n") { it.asString() }}")
 	}
 }
@@ -380,6 +398,7 @@ data class ErrorResponse(
 
 	data class Error(
 		val message: String,
+		val path: List<String>?,
 		val type: String?,
 		val locations: List<Location>?,
 	) {
