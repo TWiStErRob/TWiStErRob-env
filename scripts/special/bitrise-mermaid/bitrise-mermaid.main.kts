@@ -6,10 +6,11 @@ import java.io.File
 
 fun main(vararg args: String) {
 	val bitriseFile = File(args[0])
+	val start = args.drop(1).takeIf { it.isNotEmpty() }
 	val load = Load(LoadSettings.builder().build())
 	val bitriseYaml = load.loadFromInputStream(bitriseFile.inputStream())
 	val bitrise = parse(bitriseYaml)
-	val mermaid = render(bitrise)
+	val mermaid = render(bitrise, start?.map { bitrise.workflows[it]!! })
 	println(mermaid)
 }
 
@@ -58,7 +59,7 @@ fun parse(data: Any): BitriseYaml {
 }
 
 @Suppress("detekt.CyclomaticComplexMethod")
-fun render(bitrise: BitriseYaml): String = buildString {
+fun render(bitrise: BitriseYaml, start: List<Workflow>?): String = buildString {
 	appendLine("%%{init: {'flowchart': {'curve': 'bumpX'}}}%%")
 	appendLine("graph LR") // https://mermaid.js.org/syntax/flowchart.html
 	appendLine(
@@ -90,22 +91,32 @@ fun render(bitrise: BitriseYaml): String = buildString {
 		appendLine("${caller} -.-> ${callee}")
 	}
 
-
-	bitrise.triggers.forEach { (trigger, workflow) ->
-		triggers(trigger, workflow)
-	}
-	bitrise.workflows.forEach { (workflowName, workflow) ->
-		workflow(workflowName)
+	val done = mutableSetOf<String>()
+	val queue = (start ?: bitrise.workflows.values).toMutableList()
+	while (queue.isNotEmpty()) {
+		val workflow = queue.removeFirst()
+		if (!done.add(workflow.id)) {
+			continue
+		}
+		workflow(workflow.id)
 		workflow.beforeRun.forEach { beforeRun ->
-			calls(workflowName, beforeRun)
+			calls(workflow.id, beforeRun)
+			queue.add(bitrise.workflows[beforeRun]!!)
 		}
 		workflow.afterRun.forEach { afterRun ->
-			calls(workflowName, afterRun)
+			calls(workflow.id, afterRun)
+			queue.add(bitrise.workflows[afterRun]!!)
 		}
 		workflow.buildRouterStartSteps.forEach { workflows ->
 			workflows.forEach { parallelWorkflow ->
-				dispatch(workflowName, parallelWorkflow)
+				dispatch(workflow.id, parallelWorkflow)
+				queue.add(bitrise.workflows[parallelWorkflow]!!)
 			}
+		}
+	}
+	bitrise.triggers.forEach { (trigger, workflow) ->
+		if (start == null || done.contains(workflow)) {
+			triggers(trigger, workflow)
 		}
 	}
 }
