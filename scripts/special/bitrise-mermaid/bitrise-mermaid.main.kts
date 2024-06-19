@@ -10,7 +10,10 @@ fun main(vararg args: String) {
 	val load = Load(LoadSettings.builder().build())
 	val bitriseYaml = load.loadFromInputStream(bitriseFile.inputStream())
 	val bitrise = parse(bitriseYaml)
-	val mermaid = render(bitrise, start?.map { bitrise.workflows[it]!! })
+	val startWorkflows = start?.map { name ->
+		bitrise.workflows[name] ?: error("Workflow ${name} doesn't exist in ${bitriseFile}.")
+	}
+	val mermaid = render(bitrise, startWorkflows)
 	println(mermaid)
 }
 
