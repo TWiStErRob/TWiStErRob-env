@@ -1,0 +1,10 @@
+query {
+    organization(login: "actions") {
+        repositories(first: 100) {
+            nodes {
+                nameWithOwner
+                url
+            }
+        }
+    }
+}
