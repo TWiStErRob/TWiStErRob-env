@@ -2,9 +2,9 @@
 // Note: normally these dependencies are listed without a -jvm suffix,
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
-@file:DependsOn("com.fasterxml.jackson.core:jackson-databind:2.17.1")
-@file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
-@file:DependsOn("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.1")
+@file:DependsOn("com.fasterxml.jackson.core:jackson-databind:2.17.2")
+@file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
+@file:DependsOn("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
 
 import Summarize_main.ContributionsResponse.ContributorActivity
