@@ -495,7 +495,7 @@ jobs:
         if: ${{ success() || failure() }}
         env:
           # Use https://github.com/psastras/sarif-rs
-          SHELLCHECK_SARIF_VERSION: '0.6.0'
+          SHELLCHECK_SARIF_VERSION: '0.6.2'
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release download "shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}" --repo psastras/sarif-rs --pattern "shellcheck-sarif-x86_64-unknown-linux-gnu" --output shellcheck-sarif
@@ -510,7 +510,7 @@ jobs:
         if: ${{ success() || failure() }}
         env:
           # Use https://github.com/psastras/sarif-rs
-          SARIF_FMT_VERSION: '0.6.0'
+          SARIF_FMT_VERSION: '0.6.2'
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release download "sarif-fmt-v${SARIF_FMT_VERSION?}" --repo psastras/sarif-rs --pattern "sarif-fmt-x86_64-unknown-linux-gnu" --output sarif-fmt
