@@ -3,6 +3,16 @@
 	extends: [
 		"local>TWiStErRob/renovate-config",
 	],
+        packageRules: [
+            {
+                description: "Auto-merge some 0.x versioned dependencies, they're part of the CI.",
+                matchDepNames: [
+                    "psastras/sarif-rs",
+                    "koalaman/shellcheck",
+                ],
+                automerge: true,
+            },
+        ],
 	customManagers: [
 		{
 			description: "Update ShellCheck CLI from GitHub Releases.",
