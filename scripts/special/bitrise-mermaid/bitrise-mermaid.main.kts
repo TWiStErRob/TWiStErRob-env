@@ -1,4 +1,4 @@
-@file:DependsOn("org.snakeyaml:snakeyaml-engine:2.7")
+@file:DependsOn("org.snakeyaml:snakeyaml-engine:2.8")
 
 import org.snakeyaml.engine.v2.api.Load
 import org.snakeyaml.engine.v2.api.LoadSettings
