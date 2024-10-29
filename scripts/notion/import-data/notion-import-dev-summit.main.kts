@@ -4,7 +4,7 @@
 @file:Repository("https://repo1.maven.org/maven2/")
 // TODEL https://youtrack.jetbrains.com/issue/KT-47384 cannot use kotlinx-serialization...
 @file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.0")
-@file:DependsOn("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.0")
+@file:DependsOn("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.1")
 @file:DependsOn("com.github.seratch:notion-sdk-jvm-core:1.11.1")
 @file:DependsOn("com.github.seratch:notion-sdk-jvm-okhttp4:1.11.1")
 
