@@ -3,9 +3,9 @@
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
-@file:DependsOn("io.ktor:ktor-client-java-jvm:2.3.12")
-@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:2.3.12")
-@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:2.3.12")
+@file:DependsOn("io.ktor:ktor-client-java-jvm:3.0.1")
+@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:3.0.1")
+@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:3.0.1")
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -15,7 +15,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readBytes
+import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.util.encodeBase64
@@ -186,7 +186,7 @@ fun load(
 	if (force || !cache.exists()) {
 		val response = runBlocking {
 			println("Loading $org/$repo data from $host...")
-			client.contributions(host, org, repo, user, token).readBytes()
+			client.contributions(host, org, repo, user, token).readRawBytes()
 		}
 		cache.parentFile.mkdirs()
 		println("Saving cached data for $org/$repo from ${cache.absolutePath}.")
