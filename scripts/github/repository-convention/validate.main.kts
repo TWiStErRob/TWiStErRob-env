@@ -5,11 +5,11 @@
 @file:DependsOn("javax.json:javax.json-api:1.1.4")
 @file:DependsOn("org.glassfish:javax.json:1.1.4")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
-@file:DependsOn("io.ktor:ktor-client-java-jvm:3.0.2")
-@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:3.0.2")
-@file:DependsOn("io.ktor:ktor-client-logging-jvm:3.0.2")
-@file:DependsOn("io.ktor:ktor-client-auth-jvm:3.0.2")
-@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:3.0.2")
+@file:DependsOn("io.ktor:ktor-client-java-jvm:3.0.3")
+@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:3.0.3")
+@file:DependsOn("io.ktor:ktor-client-logging-jvm:3.0.3")
+@file:DependsOn("io.ktor:ktor-client-auth-jvm:3.0.3")
+@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:3.0.3")
 @file:DependsOn("tech.tablesaw:tablesaw-core:0.43.1")
 
 import Validate_main.JsonX.asSafeString
