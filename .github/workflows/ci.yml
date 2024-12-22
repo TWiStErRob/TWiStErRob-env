@@ -409,7 +409,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gradle:
+        include:
 
           - gradle: '5.6.4'
             java: 11
