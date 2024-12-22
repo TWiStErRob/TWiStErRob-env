@@ -279,6 +279,15 @@ jobs:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
+      - name: "Set up SVN."
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y subversion
+          which svn
+          svn --version
+          which svnadmin
+          svnadmin --version
+
       - name: "Create test repository."
         working-directory: scripts/special/svn2git-migration
         run: |
