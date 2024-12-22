@@ -34,7 +34,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -68,7 +68,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -85,7 +85,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -105,7 +105,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -122,7 +122,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -144,7 +144,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -161,7 +161,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -178,7 +178,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -196,7 +196,7 @@ jobs:
       # actions/checkout
       contents: read
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash
@@ -270,7 +270,7 @@ jobs:
       # actions/checkout
       contents: read
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash
@@ -278,6 +278,15 @@ jobs:
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
+
+      - name: "Set up SVN."
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y subversion
+          which svn
+          svn --version
+          which svnadmin
+          svnadmin --version
 
       - name: "Create test repository."
         working-directory: scripts/special/svn2git-migration
@@ -372,12 +381,18 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
-      - name: "Setup Gradle."
+      - name: "Set up Java."
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: zulu
+
+      - name: "Set up Gradle."
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: ${{ matrix.gradle }}
@@ -394,15 +409,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gradle:
-          - '5.6.4'
-          - '6.0.1'
-          - '6.1.1'
-          - '6.2.2'
-          - '7.6.4'
-          - '8.0.2'
-          - '8.7'
-          - '8.8'
+        include:
+
+          - gradle: '5.6.4'
+            java: 11
+
+          - gradle: '6.0.1'
+            java: 11
+
+          - gradle: '6.1.1'
+            java: 11
+
+          - gradle: '6.2.2'
+            java: 11
+
+          - gradle: '7.6.4'
+            java: 17
+
+          - gradle: '8.0.2'
+            java: 17
+
+          - gradle: '8.7'
+            java: 17
+
+          - gradle: '8.8'
+            java: 17
 
 
   detekt:
@@ -413,7 +444,7 @@ jobs:
       contents: read
       # github/codeql-action/upload-sarif
       security-events: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -464,7 +495,7 @@ jobs:
       # github/codeql-action/upload-sarif
       security-events: write
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash
@@ -543,7 +574,7 @@ jobs:
       # github/codeql-action/upload-sarif
       security-events: write
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
