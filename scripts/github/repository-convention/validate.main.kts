@@ -4,7 +4,7 @@
 @file:Repository("https://repo1.maven.org/maven2/")
 @file:DependsOn("javax.json:javax.json-api:1.1.4")
 @file:DependsOn("org.glassfish:javax.json:1.1.4")
-@file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
+@file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
 @file:DependsOn("io.ktor:ktor-client-java-jvm:3.0.3")
 @file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:3.0.3")
 @file:DependsOn("io.ktor:ktor-client-logging-jvm:3.0.3")
