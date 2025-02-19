@@ -10,7 +10,7 @@
 @file:DependsOn("io.ktor:ktor-client-logging-jvm:3.1.0")
 @file:DependsOn("io.ktor:ktor-client-auth-jvm:3.1.0")
 @file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:3.1.0")
-@file:DependsOn("tech.tablesaw:tablesaw-core:0.43.1")
+@file:DependsOn("tech.tablesaw:tablesaw-core:0.44.1")
 
 import Validate_main.JsonX.asSafeString
 import Validate_main.JsonX.filterNot
