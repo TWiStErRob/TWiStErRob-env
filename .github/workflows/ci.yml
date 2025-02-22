@@ -452,7 +452,7 @@ jobs:
       - name: "Run detekt."
         env:
           # Use https://github.com/detekt/detekt
-          DETEKT_VERSION: '1.23.7'
+          DETEKT_VERSION: '1.23.8'
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
