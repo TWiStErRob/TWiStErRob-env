@@ -3,9 +3,9 @@
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
-@file:DependsOn("io.ktor:ktor-client-java-jvm:3.1.1")
-@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:3.1.1")
-@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:3.1.1")
+@file:DependsOn("io.ktor:ktor-client-java-jvm:3.1.2")
+@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:3.1.2")
+@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:3.1.2")
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
