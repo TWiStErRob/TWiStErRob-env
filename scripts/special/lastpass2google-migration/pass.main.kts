@@ -1,4 +1,4 @@
-@file:DependsOn("com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.18.3")
+@file:DependsOn("com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.19.0")
 @file:DependsOn("org.skyscreamer:jsonassert:1.5.3")
 
 import com.fasterxml.jackson.annotation.JsonProperty
