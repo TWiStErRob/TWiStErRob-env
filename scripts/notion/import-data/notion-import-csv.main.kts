@@ -2,7 +2,7 @@
 // Note: normally these dependencies are listed without a -jvm suffix,
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
-@file:DependsOn("com.opencsv:opencsv:5.10")
+@file:DependsOn("com.opencsv:opencsv:5.11")
 @file:DependsOn("com.github.seratch:notion-sdk-jvm-core:1.11.1")
 @file:DependsOn("com.github.seratch:notion-sdk-jvm-okhttp4:1.11.1")
 
