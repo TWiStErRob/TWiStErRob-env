@@ -1,4 +1,6 @@
+import java.util.Locale
 import org.gradle.internal.logging.DefaultLoggingConfiguration
+
 // if (GradleVersion.version("6.2.2") <= GradleVersion.current().baseVersion)
 // Gradle.beforeSettings { } was added in Gradle 6.0
 // GradlePropertiesController was added in 6.2.2 https://github.com/gradle/gradle/commit/6abcc3fa4a01f276100955f0761096d705237be6
@@ -29,9 +31,11 @@ gradle.beforeSettings settings@{ // this: Settings
 	if (actual == defaul && start == defaul && prop == null) {
 		// This is not possible to detect, as the default is not null, using a best effort implementation:
 		// it'll fail and override anyway if user explicitly launches `gradlew --warning-mode=summary`.
-		// Deprecated in Kotlin 1.5, starting from Gradle 8.0; for compatibility older, keeping the old method call.
-		@Suppress("DEPRECATION")
-		val overrideName = override.name.toLowerCase()
+		// String.toLowerCase is deprecated since Kotlin 1.5 (starting from Gradle 8.0)
+		// String.toLowerCase is erroring since Kotlin 2.1 (starting from Gradle 9.0)
+		// For compatibility older versions, use Java directly.
+		@Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+		val overrideName = (override.name as java.lang.String).toLowerCase(Locale.ROOT)
 		logger.lifecycle(
 			"${this@settings} has no Warning Mode specified, " +
 					"using a default fallback in init script: --warning-mode=$overrideName, adjust gradle.properties:\n" +
