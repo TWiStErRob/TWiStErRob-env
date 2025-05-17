@@ -52,8 +52,8 @@ $user = [ordered]@{
 
     GCLOUD_HOME = "%PROG_HOME%\tools\sdk\google-cloud-sdk"
     # set up a Gradle for global things
-    GRADLE7_HOME = "%PROG_HOME%\tools\build\gradle\gradle-7.6.4-bin\eq47ircvekz8t0m2yd28ebfsh\gradle-7.6.4"
-    GRADLE8_HOME = "%PROG_HOME%\tools\build\gradle\gradle-8.7-all\aan3ydargesu18aqyqjwhr3pc\gradle-8.7"
+    GRADLE7_HOME = "%PROG_HOME%\tools\build\gradle\gradle-7.6.4-all\69w292fwwbbevpookp42lrbux\gradle-7.6.4"
+    GRADLE8_HOME = "%PROG_HOME%\tools\build\gradle\gradle-8.14-all\c2qonpi39x1mddn7hk5gh9iqj\gradle-8.14"
     GRADLE_HOME = "%GRADLE8_HOME%"
     # Global Gradle arguments to be passed to `gradle`/`gradlew`
     #-PSNAPSHOT_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2 -PRELEASE_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2
@@ -86,9 +86,9 @@ $user = [ordered]@{
     JAVA17_HOME = "%PROG_HOME%\tools\lang\java-17.0.5-x64-jdk"
     JAVA19_HOME = "%PROG_HOME%\tools\lang\java-19.0.1-x64-jdk"
     JAVA20_HOME = "%PROG_HOME%\tools\lang\java-20.0.2-x64-jdk"
-    JAVA21_HOME = "%PROG_HOME%\tools\lang\java-21.0.1-x64-openjdk"
+    JAVA21_HOME = "%PROG_HOME%\tools\lang\java-21.0.7-x64-jdk"
     # for gradlew, mvn
-    JAVA_HOME = "%JAVA17_HOME%"
+    JAVA_HOME = "%JAVA21_HOME%"
     # Global Java settings for random `java` executions
     # (unofficial version: _JAVA_OPTIONS, but that doesn't allow -Xmx1G to be used from command line)
     # -Xmx to minimize 1/4 memory usage (8G out of 32G)

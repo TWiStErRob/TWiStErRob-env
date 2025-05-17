@@ -376,7 +376,7 @@ jobs:
 
 
   gradle-init:
-    name: "🔨 Build / Gradle init scripts"
+    name: "🔨 Build / Gradle init scripts (${{ matrix.name }} on Java ${{ matrix.java }})"
     timeout-minutes: 5
     permissions:
       # actions/checkout
@@ -411,30 +411,45 @@ jobs:
       matrix:
         include:
 
-          - gradle: '5.6.4'
+          - name: '5.6'
+            gradle: '5.6.4'
             java: 11
 
-          - gradle: '6.0.1'
+          - name: '6.0'
+            gradle: '6.0.1'
             java: 11
 
-          - gradle: '6.1.1'
+          - name: '6.1'
+            gradle: '6.1.1'
             java: 11
 
-          - gradle: '6.2.2'
+          - name: '6.2'
+            gradle: '6.2.2'
             java: 11
 
-          - gradle: '7.6.4'
+          - name: '7.6'
+            gradle: '7.6.4'
             java: 17
 
-          - gradle: '8.0.2'
+          - name: '8.0'
+            gradle: '8.0.2'
             java: 17
 
-          - gradle: '8.7'
+          - name: '8.7'
+            gradle: '8.7'
             java: 17
 
-          - gradle: '8.8'
+          - name: '8.8'
+            gradle: '8.8'
             java: 17
 
+          - name: '8.14'
+            gradle: '8.14'
+            java: 17
+
+          - name: 'latest'
+            gradle: '9.0.0-milestone-8' # renovate
+            java: 21
 
   detekt:
     name: "🔍 Static Checks / Detekt"
