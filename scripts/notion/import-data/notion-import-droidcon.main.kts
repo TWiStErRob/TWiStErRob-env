@@ -39,14 +39,14 @@ import java.time.format.DateTimeFormatter
 main(*args)
 
 object Constants {
-	const val COLLECTION_PAGE = "d771f424bc914d1089b1705c5042f129"
+	const val COLLECTION_PAGE = "d5a731c8da794c778ffa18814b6b857b"
 	const val EVENT_TIME_ZONE = "Europe/London"
 	const val TARGET_DATABASE = "d6d80a4765fe470dbae06fd5cd3d3f41"
 	const val AUTHORS_DATABASE = "aecb82387adf4d7fa6816b791b0a579c"
 	const val TOPICS_DATABASE = "a05a1b8d8eed43a1bc2e684b9fae50e0"
-	const val BIO_HEADING = "Bio at DroidCon 2023"
-	val SESSIONS_FILE = File("droidcon-2023-london/sessions.json")
-	val SPEAKERS_FILE = File("droidcon-2023-london/speakers.json")
+	const val BIO_HEADING = "Bio at DroidCon 2024"
+	val SESSIONS_FILE = File("droidcon-2024-london/sessions.json")
+	val SPEAKERS_FILE = File("droidcon-2024-london/speakers.json")
 }
 
 @Suppress("LongMethod")
@@ -176,7 +176,7 @@ val Group.Session.format: String
 
 data class Speaker(
 	val fullName: String,
-	val bio: String,
+	val bio: String?,
 	val tagLine: String,
 	val profilePicture: URI,
 	val links: List<Link>,
@@ -262,10 +262,12 @@ fun ensureSpeakers(client: NotionClient, wantedSpeakerNames: List<String>, speak
 					)
 				),
 			).filterValues { it != null }.mapValues { it.value!! },
-			children = listOf(
-				HeadingOneBlock(heading1 = HeadingOneBlock.Element(Constants.BIO_HEADING.asRichText())),
-				ParagraphBlock(ParagraphBlock.Element(details.bio.asRichText())),
-			),
+			children = details.bio?.let {
+				listOf(
+					HeadingOneBlock(heading1 = HeadingOneBlock.Element(Constants.BIO_HEADING.asRichText())),
+					ParagraphBlock(ParagraphBlock.Element(it.asRichText())),
+				)
+			},
 		)
 	}
 	return existingPages + newPages
@@ -363,6 +365,8 @@ fun remapFormat(format: String): String =
 		"Lightning talk" -> "Lightning Talk"
 		"Session" -> "Talk"
 		"Workshop" -> "Workshop"
+		"Office Hours" -> "Demo"
+		"Roundtable Discussion" -> "Panel"
 		"Keynote" -> "Keynote"
 		"panel" -> "Panel"
 		else -> error("Unknown format: ${format}")
