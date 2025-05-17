@@ -1,75 +1,85 @@
 {
-	$schema: "https://docs.renovatebot.com/renovate-schema.json",
+	$schema: 'https://docs.renovatebot.com/renovate-schema.json',
 	extends: [
-		"local>TWiStErRob/renovate-config",
+		'local>TWiStErRob/renovate-config',
 	],
 	packageRules: [
 		{
 			description: "Auto-merge some 0.x versioned dependencies, they're part of the CI.",
 			matchDepNames: [
-				"psastras/sarif-rs",
-				"koalaman/shellcheck",
+				'psastras/sarif-rs',
+				'koalaman/shellcheck',
 			],
 			automerge: true,
 		},
 	],
 	customManagers: [
 		{
-			description: "Update ShellCheck CLI from GitHub Releases.",
-			customType: "regex",
-			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
-			datasourceTemplate: "github-releases",
-			depNameTemplate: "detekt/detekt",
-			matchStrings: [
-				"DETEKT_VERSION: '(?<currentValue>.*?)'"
+			description: 'Update ShellCheck CLI from GitHub Releases.',
+			customType: 'regex',
+			managerFilePatterns: [
+				'/^\\.github/workflows/ci\\.yml$/',
 			],
-			extractVersionTemplate: "^v(?<version>.*)$",
-			versioningTemplate: "semver",
+			datasourceTemplate: 'github-releases',
+			depNameTemplate: 'detekt/detekt',
+			matchStrings: [
+				"DETEKT_VERSION: '(?<currentValue>.*?)'",
+			],
+			extractVersionTemplate: '^v(?<version>.*)$',
+			versioningTemplate: 'semver',
 		},
 		{
-			description: "Update ShellCheck CLI from GitHub Releases.",
-			customType: "regex",
-			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
-			datasourceTemplate: "github-releases",
-			depNameTemplate: "koalaman/shellcheck",
-			matchStrings: [
-				"SHELLCHECK_VERSION: '(?<currentValue>.*?)'"
+			description: 'Update ShellCheck CLI from GitHub Releases.',
+			customType: 'regex',
+			managerFilePatterns: [
+				'/^\\.github/workflows/ci\\.yml$/',
 			],
-			extractVersionTemplate: "^v(?<version>.*)$",
-			versioningTemplate: "semver",
+			datasourceTemplate: 'github-releases',
+			depNameTemplate: 'koalaman/shellcheck',
+			matchStrings: [
+				"SHELLCHECK_VERSION: '(?<currentValue>.*?)'",
+			],
+			extractVersionTemplate: '^v(?<version>.*)$',
+			versioningTemplate: 'semver',
 		},
 		{
-			description: "Update ShellCheck CLI from GitHub Releases.",
-			customType: "regex",
-			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
-			datasourceTemplate: "github-releases",
-			depNameTemplate: "psastras/sarif-rs",
-			matchStrings: [
-				"SHELLCHECK_SARIF_VERSION: '(?<currentValue>.*?)'"
+			description: 'Update ShellCheck CLI from GitHub Releases.',
+			customType: 'regex',
+			managerFilePatterns: [
+				'/^\\.github/workflows/ci\\.yml$/',
 			],
-			extractVersionTemplate: "^shellcheck-sarif-v(?<version>.*)$",
-			versioningTemplate: "semver",
+			datasourceTemplate: 'github-releases',
+			depNameTemplate: 'psastras/sarif-rs',
+			matchStrings: [
+				"SHELLCHECK_SARIF_VERSION: '(?<currentValue>.*?)'",
+			],
+			extractVersionTemplate: '^shellcheck-sarif-v(?<version>.*)$',
+			versioningTemplate: 'semver',
 		},
 		{
-			description: "Update ShellCheck CLI from GitHub Releases.",
-			customType: "regex",
-			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
-			datasourceTemplate: "github-releases",
-			depNameTemplate: "psastras/sarif-rs",
-			matchStrings: [
-				"SARIF_FMT_VERSION: '(?<currentValue>.*?)'"
+			description: 'Update ShellCheck CLI from GitHub Releases.',
+			customType: 'regex',
+			managerFilePatterns: [
+				'/^\\.github/workflows/ci\\.yml$/',
 			],
-			extractVersionTemplate: "^sarif-fmt-v(?<version>.*)$",
-			versioningTemplate: "semver",
+			datasourceTemplate: 'github-releases',
+			depNameTemplate: 'psastras/sarif-rs',
+			matchStrings: [
+				"SARIF_FMT_VERSION: '(?<currentValue>.*?)'",
+			],
+			extractVersionTemplate: '^sarif-fmt-v(?<version>.*)$',
+			versioningTemplate: 'semver',
 		},
 		{
-			description: "Update Gradle wrapper in init script CI.",
-			customType: "regex",
-			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
-			datasourceTemplate: "gradle-version",
-			depNameTemplate: "gradle",
+			description: 'Update Gradle wrapper in init script CI.',
+			customType: 'regex',
+			managerFilePatterns: [
+				'/^\\.github/workflows/ci\\.yml$/',
+			],
+			datasourceTemplate: 'gradle-version',
+			depNameTemplate: 'gradle',
 			matchStrings: [
-				"gradle: '(?<currentValue>.*?)' # renovate"
+				"gradle: '(?<currentValue>.*?)' # renovate",
 			],
 		},
 	],
