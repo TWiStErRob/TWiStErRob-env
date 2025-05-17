@@ -21,7 +21,7 @@ jobs:
 
   validate:
     name: "🦺 Validation"
-    uses: TWiStErRob/github-workflows/.github/workflows/validate.yml@1e06403c5d561d70e40109c2701ea3092ca6ded7 # v3
+    uses: TWiStErRob/github-workflows/.github/workflows/validate.yml@1851e9c09214df39596b289eef626688ba3a0269 # v3
     permissions:
       contents: read
       security-events: write
@@ -34,7 +34,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -68,7 +68,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -85,7 +85,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -105,7 +105,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -122,7 +122,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -144,7 +144,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -161,7 +161,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -178,7 +178,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -196,7 +196,7 @@ jobs:
       # actions/checkout
       contents: read
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash
@@ -270,7 +270,7 @@ jobs:
       # actions/checkout
       contents: read
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash
@@ -278,6 +278,15 @@ jobs:
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
+
+      - name: "Set up SVN."
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y subversion
+          which svn
+          svn --version
+          which svnadmin
+          svnadmin --version
 
       - name: "Create test repository."
         working-directory: scripts/special/svn2git-migration
@@ -367,17 +376,23 @@ jobs:
 
 
   gradle-init:
-    name: "🔨 Build / Gradle init scripts"
+    name: "🔨 Build / Gradle init scripts (${{ matrix.name }} on Java ${{ matrix.java }})"
     timeout-minutes: 5
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
 
-      - name: "Setup Gradle."
+      - name: "Set up Java."
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: zulu
+
+      - name: "Set up Gradle."
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: ${{ matrix.gradle }}
@@ -394,16 +409,47 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gradle:
-          - '5.6.4'
-          - '6.0.1'
-          - '6.1.1'
-          - '6.2.2'
-          - '7.6.4'
-          - '8.0.2'
-          - '8.7'
-          - '8.8'
+        include:
 
+          - name: '5.6'
+            gradle: '5.6.4'
+            java: 11
+
+          - name: '6.0'
+            gradle: '6.0.1'
+            java: 11
+
+          - name: '6.1'
+            gradle: '6.1.1'
+            java: 11
+
+          - name: '6.2'
+            gradle: '6.2.2'
+            java: 11
+
+          - name: '7.6'
+            gradle: '7.6.4'
+            java: 17
+
+          - name: '8.0'
+            gradle: '8.0.2'
+            java: 17
+
+          - name: '8.7'
+            gradle: '8.7'
+            java: 17
+
+          - name: '8.8'
+            gradle: '8.8'
+            java: 17
+
+          - name: '8.14'
+            gradle: '8.14'
+            java: 17
+
+          - name: 'latest'
+            gradle: '9.0.0-milestone-8' # renovate
+            java: 21
 
   detekt:
     name: "🔍 Static Checks / Detekt"
@@ -413,7 +459,7 @@ jobs:
       contents: read
       # github/codeql-action/upload-sarif
       security-events: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
@@ -421,7 +467,7 @@ jobs:
       - name: "Run detekt."
         env:
           # Use https://github.com/detekt/detekt
-          DETEKT_VERSION: '1.23.6'
+          DETEKT_VERSION: '1.23.8'
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
@@ -464,7 +510,7 @@ jobs:
       # github/codeql-action/upload-sarif
       security-events: write
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash
@@ -495,7 +541,7 @@ jobs:
         if: ${{ success() || failure() }}
         env:
           # Use https://github.com/psastras/sarif-rs
-          SHELLCHECK_SARIF_VERSION: '0.6.5'
+          SHELLCHECK_SARIF_VERSION: '0.8.0'
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release download "shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION?}" --repo psastras/sarif-rs --pattern "shellcheck-sarif-x86_64-unknown-linux-gnu" --output shellcheck-sarif
@@ -510,7 +556,7 @@ jobs:
         if: ${{ success() || failure() }}
         env:
           # Use https://github.com/psastras/sarif-rs
-          SARIF_FMT_VERSION: '0.6.5'
+          SARIF_FMT_VERSION: '0.8.0'
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release download "sarif-fmt-v${SARIF_FMT_VERSION?}" --repo psastras/sarif-rs --pattern "sarif-fmt-x86_64-unknown-linux-gnu" --output sarif-fmt
@@ -543,7 +589,7 @@ jobs:
       # github/codeql-action/upload-sarif
       security-events: write
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v4
