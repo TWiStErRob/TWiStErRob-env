@@ -435,6 +435,11 @@ jobs:
           - gradle: '8.8'
             java: 17
 
+          - gradle: '8.14'
+            java: 17
+
+          - gradle: '9.0.0-milestone-8' # renovate
+            java: 21
 
   detekt:
     name: "🔍 Static Checks / Detekt"

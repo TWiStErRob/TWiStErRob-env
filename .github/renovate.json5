@@ -3,16 +3,16 @@
 	extends: [
 		"local>TWiStErRob/renovate-config",
 	],
-        packageRules: [
-            {
-                description: "Auto-merge some 0.x versioned dependencies, they're part of the CI.",
-                matchDepNames: [
-                    "psastras/sarif-rs",
-                    "koalaman/shellcheck",
-                ],
-                automerge: true,
-            },
-        ],
+	packageRules: [
+		{
+			description: "Auto-merge some 0.x versioned dependencies, they're part of the CI.",
+			matchDepNames: [
+				"psastras/sarif-rs",
+				"koalaman/shellcheck",
+			],
+			automerge: true,
+		},
+	],
 	customManagers: [
 		{
 			description: "Update ShellCheck CLI from GitHub Releases.",
@@ -61,6 +61,16 @@
 			],
 			extractVersionTemplate: "^sarif-fmt-v(?<version>.*)$",
 			versioningTemplate: "semver",
-		}
+		},
+		{
+			description: "Update Gradle wrapper in init script CI.",
+			customType: "regex",
+			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
+			datasourceTemplate: "gradle-version",
+			depNameTemplate: "gradle",
+			matchStrings: [
+				"gradle: '(?<currentValue>.*?)' # renovate"
+			],
+		},
 	],
 }
