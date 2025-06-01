@@ -17,11 +17,13 @@
 		{
 			description: "Update ShellCheck CLI from GitHub Releases.",
 			customType: "regex",
-			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
+			managerFilePatterns: [
+				".github/workflows/ci.yml",
+			],
 			datasourceTemplate: "github-releases",
 			depNameTemplate: "detekt/detekt",
 			matchStrings: [
-				"DETEKT_VERSION: '(?<currentValue>.*?)'"
+				"DETEKT_VERSION: '(?<currentValue>.*?)'",
 			],
 			extractVersionTemplate: "^v(?<version>.*)$",
 			versioningTemplate: "semver",
@@ -29,11 +31,13 @@
 		{
 			description: "Update ShellCheck CLI from GitHub Releases.",
 			customType: "regex",
-			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
+			managerFilePatterns: [
+				".github/workflows/ci.yml",
+			],
 			datasourceTemplate: "github-releases",
 			depNameTemplate: "koalaman/shellcheck",
 			matchStrings: [
-				"SHELLCHECK_VERSION: '(?<currentValue>.*?)'"
+				"SHELLCHECK_VERSION: '(?<currentValue>.*?)'",
 			],
 			extractVersionTemplate: "^v(?<version>.*)$",
 			versioningTemplate: "semver",
@@ -41,11 +45,13 @@
 		{
 			description: "Update ShellCheck CLI from GitHub Releases.",
 			customType: "regex",
-			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
+			managerFilePatterns: [
+				".github/workflows/ci.yml",
+			],
 			datasourceTemplate: "github-releases",
 			depNameTemplate: "psastras/sarif-rs",
 			matchStrings: [
-				"SHELLCHECK_SARIF_VERSION: '(?<currentValue>.*?)'"
+				"SHELLCHECK_SARIF_VERSION: '(?<currentValue>.*?)'",
 			],
 			extractVersionTemplate: "^shellcheck-sarif-v(?<version>.*)$",
 			versioningTemplate: "semver",
@@ -53,11 +59,13 @@
 		{
 			description: "Update ShellCheck CLI from GitHub Releases.",
 			customType: "regex",
-			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
+			managerFilePatterns: [
+				".github/workflows/ci.yml",
+			],
 			datasourceTemplate: "github-releases",
 			depNameTemplate: "psastras/sarif-rs",
 			matchStrings: [
-				"SARIF_FMT_VERSION: '(?<currentValue>.*?)'"
+				"SARIF_FMT_VERSION: '(?<currentValue>.*?)'",
 			],
 			extractVersionTemplate: "^sarif-fmt-v(?<version>.*)$",
 			versioningTemplate: "semver",
@@ -65,11 +73,13 @@
 		{
 			description: "Update Gradle wrapper in init script CI.",
 			customType: "regex",
-			fileMatch: ["^\\.github/workflows/ci\\.yml$"],
+			managerFilePatterns: [
+				".github/workflows/ci.yml",
+			],
 			datasourceTemplate: "gradle-version",
 			depNameTemplate: "gradle",
 			matchStrings: [
-				"gradle: '(?<currentValue>.*?)' # renovate"
+				"gradle: '(?<currentValue>.*?)' # renovate",
 			],
 		},
 	],
