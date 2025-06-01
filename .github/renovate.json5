@@ -18,7 +18,7 @@
 			description: "Update ShellCheck CLI from GitHub Releases.",
 			customType: "regex",
 			managerFilePatterns: [
-				"/^\\.github/workflows/ci\\.yml$/",
+				".github/workflows/ci.yml",
 			],
 			datasourceTemplate: "github-releases",
 			depNameTemplate: "detekt/detekt",
@@ -32,7 +32,7 @@
 			description: "Update ShellCheck CLI from GitHub Releases.",
 			customType: "regex",
 			managerFilePatterns: [
-				"/^\\.github/workflows/ci\\.yml$/",
+				".github/workflows/ci.yml",
 			],
 			datasourceTemplate: "github-releases",
 			depNameTemplate: "koalaman/shellcheck",
@@ -46,7 +46,7 @@
 			description: "Update ShellCheck CLI from GitHub Releases.",
 			customType: "regex",
 			managerFilePatterns: [
-				"/^\\.github/workflows/ci\\.yml$/",
+				".github/workflows/ci.yml",
 			],
 			datasourceTemplate: "github-releases",
 			depNameTemplate: "psastras/sarif-rs",
@@ -60,7 +60,7 @@
 			description: "Update ShellCheck CLI from GitHub Releases.",
 			customType: "regex",
 			managerFilePatterns: [
-				"/^\\.github/workflows/ci\\.yml$/",
+				".github/workflows/ci.yml",
 			],
 			datasourceTemplate: "github-releases",
 			depNameTemplate: "psastras/sarif-rs",
@@ -74,7 +74,7 @@
 			description: "Update Gradle wrapper in init script CI.",
 			customType: "regex",
 			managerFilePatterns: [
-				"/^\\.github/workflows/ci\\.yml$/",
+				".github/workflows/ci.yml",
 			],
 			datasourceTemplate: "gradle-version",
 			depNameTemplate: "gradle",
