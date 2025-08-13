@@ -10,7 +10,9 @@ env:
   # -Xallow-any-scripts-in-source-roots: https://youtrack.jetbrains.com/issue/KT-62575
   # -Werror: be strict
   # -progressive: use latest features
-  KOTLINC: kotlinc -Xallow-any-scripts-in-source-roots -Werror -progressive
+  # -Xuse-fir-lt:
+  # > warning: scripts are not yet supported with K2 in LightTree mode, consider using K1 or disable LightTree mode with -Xuse-fir-lt=false
+  KOTLINC: kotlinc -Xallow-any-scripts-in-source-roots -Werror -progressive -Xuse-fir-lt=false
 
 jobs:
 
