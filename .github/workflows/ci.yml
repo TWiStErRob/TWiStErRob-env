@@ -100,10 +100,12 @@ jobs:
       - name: "Compile .main.kts."
         working-directory: scripts/github/user-contribs
         shell: bash
-        run: >
-          $KOTLINC
-          get.main.kts
-          summarize.main.kts
+        run: $KOTLINC get.main.kts
+
+      - name: "Compile .main.kts."
+        working-directory: scripts/github/user-contribs
+        shell: bash
+        run: $KOTLINC summarize.main.kts
 
 
   google-play-reviews:
@@ -137,12 +139,22 @@ jobs:
       - name: "Compile .main.kts."
         working-directory: scripts/notion/import-data
         shell: bash
-        run: >
-          $KOTLINC
-          notion-import-csv.main.kts
-          notion-import-dev-summit.main.kts
-          notion-import-droidcon.main.kts
-          siliconmilkroundabout/companies-attending.main.kts
+        run: $KOTLINC notion-import-csv.main.kts
+
+      - name: "Compile .main.kts."
+        working-directory: scripts/notion/import-data
+        shell: bash
+        run: $KOTLINC notion-import-dev-summit.main.kts
+
+      - name: "Compile .main.kts."
+        working-directory: scripts/notion/import-data
+        shell: bash
+        run: $KOTLINC notion-import-droidcon.main.kts
+
+      - name: "Compile .main.kts."
+        working-directory: scripts/notion/import-data
+        shell: bash
+        run: $KOTLINC siliconmilkroundabout/companies-attending.main.kts
 
 
   notion-filter-content:
