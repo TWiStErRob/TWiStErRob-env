@@ -7,11 +7,8 @@
 @file:DependsOn("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.2")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
 
-import Summarize_main.ContributionsResponse.ContributorActivity
-import Summarize_main.ContributionsResponse.ContributorActivity.WeeklyContributions
-import Summarize_main.LoginName
-import Summarize_main.OrganisationName
-import Summarize_main.RepositoryName
+import ContributionsResponse.ContributorActivity
+import ContributionsResponse.ContributorActivity.WeeklyContributions
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory

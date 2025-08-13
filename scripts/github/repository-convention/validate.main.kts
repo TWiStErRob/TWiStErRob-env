@@ -12,12 +12,12 @@
 @file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:3.2.2")
 @file:DependsOn("tech.tablesaw:tablesaw-core:0.44.4")
 
-import Validate_main.JsonX.asSafeString
-import Validate_main.JsonX.filterNot
-import Validate_main.JsonX.format
-import Validate_main.JsonX.getSafeString
-import Validate_main.JsonX.mapJsonArray
-import Validate_main.JsonX.prettyPrint
+import JsonX.asSafeString
+import JsonX.filterNot
+import JsonX.format
+import JsonX.getSafeString
+import JsonX.mapJsonArray
+import JsonX.prettyPrint
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper

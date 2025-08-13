@@ -25,7 +25,7 @@ import java.io.PrintWriter
 main()
 
 fun main() {
-	val service: Gmail = this
+	val service: Gmail = Unit
 		.gmail(
 			"client_secret_projectId-identifier.apps.googleusercontent.com.json",
 			GmailScopes.GMAIL_READONLY,
@@ -160,7 +160,7 @@ fun ParsedMessage.asReview(): Review {
 	)
 }
 
-fun gmail(credentials: String, vararg scopes: String): Gmail.Builder {
+fun Unit.gmail(credentials: String, vararg scopes: String): Gmail.Builder {
 	val json: JsonFactory = GsonFactory.getDefaultInstance()
 	val transport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
 	return Gmail.Builder(
