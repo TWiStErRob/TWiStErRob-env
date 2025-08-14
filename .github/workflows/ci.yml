@@ -541,7 +541,7 @@ jobs:
       - name: "Run shellcheck."
         env:
           # Use https://github.com/koalaman/shellcheck
-          SHELLCHECK_VERSION: '0.10.0'
+          SHELLCHECK_VERSION: '0.11.0'
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release download "v${SHELLCHECK_VERSION?}" --repo koalaman/shellcheck --pattern "shellcheck-v*.linux.x86_64.tar.xz"
