@@ -52,8 +52,8 @@ $user = [ordered]@{
 
     GCLOUD_HOME = "%PROG_HOME%\tools\sdk\google-cloud-sdk"
     # set up a Gradle for global things
-    GRADLE7_HOME = "%PROG_HOME%\tools\build\gradle\gradle-7.6.4-all\69w292fwwbbevpookp42lrbux\gradle-7.6.4"
-    GRADLE8_HOME = "%PROG_HOME%\tools\build\gradle\gradle-8.14-all\c2qonpi39x1mddn7hk5gh9iqj\gradle-8.14"
+    #GRADLE7_HOME = "%PROG_HOME%\tools\build\gradle\gradle-7.6.4-all\69w292fwwbbevpookp42lrbux\gradle-7.6.4"
+    GRADLE8_HOME = "%PROG_HOME%\tools\build\gradle\gradle-8.14.3-all\10utluxaxniiv4wxiphsi49nj\gradle-8.14.3"
     GRADLE_HOME = "%GRADLE8_HOME%"
     # Global Gradle arguments to be passed to `gradle`/`gradlew`
     #-PSNAPSHOT_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2 -PRELEASE_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2
@@ -83,10 +83,11 @@ $user = [ordered]@{
     # BEWARE: after 11 Oracle JDKs are commercially licenced, not free
     JAVA11_HOME = "%PROG_HOME%\tools\lang\java-11.0.2-x64-openjdk"
     # 17+ is fine licence-wise
-    JAVA17_HOME = "%PROG_HOME%\tools\lang\java-17.0.5-x64-jdk"
+    JAVA17_HOME = "%PROG_HOME%\tools\lang\java-17.0.15-x64-jdk"
     JAVA19_HOME = "%PROG_HOME%\tools\lang\java-19.0.1-x64-jdk"
     JAVA20_HOME = "%PROG_HOME%\tools\lang\java-20.0.2-x64-jdk"
     JAVA21_HOME = "%PROG_HOME%\tools\lang\java-21.0.7-x64-jdk"
+    JAVA24_HOME = "%PROG_HOME%\tools\lang\java-24.0.1-x64-jdk"
     # for gradlew, mvn
     JAVA_HOME = "%JAVA21_HOME%"
     # Global Java settings for random `java` executions
@@ -119,7 +120,7 @@ $user = [ordered]@{
     WOFF2_HOME = "%PROG_HOME%\tools\misc\woff2-1.0.3-SNAPSHOT"
     #SCALA_HOME = "%PROG_HOME%\tools\lang\scala-2.11.7"
     PYTHON2_HOME = "%PROG_HOME%\tools\lang\python-2.7.10-amd64"
-    PYTHON3_HOME = "%PROG_HOME%\tools\lang\python-3.7.2.post1-embed-amd64"
+    PYTHON3_HOME = "%PROG_HOME%\tools\lang\python-3.11.1-amd64"
     PYTHON_HOME = "%PYTHON3_HOME%"
 
     PERL5_HOME = "%PROG_HOME%\tools\lang\perl-5.14.2.1402-x64"
@@ -156,7 +157,7 @@ $paths = @(
         "%FONTFORGE_HOME%\bin",
         # woff2_compress for fontcustom
         "%WOFF2_HOME%",
-        # pyhton is needed for fontcustom
+        # python is needed for fontcustom
         "%PYTHON_HOME%",
         # perl
         "%PERL_HOME%\bin",

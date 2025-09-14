@@ -1,40 +1,41 @@
 groovy-2.4.5 apache-groovy-sdk-2.4.5.zip
-scala-2.11.7 http://downloads.typesafe.com/scala/2.11.7/scala-2.11.7.zip
 java-1.4.2_19-x86-jre j2re-1_4_2_19-windows-i586-p
 java-1.5.0_22-x64-jdk jdk-1_5_0_22-windows-amd64
 java-1.5.0_22-x64-jre jre-1_5_0_22-windows-amd64
 java-1.5.0_22-x86-jdk jdk-1_5_0_22-windows-i586-p
 java-1.5.0_22-x86-jre jre-1_5_0_22-windows-i586-p
-ruby-2.2.2 http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.2.tar.gz
-ruby-2.2.2-i386-mingw32 http://dl.bintray.com/oneclick/rubyinstaller/ruby-2.2.2-i386-mingw32.7z
-ruby-2.2.2-x64-mingw32 http://dl.bintray.com/oneclick/rubyinstaller/ruby-2.2.2-x64-mingw32.7z
-ruby-devkit http://dl.bintray.com/oneclick/rubyinstaller/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe
-python-2.7.10-amd64 https://www.python.org/ftp/python/2.7.10/python-2.7.10.amd64.msi
-java-11.0.2-x64-jdk jdk-11.0.2_windows-x64_bin.zip BEWARE: https://blog.joda.org/2018/09/do-not-fall-into-oracles-java-11-trap.html
-java-1.6.0_45-x86-jdk jdk-6u45-windows-i586.exe
-java-1.6.0_45-x86-jre jdk-6u45-windows-i586.exe (embedded)
 java-1.6.0_45-x64-jdk jdk-6u45-windows-x64.exe
 java-1.6.0_45-x64-jre jdk-6u45-windows-x64.exe (embedded)
-java-1.8.0_201-x64-jdk jdk-8u201-windows-x64.exe
-java-1.8.0_201-x64-jre jdk-8u201-windows-x64.exe (embedded)
-java-1.8.0_201-x86-jdk jdk-8u201-windows-i586.exe
-java-1.8.0_201-x86-jre jdk-8u201-windows-i586.exe (embedded)
+java-1.6.0_45-x86-jdk jdk-6u45-windows-i586.exe
+java-1.6.0_45-x86-jre jdk-6u45-windows-i586.exe (embedded)
 java-1.7.0_80-x64-jdk jdk-7u80-windows-x64.exe
 java-1.7.0_80-x64-jre jdk-7u80-windows-x64.exe (embedded)
 java-1.7.0_80-x86-jdk jdk-7u80-windows-i586.exe
 java-1.7.0_80-x86-jre jdk-7u80-windows-i586.exe (embedded)
+java-1.8.0_201-x64-jdk jdk-8u201-windows-x64.exe
+java-1.8.0_201-x64-jre jdk-8u201-windows-x64.exe (embedded)
+java-1.8.0_201-x86-jdk jdk-8u201-windows-i586.exe
+java-1.8.0_201-x86-jre jdk-8u201-windows-i586.exe (embedded)
 java-10.0.2-x64-jdk jdk-10.0.2_windows-x64_bin.exe
 java-10.0.2-x64-jre jdk-10.0.2_windows-x64_bin.exe (embedded)
-kotlin-1.3.21 +kscript 2.7.1
+java-11.0.2-x64-jdk jdk-11.0.2_windows-x64_bin.zip BEWARE: https://blog.joda.org/2018/09/do-not-fall-into-oracles-java-11-trap.html
 java-11.0.2-x64-zulu zulu11.52.13-ca-jdk11.0.13-win_x64.zip from https://www.azul.com/downloads/?version=java-11-lts&os=windows&architecture=x86-64-bit&package=jdk
+java-17.0.15-x64-jdk https://download.oracle.com/otn/java/jdk/17.0.15+9/4f092786cec841d58ae21840b10204d7/jdk-17.0.15_windows-x64_bin.zip?AuthParam=1751811277_52064e85abe815df919356f91cfeea91
 java-19.0.1-x64-jdk https://download.oracle.com/java/19/latest/jdk-19_windows-x64_bin.zip
-java-17.0.5-x64-jdk https://download.oracle.com/java/17/latest/jdk-17_windows-x64_bin.zip
-python-3.11.1-embed-amd64 https://www.python.org/ftp/python/3.11.1/python-3.11.1-embed-amd64.zip
-python-3.11.1-amd64 https://www.python.org/ftp/python/3.11.1/python-3.11.1-amd64.exe\n\nInstalled, copied, uninstall, deleted all __pycache__ folders, ran `python -m pip install --upgrade --force-reinstall pip`
-ruby-2.7.8-x64-mingw32 https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.8-1/rubyinstaller-2.7.8-1-x64.7z
 java-20.0.2-x64-jdk https://download.oracle.com/java/20/latest/jdk-20_windows-x64_bin.zip
-nvm-1.1.11 https://github.com/coreybutler/nvm-windows/releases/download/1.1.11/nvm-noinstall.zip
-kotlin-1.9.10 https://github.com/JetBrains/kotlin/releases/download/v1.9.10/kotlin-compiler-1.9.10.zip
 java-21.0.1-x64-openjdk https://jdk.java.net/21/ -> https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-21.0.1_windows-x64_bin.zip
-ruby-3.3.1-1-x64 https://rubyinstaller.org/downloads/ -> https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.1-1/rubyinstaller-3.3.1-1-x64.7z\n\nThen inside\n * bin folder: ridk install\n * choose 3 (MSYS2 and MINGW)\n * this downloads\n * starts installer (and fails in the background), complete installation anyways to msys64 folder inside Ruby folder\n * choose 3 again\n * wait\n * CTRL+C to completeÂ
+java-24.0.1-x64-jdk https://download.oracle.com/java/24/latest/jdk-24_windows-x64_bin.zip
+kotlin-1.3.21 +kscript 2.7.1
+kotlin-1.9.10 https://github.com/JetBrains/kotlin/releases/download/v1.9.10/kotlin-compiler-1.9.10.zip
 kotlin-2.0.0 https://github.com/JetBrains/kotlin/releases/download/v2.0.0/kotlin-compiler-2.0.0.zip
+nvm-1.1.11 https://github.com/coreybutler/nvm-windows/releases/download/1.1.11/nvm-noinstall.zip
+python-2.7.10-amd64 https://www.python.org/ftp/python/2.7.10/python-2.7.10.amd64.msi
+python-3.11.1-amd64 https://www.python.org/ftp/python/3.11.1/python-3.11.1-amd64.exe\n\nInstalled, copied, uninstall, deleted all __pycache__ folders, ran `python -m pip install --upgrade --force-reinstall pip`
+python-3.11.1-embed-amd64 https://www.python.org/ftp/python/3.11.1/python-3.11.1-embed-amd64.zip
+ruby-2.2.2 http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.2.tar.gz
+ruby-2.2.2-i386-mingw32 http://dl.bintray.com/oneclick/rubyinstaller/ruby-2.2.2-i386-mingw32.7z
+ruby-2.2.2-x64-mingw32 http://dl.bintray.com/oneclick/rubyinstaller/ruby-2.2.2-x64-mingw32.7z
+ruby-2.7.8-x64-mingw32 https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.8-1/rubyinstaller-2.7.8-1-x64.7z
+ruby-3.3.1-1-x64 https://rubyinstaller.org/downloads/ -> https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.1-1/rubyinstaller-3.3.1-1-x64.7z\n\nThen inside\n * bin folder: ridk install\n * choose 3 (MSYS2 and MINGW)\n * this downloads\n * starts installer (and fails in the background), complete installation anyways to msys64 folder inside Ruby folder\n * choose 3 again\n * wait\n * CTRL+C to completeÂ
+ruby-devkit http://dl.bintray.com/oneclick/rubyinstaller/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe
+scala-2.11.7 http://downloads.typesafe.com/scala/2.11.7/scala-2.11.7.zip
