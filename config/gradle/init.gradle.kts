@@ -10,7 +10,8 @@ if (GradleVersion.version("6.0") <= GradleVersion.current().baseVersion
 	apply(from = "init.d/includes/gradle_buildCache-local-expiry.init.gradle.kts")
 }
 
-if (GradleVersion.version("6.2.2") <= GradleVersion.current().baseVersion) {
+if (GradleVersion.version("6.2.2") <= GradleVersion.current().baseVersion
+	&& GradleVersion.current().baseVersion < GradleVersion.version("9.1")) {
 	apply(from = "init.d/includes/gradle_auto-warning.init.gradle.kts")
 }
 

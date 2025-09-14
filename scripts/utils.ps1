@@ -17,8 +17,33 @@ Function New-SymLink() {
     )
 
     $resolvedLink = [System.Environment]::ExpandEnvironmentVariables($link)
-    $resolvedTarget = Resolve-Path -LiteralPath ([System.Environment]::ExpandEnvironmentVariables($target))
+    $resolvedTarget = (Resolve-Path -LiteralPath ([System.Environment]::ExpandEnvironmentVariables($target))).ProviderPath
+
     Write-Host "Linking ""$link"" (""$resolvedLink"") => ""$target"" (""$resolvedTarget"")"
+
+    if (Test-Path $resolvedLink) {
+        $existing = Get-Item $resolvedLink -Force
+        if ($existing.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+            if ($existing.Target -eq $resolvedTarget) {
+                return
+            } else {
+                throw "There's an existing file/folder at $resolvedLink, and it does not point to the right place." `
+                + "`nExisting link: $($existing.Target)" `
+                + "`nExpected link: $resolvedTarget"
+            }
+        } else {
+            throw "A real file/folder already exists at '$resolvedLink'. Cannot create symlink."
+        }
+    }
+
+    $parentDir = Split-Path $resolvedLink -Parent
+    if (-not (Test-Path $parentDir)) {
+        Write-Host "Creating missing parent directory: $parentDir"
+        New-Item -ItemType Directory -Path $parentDir
+    } elseif (-not (Test-Path $parentDir -PathType Container)) {
+        throw "Parent path '$parentDir' exists but is not a directory."
+    }
+
     if (Test-Path -PathType Container $resolvedTarget) {
         $command = "cmd /c mklink /d"
     } elseif (Test-Path -PathType Leaf $resolvedTarget) {
@@ -26,8 +51,8 @@ Function New-SymLink() {
     } else {
         throw "Cannot resolve ""$target"" (""$resolvedTarget"")"
     }
-    # TODO make sure link's parent created and is a folder
-    Invoke-Expression "$command ""$link"" ""$resolvedTarget"""
+
+    Invoke-Expression "$command ""$resolvedLink"" ""$resolvedTarget"""
 }
 
 Function Remove-SymLink() {
