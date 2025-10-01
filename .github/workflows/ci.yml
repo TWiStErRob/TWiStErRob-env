@@ -412,7 +412,7 @@ jobs:
           distribution: zulu
 
       - name: "Set up Gradle."
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           gradle-version: ${{ matrix.gradle }}
           cache-disabled: true
