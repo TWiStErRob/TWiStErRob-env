@@ -274,7 +274,7 @@ jobs:
 
       - name: "Upload 'pst2maildir test' artifact."
         if: ${{ success() || failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: 'pst2maildir test'
           if-no-files-found: error
@@ -387,7 +387,7 @@ jobs:
 
       - name: "Upload 'svn2git test' artifact."
         if: ${{ success() || failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: 'svn2git test'
           if-no-files-found: error
@@ -506,7 +506,7 @@ jobs:
 
       - name: "Upload 'Detekt Results' artifact."
         if: ${{ success() || failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: 'Detekt Results'
           if-no-files-found: error
@@ -585,7 +585,7 @@ jobs:
 
       - name: "Upload 'ShellCheck Results' artifact."
         if: ${{ success() || failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: 'ShellCheck Results'
           if-no-files-found: error
@@ -624,7 +624,7 @@ jobs:
 
       - name: "Upload 'PSScriptAnalyzer Results' artifact."
         if: ${{ success() || failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: 'PSScriptAnalyzer Results'
           if-no-files-found: error
