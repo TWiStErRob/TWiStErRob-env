@@ -467,7 +467,7 @@ jobs:
             java: 17
 
           - name: 'latest'
-            gradle: '9.2.0' # renovate
+            gradle: '9.2.1' # renovate
             java: 21
 
   detekt:
