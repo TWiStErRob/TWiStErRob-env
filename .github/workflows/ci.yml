@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Compile .main.kts."
         working-directory: scripts/git/merged-branches
@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/project-manage-draft-issues
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/repository-convention
@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Compile .main.kts."
         working-directory: scripts/github/user-contribs
@@ -117,7 +117,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Compile .main.kts."
         working-directory: scripts/google/gmail-play-reviews
@@ -134,7 +134,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Compile .main.kts."
         working-directory: scripts/notion/import-data
@@ -166,7 +166,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Compile .main.kts."
         working-directory: scripts/notion/database-filter-page-content
@@ -183,7 +183,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Compile .main.kts."
         working-directory: scripts/notion/page-section-move-to-property
@@ -200,7 +200,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Compile .main.kts."
         working-directory: scripts/special/lastpass2google-migration
@@ -222,7 +222,7 @@ jobs:
 
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Prepare test data."
         working-directory: scripts/special/pst-maildir-imap
@@ -296,7 +296,7 @@ jobs:
 
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Set up SVN."
         run: |
@@ -403,7 +403,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Set up Java."
         uses: actions/setup-java@v5
@@ -481,7 +481,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Run detekt."
         env:
@@ -536,7 +536,7 @@ jobs:
 
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Run shellcheck."
         env:
@@ -611,7 +611,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Run PSScriptAnalyzer."
         uses: microsoft/psscriptanalyzer-action@v1.1
