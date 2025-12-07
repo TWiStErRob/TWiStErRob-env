@@ -239,41 +239,32 @@ fun collect(views: List<ViewNode>, propSelector: (ViewNode) -> String?): List<St
 }
 
 fun parseView(text: String, marker: String): ViewNode {
-	val regex = Regex("^\\+(-*)>(.*?)\\{id=(-?\\d+), ([\\s\\S]+)\\}( " + Regex.escape(marker) + ")?")
-	val match = regex.matchEntire(text) ?: throw Exception("Cannot parse view: $text")
-	val level = match.groups[1]?.value?.length ?: 0
-	val name = match.groups[2]?.value ?: ""
-	val id = match.groups[3]?.value ?: ""
-	val rest = match.groups[4]?.value ?: ""
-	val matches = match.groups[6]?.value != null
-	val view = ViewNode(level, name, id, matches)
+	val regex = Regex("^\\+(-*)>(.*?)\\{id=(-?\\d+), ([\\s\\S]+)\\}( " + Regex.escape(marker) + ")?$")
+	val match = regex.find(text) ?: throw Exception("Cannot parse view: $text")
+	val view = ViewNode(
+		level = match.groups[1]!!.value.length,
+		name = match.groups[2]!!.value,
+		id = match.groups[3]!!.value,
+		matches = match.groups[5] != null,
+		children = mutableListOf(),
+	)
+	val rest = match.groups[4]!!.value
 	parseProps(view.props, rest)
-	// Editor info parsing
 	view.props["editor-info"]?.let { info ->
-		val infoStr = info.substring(1, info.length - 1)
-		val infoRe = Regex("(.*?)=(.*?)( (?=\\w+=)|$)")
-		infoRe.findAll(infoStr).forEach { m ->
-			val (k, v) = m.destructured
-			view.props["ei-$k"] = v
-		}
 		view.props.remove("editor-info")
+		val infoStr = info.substring(1, info.length - 1)
+		val infoRe = Regex("""(.*?)=(.*?)( (?=\w+=)|$)""")
+		infoRe.findAll(infoStr).forEach { match ->
+			view.props["ei-${match.groups[1]!!.value}"] = match.groups[2]!!.value
+		}
 	}
 	return view
 }
 
-fun parseProps(map: MutableMap<String, Any>, rest: String) {
-	val propRe = Regex("(.*?)[=:]([\\s\\S]*?)(,? (?=[\\w-]+[=:])|$)")
-	propRe.findAll(rest).forEach { match ->
-		val (k, v) = match.destructured
-		map[k] = v
-	}
-}
-
 fun parseProps(map: MutableMap<String, String>, rest: String) {
-	val propRe = Regex("(.*?)[=:]([\\s\\S]*?)(,? (?=[\\w-]+[=:])|$)")
+	val propRe = Regex("""(.*?)[=:]([\s\S]*?)(,? (?=[\w-]+[=:])|$)""")
 	propRe.findAll(rest).forEach { match ->
-		val (k, v) = match.destructured
-		map[k] = v
+		map[match.groups[1]!!.value] = match.groups[2]!!.value
 	}
 }
 

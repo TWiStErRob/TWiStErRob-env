@@ -87,48 +87,6 @@
 		result.sort();
 		return result;
 	}
-	function escapeRegExp(str) {
-		// noinspection *
-		return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-	}
-	function parseView(text, marker) {
-		var regex = new RegExp('^\\+(-*)>(.*?)\\{id=(-?\\d+), ([\\s\\S]+)\\}( ' + escapeRegExp(marker) + ')?$');
-		var match = regex.exec(text);
-		if (!match) throw "Cannot parse view: " + text;
-		var view = {
-			level: match[1].length,
-			name: match[2],
-			id: match[3],
-			matches: !!match[5],
-			children: []
-		};
-		var rest = match[4];
-		parseProps(view, rest);
-		if (view['editor-info']) {
-			var info = view['editor-info'];
-			delete view['editor-info'];
-			info = info.substring(1, info.length - 1);
-			var infoRe = /(.*?)=(.*?)( (?=\w+=)|$)/g;
-			while (match = infoRe.exec(info)) {
-				view['ei-' + match[1]] = match[2];
-			}
-		}
-		return view;
-	}
-	function parseProps(view, rest) {
-		var propRe = /(.*?)[=:]([\s\S]*?)(,? (?=[\w-]+[=:])|$)/g;
-		while (match = propRe.exec(rest)) {
-			view[match[1]] = match[2];
-		}
-		return view;
-	}
-	function toViews(input, marker) {
-		var output = [];
-		for (var i = 0; i < input.length; ++i) {
-			output.push(parseView(input[i], marker));
-		}
-		return output;
-	}
 	function build(views) {
 		var stack = [];
 		for (var i = 0; i < views.length; ++i) {
@@ -153,17 +111,7 @@
 		}
 		return views[0];
 	}
-	function render(error) {
-		if (error.hierarchy) {
-			return renderHierarchy(error);
-		} else if (error.data) {
-			return renderData(error);
-		} else if (error.roots) {
-			return renderRoots(error);
-		} else {
-			throw 'Cannot render ' + JSON.stringify(error);
-		}
-	}
+
 	function renderRoots(error) {
 		var hierarchyTreeDom = document.getElementById('hierarchy-tree');
 		while (hierarchyTreeDom.firstChild) {
