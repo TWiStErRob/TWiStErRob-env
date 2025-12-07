@@ -90,31 +90,59 @@ data class ViewNode(
 )
 
 fun parse(exception: String): ExceptionResult {
+	console.log("parsing")
 	val ambiguousRe =
-		Regex(".*(android\\.support\\.test\\.espresso\\.AmbiguousViewMatcherException): '(.*?)' matches multiple views in the hierarchy\\.\\nProblem views are marked with '(\\*\\*\\*\\*MATCHES\\*\\*\\*\\*)' below\\.\\n\\nView Hierarchy:\\n((.|\n)*)")
-	val noMatchRe =
-		Regex(".*(android.support.test.espresso.NoMatchingViewException): No views in hierarchy found matching: \\(?(.+?)\\)?\\n.*View Hierarchy:\\n((.|\n)*)")
-	val noRootRe =
-		Regex(".*(android.support.test.espresso.NoMatchingRootException): Matcher '((.|\n)*?)' did not match any of the following roots: \\[((.|\n)*)\\]\\n((.|\n)*)")
-	val runtimeRe =
-		Regex(".*(java.lang.RuntimeException): No data found matching: \\(?(.+?)\\)? contained values: <\\[((.|\n)*?)\\]>(.*)")
+		Regex("""[\s\S]*(android\.support\.test\.espresso\.AmbiguousViewMatcherException): '(.*?)' matches multiple views in the hierarchy\.\nProblem views are marked with '(\*\*\*\*MATCHES\*\*\*\*)' below.\n\nView Hierarchy:\n([\s\S]*)""")
 
-	ambiguousRe.matchEntire(exception)?.let {
-		val (ex, matcher, marker, hierarchyText) = it.destructured
-		return parseViewException(ViewExceptionResult(ex, matcher, marker, hierarchyText))
+	ambiguousRe.find(exception)?.let {
+		return parseViewException(
+			ViewExceptionResult(
+				ex = it.groupValues[1],
+				matcher = it.groupValues[2],
+				marker = it.groupValues[3],
+				hierarchyText = it.groupValues[4],
+			)
+		)
 	}
-	noMatchRe.matchEntire(exception)?.let {
-		val (ex, matcher, hierarchyText) = it.destructured
-		return parseViewException(ViewExceptionResult(ex, matcher, "", hierarchyText))
+
+	val noMatchRe =
+		Regex("""[\s\S]*(android.support.test.espresso.NoMatchingViewException): No views in hierarchy found matching: \(?(.*?)\)?\n[\s\S]*View Hierarchy:\n([\s\S]*)""")
+	noMatchRe.find(exception)?.let {
+		return parseViewException(
+			ViewExceptionResult(
+				ex = it.groupValues[1],
+				matcher = it.groupValues[2],
+				marker = "",
+				hierarchyText = it.groupValues[3],
+			)
+		)
 	}
-	noRootRe.matchEntire(exception)?.let {
-		val (ex, matcher, marker, rootText) = it.destructured
-		return parseRootException(RootExceptionResult(ex, matcher, marker, rootText))
+
+	val noRootRe =
+		Regex("""[\s\S]*(android.support.test.espresso.NoMatchingRootException): Matcher '([\s\S]*?)' did not match any of the following roots: \[([\s\S]*)\]\n([\s\S]*)""")
+	noRootRe.find(exception)?.let {
+		return parseRootException(
+			RootExceptionResult(
+				ex = it.groupValues[1],
+				matcher = it.groupValues[2],
+				marker = "",
+				rootText = it.groupValues[3],
+			)
+		)
 	}
-	runtimeRe.matchEntire(exception)?.let {
-		val (ex, matcher, dataText) = it.destructured
-		return parseDataException(DataExceptionResult(ex, matcher, dataText))
+
+	val runtimeRe =
+		Regex("""[\s\S]*(java.lang.RuntimeException): No data found matching: \(?(.*?)\)? contained values: \<\[([\s\S]*?)\]\>([\s\S]*)""")
+	runtimeRe.find(exception)?.let {
+		return parseDataException(
+			DataExceptionResult(
+				ex = it.groupValues[1],
+				matcher = it.groupValues[2],
+				dataText = it.groupValues[3],
+			)
+		)
 	}
+
 	throw Exception("Cannot match $exception")
 }
 

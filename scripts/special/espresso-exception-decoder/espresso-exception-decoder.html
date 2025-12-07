@@ -1,49 +1,4 @@
 <script>
-	function parse(exception) {
-		console.log("parsing");
-		var match;
-
-		match = /[\s\S]*(android\.support\.test\.espresso\.AmbiguousViewMatcherException): '(.*?)' matches multiple views in the hierarchy\.\nProblem views are marked with '(\*\*\*\*MATCHES\*\*\*\*)' below.\n\nView Hierarchy:\n([\s\S]*)/.exec(exception);
-		if (match) {
-			return parseViewException({
-				ex: match[1],
-				matcher: match[2],
-				marker: match[3],
-				hierarchyText: match[4]
-			});
-		}
-
-		match = /[\s\S]*(android.support.test.espresso.NoMatchingViewException): No views in hierarchy found matching: \(?(.*?)\)?\n[\s\S]*View Hierarchy:\n([\s\S]*)/.exec(exception);
-		if (match) {
-			return parseViewException({
-				ex: match[1],
-				matcher: match[2],
-				marker: '',
-				hierarchyText: match[3]
-			});
-		}
-
-		match = /[\s\S]*(android.support.test.espresso.NoMatchingRootException): Matcher '([\s\S]*?)' did not match any of the following roots: \[([\s\S]*)\]\n([\s\S]*)/.exec(exception);
-		if(match) {
-			return parseRootException({
-				ex: match[1],
-				matcher: match[2],
-				marker: '',
-				rootText: match[3]
-			});
-		}
-
-		match = /[\s\S]*(java.lang.RuntimeException): No data found matching: \(?(.*?)\)? contained values: \<\[([\s\S]*?)\]\>([\s\S]*)/.exec(exception);
-		if (match) {
-			return parseDataException({
-				ex: match[1],
-				matcher: match[2],
-				dataText: match[3]
-			});
-		}
-		
-		throw "Cannot match " + exception;
-	}
 	function parseViewException(result) {
 		result.hierarchyArray = result.hierarchyText.split("\n|\n");
 		var last = result.hierarchyArray[result.hierarchyArray.length - 1];
