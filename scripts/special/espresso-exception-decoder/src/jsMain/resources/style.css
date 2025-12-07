@@ -1,16 +1,14 @@
-/* Move CSS from the original HTML file here. */
 html, body {
 	margin: 0;
 	padding: 0;
 }
 
-/* ...rest of CSS... */
-
 #hierarchy-display {
 	overflow: hidden;
 	position: relative;
-	width: 100%;
-	padding-bottom: 177.77%;
+	/*transform: scale(.5,.5);*/
+	width: 100%; /* needs to stay 100% otherwise the padding-bottom trick doesn't work */
+	padding-bottom: 177.77%; /* set from JS, but default to portrait 9:16 */
 }
 
 #output-container {
@@ -58,13 +56,16 @@ dl#properties dd {
 	outline: 2px solid yellow;
 	z-index: 1;
 }
+
 #hierarchy-tree .view.MATCHES > .name {
 	background-color: #EFC94C;
 }
+
 #hierarchy-tree .view.highlight > .name,
 #hierarchy-tree .view:hover > .name {
 	font-weight: bold;
 }
+
 #hierarchy-tree .view.highlight > .name {
 	color: red;
 }
@@ -81,6 +82,7 @@ dl#properties dd {
 #hierarchy-display .view.GONE {
 	opacity: 0.3;
 }
+
 #hierarchy-display .view.GONE {
 	outline: none;
 }
@@ -89,6 +91,7 @@ dl#properties dd {
 #hierarchy-tree .view.GONE .name {
 	opacity: 0.5;
 }
+
 #hierarchy-tree .view.GONE > .name {
 	opacity: 0.2;
 }
@@ -113,8 +116,24 @@ dl#properties dd {
 	border: 1px solid red;
 }
 
+/*noinspection CssOptimizeSimilarProperties*/
 .show-borders.layout-borders .view.VISIBLE::after {
-	border-image: url('data:image/svg+xml;charset=utf8,<svg width="50" height="50" viewBox="0,0 50 50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><g id="corner"><line x1="0" y1="0" x2="10" y2="0" stroke-width="3" stroke="blue" /><line x1="0" y1="0" x2="0" y2="10" stroke-width="3" stroke="blue" /></g></defs><rect width="50" height="50" stroke-width="1" stroke="red" fill="none" /><use transform="translate( 0, 0) rotate(0)" xlink:href="#corner" /><use transform="translate(50, 0) rotate(90)" xlink:href="#corner" /><use transform="translate( 0,50) rotate(-90)" xlink:href="#corner" /><use transform="translate(50,50) rotate(180)" xlink:href="#corner" /></svg>') 10 repeat;
+	/* removed < ? xml version="1.0" encoding="UTF-8"?> because 000webhost cannot handle < and ? one after the other */
+	border-image: url('data:image/svg+xml;charset=utf8,\
+		<svg width="50" height="50" viewBox="0,0 50 50" \
+			xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">\
+			<defs>\
+				<g id="corner">\
+					<line x1="0" y1="0" x2="10" y2="0" stroke-width="3" stroke="blue" />\
+					<line x1="0" y1="0" x2="0" y2="10" stroke-width="3" stroke="blue" />\
+				</g>\
+			</defs>\
+			<rect width="50" height="50" stroke-width="1" stroke="red" fill="none" />\
+			<use transform="translate( 0, 0) rotate(0)" xlink:href="#corner" />\
+			<use transform="translate(50, 0) rotate(90)" xlink:href="#corner" />\
+			<use transform="translate( 0,50) rotate(-90)" xlink:href="#corner" />\
+			<use transform="translate(50,50) rotate(180)" xlink:href="#corner" />\
+		</svg>') 10 repeat;
 	border-width: 10px;
 	border-style: solid;
 }
@@ -124,5 +143,3 @@ dl#properties dd {
 #hierarchy-display .RecyclerView {
 	overflow: hidden;
 }
-
-/* This file will contain shared Kotlin code if needed. */
