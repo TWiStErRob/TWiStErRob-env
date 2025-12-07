@@ -12,8 +12,8 @@ fun main() {
 
 		border.addEventListener("change", {
 			for (i in 0 until border.options.length) {
-				val option = border.options.item(i) as? HTMLOptionElement
-				val optionClasses = option?.value?.split(" ") ?: emptyList()
+				val option = border.options.item(i) as HTMLOptionElement
+				val optionClasses = option.value.split(" ")
 				for (c in optionClasses) {
 					output.classList.remove(c)
 				}
@@ -35,12 +35,16 @@ fun main() {
 			}
 		})
 		message.addEventListener("click", {
-			document.getElementById("name")?.textContent = "Statistics"
-			document.getElementById("path")?.textContent = ""
+			document.getElementById("name")!!.textContent = "Statistics"
+			document.getElementById("path")!!.textContent = ""
 			val error = message.asDynamic().error
-			document.getElementById("properties")?.innerHTML =
-				"<dt>Available res-names</dt><dd>" + error.resNames.join(", ") + "</dd>" +
-						"<dt>Available classes</dt><dd>" + error.types.join(", ") + "</dd>"
+			document.getElementById("properties")!!.innerHTML =
+				"""
+					<dt>Available res-names</dt>
+					<dd>${error.resNames.join(", ")}</dd>
+					<dt>Available classes</dt>
+					<dd>${error.types.join(", ")}</dd>
+				""".trimIndent()
 		})
 	}
 }
