@@ -148,15 +148,16 @@ fun parse(exception: String): ExceptionResult {
 
 fun parseViewException(result: ViewExceptionResult): ViewExceptionResult {
 	result.hierarchyArray = result.hierarchyText.split("\n|\n")
-	val last = result.hierarchyArray.lastOrNull()
-	if (last != null && Regex("^\\s*at").matches(last.trim())) {
-		result.stacktrace = last
+	val last = result.hierarchyArray.last()
+	println(last)
+	if (Regex("""^\s*at""").containsMatchIn(last)) {
+		result.stacktrace = last // TODO stack trace contains stuff after the "at " lines
 		result.hierarchyArray = result.hierarchyArray.dropLast(1)
 	} else {
 		result.stacktrace = null
 	}
 	val views = toViews(result.hierarchyArray, result.marker)
-	result.hierarchy = buildHierarchy(views)
+	result.hierarchy = build(views)
 	result.resNames = collect(views) { it.props["res-name"] }
 	result.types = collect(views) { it.name }
 	return result
@@ -272,18 +273,24 @@ fun toViews(input: List<String>, marker: String): List<ViewNode> {
 	return input.map { parseView(it, marker) }
 }
 
-fun buildHierarchy(views: List<ViewNode>): ViewNode? {
-	val stack = mutableListOf<ViewNode>()
+fun build(views: List<ViewNode>): ViewNode? {
+	val stack = ArrayDeque<ViewNode>()
 	for (view in views) {
-		while (view.level < stack.size) {
-			stack.removeAt(stack.size - 1)
+		if (view.level > stack.size) {
+			error("${view} is deeper than ${stack.size}: missing some parents.")
+		} else while (view.level < stack.size) {
+			//console.log("Popping " + view.name);
+			stack.removeLast()
 		}
 		val parent = stack.lastOrNull()
 		if (parent != null) {
+			//console.log("Parent of " + view.name + " is " + parent.name);
 			parent.children.add(view)
 			view.parent = parent
+			stack.add(parent)
 		}
 		if (view.level == stack.size) {
+			//console.log("Pushing " + view.name);
 			stack.add(view)
 		}
 	}

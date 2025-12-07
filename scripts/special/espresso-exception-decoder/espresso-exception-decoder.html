@@ -1,19 +1,5 @@
 <script>
-	function parseViewException(result) {
-		result.hierarchyArray = result.hierarchyText.split("\n|\n");
-		var last = result.hierarchyArray[result.hierarchyArray.length - 1];
-		if (/^\s*at/.test(last)) {
-			result.stacktrace = last; // TODO stack trace contains stuff after the "at " lines
-			result.hierarchyArray = result.hierarchyArray.splice(0, result.hierarchyArray.length - 1);
-		} else {
-			result.stacktrace = null;
-		}
-		var views = toViews(result.hierarchyArray, result.marker);
-		result.hierarchy = build(views);
-		result.resNames = collect(views, 'res-name');
-		result.types = collect(views, 'name');
-		return result;
-	}
+
 	function parseDataException(result) {
 		result.data = [];
 		var match, dataRe = /Data: (.*?) \(class: (.*?)\) token: (\d+)(?:, |$)/g;
@@ -86,30 +72,6 @@
 		}
 		result.sort();
 		return result;
-	}
-	function build(views) {
-		var stack = [];
-		for (var i = 0; i < views.length; ++i) {
-			var view = views[i];
-			if (view.level > stack.length) {
-				throw JSON.stringify(view) + " is deeper than " + stack.length + ": missing some parents.";
-			} else while (view.level < stack.length) {
-				//console.log("Popping " + view.name);
-				stack.pop();
-			}
-			var parent = stack.pop();
-			if (parent) {
-				//console.log("Parent of " + view.name + " is " + parent.name);
-				parent.children.push(view);
-				view.parent = parent;
-				stack.push(parent);
-			}
-			if (view.level == stack.length) {
-				//console.log("Pushing " + view.name);
-				stack.push(view);
-			}
-		}
-		return views[0];
 	}
 
 	function renderRoots(error) {
