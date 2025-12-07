@@ -49,9 +49,9 @@ fun main() {
 	}
 }
 
-// Data classes for parsed results
 sealed class ExceptionResult
-class ViewExceptionResult(
+
+data class ViewExceptionResult(
 	val ex: String,
 	val matcher: String,
 	val marker: String,
@@ -63,14 +63,14 @@ class ViewExceptionResult(
 	var types: List<String> = emptyList()
 ) : ExceptionResult()
 
-class DataExceptionResult(
+data class DataExceptionResult(
 	val ex: String,
 	val matcher: String,
 	val dataText: String,
 	val data: MutableList<Map<String, String>> = mutableListOf()
 ) : ExceptionResult()
 
-class RootExceptionResult(
+data class RootExceptionResult(
 	val ex: String,
 	val matcher: String,
 	val marker: String,
