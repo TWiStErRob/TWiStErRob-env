@@ -1,3 +1,5 @@
+@file:Suppress("detekt.MagicNumber")
+
 package net.twisterrob.android.testing.parser
 
 import net.twisterrob.android.testing.DataExceptionResult
