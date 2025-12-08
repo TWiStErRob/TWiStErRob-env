@@ -65,7 +65,9 @@ private fun renderHierarchy(error: ViewExceptionResult) {
 	}
 	val width = (h.props["width"] as String).toFloat()
 	val height = (h.props["height"] as String).toFloat()
+	@Suppress("detekt.MagicNumber")
 	hierarchyDom.style.paddingBottom = "${height / width * 100}%"
+	@Suppress("detekt.MagicNumber")
 	renderView(hierarchyDom, h, 100 / width, 100 / height)
 	val hierarchyTreeDom = document.getElementById("hierarchy-tree") as HTMLElement
 	while (hierarchyTreeDom.firstChild != null) {
@@ -78,6 +80,7 @@ private fun renderHierarchy(error: ViewExceptionResult) {
 	hierarchyTreeDom.appendChild(hierarchyTreeRootDomUl)
 }
 
+@Suppress("detekt.MagicNumber")
 private fun String.hashCode32(): Int {
 	var hash = 0
 	for (element in this) {
@@ -102,13 +105,14 @@ private fun renderView(target: HTMLElement, view: ViewNode, scaleX: Float, scale
 	dom.style.height = "${(view.props["height"] as String).toFloat() * scaleY}%"
 	dom.style.left = "${(view.props["x"] as String).toFloat() * scaleX}%"
 	dom.style.top = "${(view.props["y"] as String).toFloat() * scaleY}%"
-	dom.style.backgroundColor = dom.className.hashCode32().toString(16)
+	dom.style.backgroundColor = dom.className.hashCode32().toString(@Suppress("detekt.MagicNumber") 16)
 	dom.setAttribute("data-type", view.name)
 	(view.props["text"] as String?)?.let { text ->
 		dom.innerText = text
 	}
 	target.appendChild(dom)
 	for (child in view.children) {
+		@Suppress("detekt.MagicNumber")
 		renderView(
 			dom,
 			child,

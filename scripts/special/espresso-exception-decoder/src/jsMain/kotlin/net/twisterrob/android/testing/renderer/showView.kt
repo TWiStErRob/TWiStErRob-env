@@ -25,6 +25,8 @@ internal fun showView(view: TreeNode?) {
 	}
 	val exclusions = setOf("children", "parent", "name", "matches", "_display", "_tree")
 	val propsKeysToShow = view.props.keys.filter { it !in exclusions }
+
+	@Suppress("detekt.MagicNumber")
 	val priorities = mapOf(
 		"^id" to 10,
 		"^token" to 10,
@@ -40,7 +42,7 @@ internal fun showView(view: TreeNode?) {
 		"^height" to 42,
 		"^x" to 43,
 		"^y" to 44,
-		"^ei-.*" to Int.MAX_VALUE
+		"^ei-.*" to Int.MAX_VALUE,
 	)
 
 	fun getPriority(x: String): Int {
@@ -49,7 +51,7 @@ internal fun showView(view: TreeNode?) {
 				return priority
 			}
 		}
-		return 100000
+		return (@Suppress("detekt.MagicNumber") 100000)
 	}
 
 	val propsToShow = propsKeysToShow.sortedWith(compareBy({ getPriority(it) }, { it }))
