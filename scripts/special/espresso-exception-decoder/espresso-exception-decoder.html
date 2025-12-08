@@ -1,0 +1,786 @@
+<script>
+	function parse(exception) {
+		console.log("parsing");
+		var match;
+
+		match = /[\s\S]*(android\.support\.test\.espresso\.AmbiguousViewMatcherException): '(.*?)' matches multiple views in the hierarchy\.\nProblem views are marked with '(\*\*\*\*MATCHES\*\*\*\*)' below.\n\nView Hierarchy:\n([\s\S]*)/.exec(exception);
+		if (match) {
+			return parseViewException({
+				ex: match[1],
+				matcher: match[2],
+				marker: match[3],
+				hierarchyText: match[4]
+			});
+		}
+
+		match = /[\s\S]*(android.support.test.espresso.NoMatchingViewException): No views in hierarchy found matching: \(?(.*?)\)?\n[\s\S]*View Hierarchy:\n([\s\S]*)/.exec(exception);
+		if (match) {
+			return parseViewException({
+				ex: match[1],
+				matcher: match[2],
+				marker: '',
+				hierarchyText: match[3]
+			});
+		}
+
+		match = /[\s\S]*(android.support.test.espresso.NoMatchingRootException): Matcher '([\s\S]*?)' did not match any of the following roots: \[([\s\S]*)\]\n([\s\S]*)/.exec(exception);
+		if(match) {
+			return parseRootException({
+				ex: match[1],
+				matcher: match[2],
+				marker: '',
+				rootText: match[3]
+			});
+		}
+
+		match = /[\s\S]*(java.lang.RuntimeException): No data found matching: \(?(.*?)\)? contained values: \<\[([\s\S]*?)\]\>([\s\S]*)/.exec(exception);
+		if (match) {
+			return parseDataException({
+				ex: match[1],
+				matcher: match[2],
+				dataText: match[3]
+			});
+		}
+		
+		throw "Cannot match " + exception;
+	}
+	function parseViewException(result) {
+		result.hierarchyArray = result.hierarchyText.split("\n|\n");
+		var last = result.hierarchyArray[result.hierarchyArray.length - 1];
+		if (/^\s*at/.test(last)) {
+			result.stacktrace = last; // TODO stack trace contains stuff after the "at " lines
+			result.hierarchyArray = result.hierarchyArray.splice(0, result.hierarchyArray.length - 1);
+		} else {
+			result.stacktrace = null;
+		}
+		var views = toViews(result.hierarchyArray, result.marker);
+		result.hierarchy = build(views);
+		result.resNames = collect(views, 'res-name');
+		result.types = collect(views, 'name');
+		return result;
+	}
+	function parseDataException(result) {
+		result.data = [];
+		var match, dataRe = /Data: (.*?) \(class: (.*?)\) token: (\d+)(?:, |$)/g;
+		while (match = dataRe.exec(result.dataText)) {
+			var row = {
+				token: match[3],
+				class: match[2],
+				data: match[1]
+			};
+			if (row.class == 'android.database.sqlite.SQLiteCursor') {
+				rowMatch = /Row (\d+): \{(.*)\}/.exec(row.data);
+				var props = parseProps({'row #': rowMatch[1]}, rowMatch[2]);
+				for (var p in props) {
+					if (props.hasOwnProperty(p)) {
+						row['data-' + p] = props[p];
+					}
+				}
+			}
+			result.data.push(row);
+		}
+		return result;
+	}
+	function parseRootException(result) {
+		result.roots = [];
+		var match, dataRe = /Root\{(?:application-window-token=(.*?), window-token=(.*?), has-window-focus=(.*?), (?:layout-params-type=(.*?), )?(?:layout-params-string=(.*?), )?decor-view-string=(.*?\}))\}/g;
+		while (match = dataRe.exec(result.rootText)) {
+			var root = {
+				'application-window-token': match[1],
+				'window-token': match[2],
+				'has-window-focus': match[3],
+				//'decor-view-string': match[6],
+			};
+			root.children = [];
+			if (match[4]) {
+				root['layout-params-type'] = match[4];
+				//root['layout-params-string'] = match[5];
+				var paramsMatch = /(.*?)\{\((\d+),(\d+)\)\((\d+|fill|wrap)x(\d+|fill|wrap)\) (.*)\}/.exec(match[5]);
+				var params = {
+					name: paramsMatch[1],
+					x: paramsMatch[2],
+					y: paramsMatch[3],
+					width: paramsMatch[4],
+					height: paramsMatch[5]
+				};
+				parseProps(params, paramsMatch[6]);
+				for (var p in params) {
+					if (params.hasOwnProperty(p)) {
+						root[/*'layout-params-' +*/ p] = params[p];
+					}
+				}
+				root['layout-params-class'] = params.name;
+				//root.children.push(params);
+			}
+			root.children.push(parseView('+>' + match[6], ''));
+			result.roots.push(root);
+		}
+		return result;
+	}
+	function collect(arr, prop) {
+		var set = {};
+		for (var i = 0; i < arr.length; ++i) {
+			set[arr[i][prop]] = true;
+		}
+		delete set[undefined];
+		var result = [];
+		for (var p in set) {
+			if (set.hasOwnProperty(p)) {
+				result.push(p);
+			}
+		}
+		result.sort();
+		return result;
+	}
+	function escapeRegExp(str) {
+		// noinspection *
+		return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+	}
+	function parseView(text, marker) {
+		var regex = new RegExp('^\\+(-*)>(.*?)\\{id=(-?\\d+), ([\\s\\S]+)\\}( ' + escapeRegExp(marker) + ')?$');
+		var match = regex.exec(text);
+		if (!match) throw "Cannot parse view: " + text;
+		var view = {
+			level: match[1].length,
+			name: match[2],
+			id: match[3],
+			matches: !!match[5],
+			children: []
+		};
+		var rest = match[4];
+		parseProps(view, rest);
+		if (view['editor-info']) {
+			var info = view['editor-info'];
+			delete view['editor-info'];
+			info = info.substring(1, info.length - 1);
+			var infoRe = /(.*?)=(.*?)( (?=\w+=)|$)/g;
+			while (match = infoRe.exec(info)) {
+				view['ei-' + match[1]] = match[2];
+			}
+		}
+		return view;
+	}
+	function parseProps(view, rest) {
+		var propRe = /(.*?)[=:]([\s\S]*?)(,? (?=[\w-]+[=:])|$)/g;
+		while (match = propRe.exec(rest)) {
+			view[match[1]] = match[2];
+		}
+		return view;
+	}
+	function toViews(input, marker) {
+		var output = [];
+		for (var i = 0; i < input.length; ++i) {
+			output.push(parseView(input[i], marker));
+		}
+		return output;
+	}
+	function build(views) {
+		var stack = [];
+		for (var i = 0; i < views.length; ++i) {
+			var view = views[i];
+			if (view.level > stack.length) {
+				throw JSON.stringify(view) + " is deeper than " + stack.length + ": missing some parents.";
+			} else while (view.level < stack.length) {
+				//console.log("Popping " + view.name);
+				stack.pop();
+			}
+			var parent = stack.pop();
+			if (parent) {
+				//console.log("Parent of " + view.name + " is " + parent.name);
+				parent.children.push(view);
+				view.parent = parent;
+				stack.push(parent);
+			}
+			if (view.level == stack.length) {
+				//console.log("Pushing " + view.name);
+				stack.push(view);
+			}
+		}
+		return views[0];
+	}
+	function render(error) {
+		if (error.hierarchy) {
+			return renderHierarchy(error);
+		} else if (error.data) {
+			return renderData(error);
+		} else if (error.roots) {
+			return renderRoots(error);
+		} else {
+			throw 'Cannot render ' + JSON.stringify(error);
+		}
+	}
+	function renderRoots(error) {
+		var hierarchyTreeDom = document.getElementById('hierarchy-tree');
+		while (hierarchyTreeDom.firstChild) {
+			hierarchyTreeDom.removeChild(hierarchyTreeDom.firstChild);
+		}
+		var hierarchyTreeRootDomUl = document.createElement('ul');
+		for(var i = 0; i < error.roots.length; ++i) {
+			var root = error.roots[i];
+			root.name = root['window-token'];
+			root._display = document.createElement('span');
+			for(var c = 0; c < root.children.length; ++c) {
+				var child = root.children[c];
+				child._display = document.createElement('span');
+				child.children = child.children || [];
+			}
+
+			var hierarchyTreeRootDomLi = document.createElement('li');
+			renderTree(hierarchyTreeRootDomLi, root);
+			hierarchyTreeRootDomUl.appendChild(hierarchyTreeRootDomLi);
+		}
+		hierarchyTreeDom.appendChild(hierarchyTreeRootDomUl);
+	}
+	function renderData(error) {
+		var hierarchyTreeDom = document.getElementById('hierarchy-tree');
+		while (hierarchyTreeDom.firstChild) {
+			hierarchyTreeDom.removeChild(hierarchyTreeDom.firstChild);
+		}
+		var hierarchyTreeRootDomUl = document.createElement('ul');
+		for(var i = 0; i < error.data.length; ++i) {
+			var d = error.data[i];
+			d.name = d.class;
+			d.children = [];
+			d._display = document.createElement('span');
+
+			var hierarchyTreeRootDomLi = document.createElement('li');
+			renderTree(hierarchyTreeRootDomLi, d);
+			hierarchyTreeRootDomUl.appendChild(hierarchyTreeRootDomLi);
+		}
+		hierarchyTreeDom.appendChild(hierarchyTreeRootDomUl);
+	}
+	function renderHierarchy(error) {
+		var h = error.hierarchy;
+
+		var messageDom = document.getElementById('message');
+		messageDom.error = error;
+		messageDom.innerHTML = "<b>" + error.ex + "</b>: " + error.matcher;
+
+		var hierarchyDom = document.getElementById('hierarchy-display');
+		while (hierarchyDom.firstChild) {
+			hierarchyDom.removeChild(hierarchyDom.firstChild);
+		}		
+		hierarchyDom.style.paddingBottom = h.height / h.width * 100 + '%';
+		renderView(hierarchyDom, h, 100 / h.width, 100 / h.height);
+		var hierarchyTreeDom = document.getElementById('hierarchy-tree');
+		while (hierarchyTreeDom.firstChild) {
+			hierarchyTreeDom.removeChild(hierarchyTreeDom.firstChild);
+		}
+		var hierarchyTreeRootDomUl = document.createElement('ul');
+		var hierarchyTreeRootDomLi = document.createElement('li');
+		renderTree(hierarchyTreeRootDomLi, h);
+		hierarchyTreeRootDomUl.appendChild(hierarchyTreeRootDomLi);
+		hierarchyTreeDom.appendChild(hierarchyTreeRootDomUl);
+	}
+	String.prototype.hashCode = function () {
+		var hash = 0, i, chr, len;
+		if (this.length === 0) return hash;
+		for (i = 0, len = this.length; i < len; i++) {
+			chr = this.charCodeAt(i);
+			hash = ((hash << 5) - hash) + chr;
+			hash |= 0; // Convert to 32bit integer
+		}
+		return hash;
+	};
+	function renderView(target, view, scaleX, scaleY) {
+		var dom = document.createElement('div');
+		view._display = dom;
+		dom.view = view;
+		dom.addEventListener('mouseover', function (e) {
+			e.stopPropagation();
+			showView(e.currentTarget.view);
+		});
+		dom.className = ['view', view.name, view.visibility, view.matches ? 'MATCHES' : ''].join(' ');
+		dom.style.width = view.width * scaleX + '%';
+		dom.style.height = view.height * scaleY + '%';
+		dom.style.left = view.x * scaleX + '%';
+		dom.style.top = view.y * scaleY + '%';
+		dom.style.backgroundColor = dom.className.hashCode().toString(16);
+		dom.setAttribute('data-type', view.name);
+		if (view.text) {
+			dom.innerText = view.text;
+		}
+		target.appendChild(dom);
+		for (var i = 0; i < view.children.length; ++i) {
+			renderView(dom, view.children[i], 100 / view.width, 100 / view.height);
+		}
+	}
+	function renderTree(target, view) {
+		view._tree = target;
+		target.view = view;
+		target.addEventListener('mouseover', function (e) {
+			e.stopPropagation();
+			showView(e.currentTarget.view);
+		});
+		target.className = ['view', view.name, view.visibility, view.matches ? 'MATCHES' : ''].join(' ');
+		target.setAttribute('data-type', view.name);
+		var name = document.createElement('span');
+		name.innerText = view.name;
+		name.className = 'name';
+		target.appendChild(name);
+		if(view.children.length) {
+			var children = document.createElement('ul');
+			for (var i = 0; i < view.children.length; ++i) {
+				var child = document.createElement('li');
+				renderTree(child, view.children[i]);
+				children.appendChild(child);
+			}
+			target.appendChild(children);
+		}
+	}
+	function parents(view) {
+		var parents = [];
+		view = view.parent;
+		while (view) {
+			parents.push(view.name + (view['res-name'] ? " (" + view['res-name'] + ")" : ""));
+			view = view.parent;
+		}
+		parents.reverse();
+		return parents;
+	}
+	var lastView;
+	function showView(view) {
+		if (lastView) {
+			lastView._display.classList.remove('highlight');
+			lastView._tree.classList.remove('highlight');
+		}
+		lastView = view;
+		if (!view) return;
+		view._display.classList.add('highlight');
+		view._tree.classList.add('highlight');
+
+		document.getElementById('name').innerText = view.name;
+		document.getElementById('path').innerText = "in " + parents(view).join(' > ');
+
+		var props = document.getElementById('properties');
+		while (props.firstChild) {
+			props.removeChild(props.firstChild);
+		}
+		var propsToShow = [];
+		var exclusions = ['children', 'parent', 'name', 'matches', '_display', '_tree'];
+		for (var x in view) {
+			if (!view.hasOwnProperty(x) || exclusions.indexOf(x) !== -1) continue;
+			propsToShow.push(x);
+		}
+		var priorities = {
+			'^id': 10,
+			'^token': 10,
+			'^res-name': 11,
+			'^matches': 12,
+			'^name': 20,
+			'^class': 20,
+			'^text': 30,
+			'^data': 31,
+			'^desc': 31,
+			'^level': 40,
+			'^width': 41,
+			'^height': 42,
+			'^x': 43,
+			'^y': 44,
+			'^ei-.*': Infinity
+		};
+
+		function getPriority(x) {
+			for (var re in priorities) {
+				if (priorities.hasOwnProperty(re)) {
+					if (new RegExp(re).test(x)) {
+						return priorities[re];
+					}
+				}
+			}
+			return 100000;
+		}
+
+		propsToShow.sort(function (a, b) {
+			var pa = getPriority(a);
+			var pb = getPriority(b);
+			var c = pa < pb ? -1 : (pa > pb ? 1 : 0);
+			return c !== 0 ? c : (a < b ? -1 : (a > b ? 1 : 0));
+		});
+		for (var i = 0; i < propsToShow.length; ++i) {
+			var prop = propsToShow[i];
+			var propName = document.createElement('dt');
+			var propValue = document.createElement('dd');
+			propName.innerText = prop;
+			propValue.innerText = view[prop];
+			props.appendChild(propName);
+			props.appendChild(propValue);
+		}
+	}
+</script>
+<style>
+	html, body {
+		margin: 0;
+		padding: 0;
+	}
+
+	#hierarchy-display {
+		overflow: hidden;
+		position: relative;
+		/*transform: scale(.5,.5);*/
+		width: 100%; /* needs to stay 100% otherwise the padding-bottom trick doesn't work */
+		padding-bottom: 177.77%; /* set from JS, but default to portrait 9:16 */
+	}
+
+	#output-container {
+		width: 40%;
+		float: left;
+		padding: 8px;
+	}
+
+	#hierarchy-tree {
+		width: 20%;
+		height: 100%;
+		overflow: auto;
+		float: left;
+	}
+
+	#selected {
+		width: 35%;
+		float: left;
+		height: 100%;
+		overflow-y: scroll;
+	}
+
+	dl#properties dt {
+		float: left;
+		clear: left;
+		width: 150px;
+		text-align: right;
+		font-weight: bold;
+		margin: 0;
+		padding: 0;
+	}
+
+	dl#properties dd {
+		float: left;
+		margin: 0 0 0 7px;
+	}
+
+	#hierarchy-display .view {
+		position: absolute;
+		background: rgba(0, 0, 0, 0.025);
+	}
+
+	#hierarchy-display .view.highlight,
+	#hierarchy-display .view:hover {
+		outline: 2px solid yellow;
+		z-index: 1;
+	}
+	#hierarchy-tree .view.MATCHES > .name {
+		background-color: #EFC94C;
+	}
+	#hierarchy-tree .view.highlight > .name,
+	#hierarchy-tree .view:hover > .name {
+		font-weight: bold;
+	}
+	#hierarchy-tree .view.highlight > .name {
+		color: red;
+	}
+
+	#hierarchy-tree li.view ul {
+		padding-left: 8px;
+	}
+
+	#hierarchy-display .view.MATCHES {
+		background-color: #EFC94C;
+	}
+
+	#hierarchy-display .view.INVISIBLE,
+	#hierarchy-display .view.GONE {
+		opacity: 0.3;
+	}
+	#hierarchy-display .view.GONE {
+		outline: none;
+	}
+
+	#hierarchy-tree .view.INVISIBLE .name,
+	#hierarchy-tree .view.GONE .name {
+		opacity: 0.5;
+	}
+	#hierarchy-tree .view.GONE > .name {
+		opacity: 0.2;
+	}
+
+	.show-names .view::before {
+		content: attr(data-type);
+	}
+
+	.show-borders .view::after {
+		content: "";
+		position: absolute;
+		z-index: -1;
+		top: 0;
+		right: 0;
+		left: 0;
+		bottom: 0;
+		box-sizing: border-box;
+		border-collapse: separate;
+	}
+
+	.show-borders .view.VISIBLE::after {
+		border: 1px solid red;
+	}
+
+	/*noinspection CssOptimizeSimilarProperties*/
+	.show-borders.layout-borders .view.VISIBLE::after {
+		/* removed < ? xml version="1.0" encoding="UTF-8"?> because 000webhost cannot handle < and ? one after the other */
+		border-image: url('data:image/svg+xml;charset=utf8,\
+			<svg width="50" height="50" viewBox="0,0 50 50" \
+				xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">\
+				<defs>\
+					<g id="corner">\
+						<line x1="0" y1="0" x2="10" y2="0" stroke-width="3" stroke="blue" />\
+						<line x1="0" y1="0" x2="0" y2="10" stroke-width="3" stroke="blue" />\
+					</g>\
+				</defs>\
+				<rect width="50" height="50" stroke-width="1" stroke="red" fill="none" />\
+				<use transform="translate( 0, 0) rotate(0)" xlink:href="#corner" />\
+				<use transform="translate(50, 0) rotate(90)" xlink:href="#corner" />\
+				<use transform="translate( 0,50) rotate(-90)" xlink:href="#corner" />\
+				<use transform="translate(50,50) rotate(180)" xlink:href="#corner" />\
+			</svg>') 10 repeat;
+		border-width: 10px;
+		border-style: solid;
+	}
+
+	#hierarchy-display .ScrollView,
+	#hierarchy-display .ListView,
+	#hierarchy-display .RecyclerView {
+		overflow: hidden;
+	}
+</style>
+<div id="output-container" class="show-borders layout-borders">
+	<div id="controls">
+		<label>Border type:
+			<select id="border-type">
+				<option value="no-borders">No borders</option>
+				<option value="show-borders">Show borders</option>
+				<option value="show-borders layout-borders" selected>Layout borders</option>
+			</select>
+		</label>
+		<label><input type="checkbox" id="name-display" /> Show names</label>
+		<textarea id="trace" xml:space="preserve">
+Waiting for process to come online
+Connected to process 10052 on device Nexus_5_API_21 [emulator-5554]
+android.support.test.espresso.NoMatchingViewException: No views in hierarchy found matching: with string from resource id: <2131165435>[about_title] value: About & Help
+If the target view is not part of the view hierarchy, you may need to use Espresso.onData to load it from one of the following AdapterViews:android.widget.ListView{190267b5 VFED.VC. .F...... 0,0-1080,1701 #102000a android:id/list}
+
+View Hierarchy:
++>DecorView{id=-1, visibility=VISIBLE, width=1080, height=1776, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++->LinearLayout{id=-1, visibility=VISIBLE, width=1080, height=1776, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=2}
+|
++-->ViewStub{id=16909166, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0}
+|
++-->FrameLayout{id=16908290, res-name=content, visibility=VISIBLE, width=1080, height=1701, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=75.0, child-count=1}
+|
++--->LinearLayout{id=-1, visibility=VISIBLE, width=1080, height=1701, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=2}
+|
++---->LinearLayout{id=-1, visibility=VISIBLE, width=1080, height=1701, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++----->LinearLayout{id=16909139, res-name=headers, visibility=VISIBLE, width=1080, height=1701, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=2}
+|
++------>ListView{id=16908298, res-name=list, visibility=VISIBLE, width=1080, height=1701, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=true, is-focusable=true, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=8}
+|
++------->TextView{id=16908310, res-name=title, visibility=VISIBLE, width=1032, height=105, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=24.0, y=0.0, text=Preferences, input-type=0, ime-target=false, has-links=false}
+|
++------->LinearLayout{id=-1, visibility=VISIBLE, width=1032, height=218, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=true, root-is-layout-requested=false, has-input-connection=false, x=24.0, y=107.0, child-count=3}
+|
++-------->LinearLayout{id=16909137, res-name=icon_frame, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=true, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++--------->PreferenceImageView{id=16908294, res-name=icon, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=true, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0}
+|
++-------->RelativeLayout{id=-1, visibility=VISIBLE, width=936, height=218, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=true, root-is-layout-requested=false, has-input-connection=false, x=48.0, y=0.0, child-count=2}
+|
++--------->TextView{id=16908310, res-name=title, visibility=VISIBLE, width=432, height=65, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=true, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=48.0, text=Default Details Page, input-type=0, ime-target=false, has-links=false}
+|
++--------->TextView{id=16908304, res-name=summary, visibility=VISIBLE, width=194, height=57, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=true, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=113.0, text=Automatic, input-type=0, ime-target=false, has-links=false}
+|
++-------->LinearLayout{id=16908312, res-name=widget_frame, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=true, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=0}
+|
++------->LinearLayout{id=-1, visibility=VISIBLE, width=1032, height=414, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=24.0, y=327.0, child-count=3}
+|
++-------->LinearLayout{id=16909137, res-name=icon_frame, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++--------->PreferenceImageView{id=16908294, res-name=icon, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0}
+|
++-------->RelativeLayout{id=-1, visibility=VISIBLE, width=792, height=414, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=48.0, y=0.0, child-count=2}
+|
++--------->TextView{id=16908310, res-name=title, visibility=VISIBLE, width=545, height=65, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=48.0, text=Use internal image viewer, input-type=0, ime-target=false, has-links=false}
+|
++--------->TextView{id=16908304, res-name=summary, visibility=VISIBLE, width=792, height=253, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=113.0, text=Internal image viewer has limited functionality, but it definitely shows the images, while using another application may result in crashes out of this app's control., input-type=0, ime-target=false, has-links=false}
+|
++-------->LinearLayout{id=16908312, res-name=widget_frame, visibility=VISIBLE, width=144, height=414, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=840.0, y=0.0, child-count=1}
+|
++--------->CheckBox{id=16908289, res-name=checkbox, visibility=VISIBLE, width=96, height=96, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=48.0, y=159.0, text=, input-type=0, ime-target=false, has-links=false, is-checked=false}
+|
++------->LinearLayout{id=-1, visibility=VISIBLE, width=1032, height=218, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=24.0, y=743.0, child-count=3}
+|
++-------->LinearLayout{id=16909137, res-name=icon_frame, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++--------->PreferenceImageView{id=16908294, res-name=icon, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0}
+|
++-------->RelativeLayout{id=-1, visibility=VISIBLE, width=936, height=218, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=48.0, y=0.0, child-count=2}
+|
++--------->TextView{id=16908310, res-name=title, visibility=VISIBLE, width=416, height=65, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=48.0, text=Suggest Categories, input-type=0, ime-target=false, has-links=false}
+|
++--------->TextView{id=16908304, res-name=summary, visibility=VISIBLE, width=225, height=57, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=113.0, text=When better, input-type=0, ime-target=false, has-links=false}
+|
++-------->LinearLayout{id=16908312, res-name=widget_frame, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=0}
+|
++------->TextView{id=16908310, res-name=title, visibility=VISIBLE, width=1032, height=105, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=24.0, y=963.0, text=Links, input-type=0, ime-target=false, has-links=false}
+|
++------->LinearLayout{id=-1, visibility=VISIBLE, width=1032, height=161, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=24.0, y=1070.0, child-count=3}
+|
++-------->LinearLayout{id=16909137, res-name=icon_frame, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++--------->PreferenceImageView{id=16908294, res-name=icon, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0}
+|
++-------->RelativeLayout{id=-1, visibility=VISIBLE, width=936, height=161, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=48.0, y=0.0, child-count=2}
+|
++--------->TextView{id=16908310, res-name=title, visibility=VISIBLE, width=416, height=65, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=48.0, text=App info in Settings, input-type=0, ime-target=false, has-links=false}
+|
++--------->TextView{id=16908304, res-name=summary, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, text=, input-type=0, ime-target=false, has-links=false}
+|
++-------->LinearLayout{id=16908312, res-name=widget_frame, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=0}
+|
++------->LinearLayout{id=-1, visibility=VISIBLE, width=1032, height=161, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=24.0, y=1233.0, child-count=3}
+|
++-------->LinearLayout{id=16909137, res-name=icon_frame, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++--------->PreferenceImageView{id=16908294, res-name=icon, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0}
+|
++-------->RelativeLayout{id=-1, visibility=VISIBLE, width=936, height=161, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=48.0, y=0.0, child-count=2}
+|
++--------->TextView{id=16908310, res-name=title, visibility=VISIBLE, width=517, height=65, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=48.0, text=App details in Play Store, input-type=0, ime-target=false, has-links=false}
+|
++--------->TextView{id=16908304, res-name=summary, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, text=, input-type=0, ime-target=false, has-links=false}
+|
++-------->LinearLayout{id=16908312, res-name=widget_frame, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=0}
+|
++------->LinearLayout{id=-1, visibility=VISIBLE, width=1032, height=316, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=24.0, y=1396.0, child-count=3}
+|
++-------->LinearLayout{id=16909137, res-name=icon_frame, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++--------->PreferenceImageView{id=16908294, res-name=icon, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0}
+|
++-------->RelativeLayout{id=-1, visibility=VISIBLE, width=936, height=316, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=48.0, y=0.0, child-count=2}
+|
++--------->TextView{id=16908310, res-name=title, visibility=VISIBLE, width=206, height=65, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=48.0, text=Feedback, input-type=0, ime-target=false, has-links=false}
+|
++--------->TextView{id=16908304, res-name=summary, visibility=VISIBLE, width=936, height=155, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=113.0, text=Ask a question, request features you'd like to see, or just tell me what you think about the app. Any feedback is welcome., input-type=0, ime-target=false, has-links=false}
+|
++-------->LinearLayout{id=16908312, res-name=widget_frame, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=0}
+|
++------>FrameLayout{id=16909140, res-name=list_footer, visibility=VISIBLE, width=1080, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=1701.0, child-count=0}
+|
++---->RelativeLayout{id=16909010, res-name=button_bar, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=2}
+|
++----->Button{id=16909143, res-name=back_button, visibility=VISIBLE, width=0, height=0, has-focus=false, has-focusable=true, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, text=Back, input-type=0, ime-target=false, has-links=false}
+|
++----->LinearLayout{id=-1, visibility=VISIBLE, width=0, height=0, has-focus=false, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=2}
+|
++------>Button{id=16909144, res-name=skip_button, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, text=Skip, input-type=0, ime-target=false, has-links=false}
+|
++------>Button{id=16909145, res-name=next_button, visibility=VISIBLE, width=0, height=0, has-focus=false, has-focusable=true, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, text=Next, input-type=0, ime-target=false, has-links=false}
+|
+at dalvik.system.VMStack.getThreadStackTrace(Native Method)
+at java.lang.Thread.getStackTrace(Thread.java:580)
+at android.support.test.espresso.base.DefaultFailureHandler.getUserFriendlyError(DefaultFailureHandler.java:92)
+at android.support.test.espresso.base.DefaultFailureHandler.handle(DefaultFailureHandler.java:56)
+at net.twisterrob.android.test.junit.AndroidJUnitRunner$DetailedFailureHandler.handle(AndroidJUnitRunner.java:144)
+at android.support.test.espresso.ViewInteraction.runSynchronouslyOnUiThread(ViewInteraction.java:184)
+at android.support.test.espresso.ViewInteraction.doPerform(ViewInteraction.java:115)
+at android.support.test.espresso.ViewInteraction.perform(ViewInteraction.java:87)
+at net.twisterrob.inventory.android.test.actors.PreferencesActivityActor.clickAboutPref(PreferencesActivityActor.java:15)
+at net.twisterrob.inventory.android.activity.PreferencesActivityTest.testAbout(PreferencesActivityTest.java:28)
+at java.lang.reflect.Method.invoke(Native Method)
+at java.lang.reflect.Method.invoke(Method.java:372)
+at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+at net.twisterrob.android.test.junit.IdlingResourceRule$IdlingResourceStatement.evaluate(IdlingResourceRule.java:42)
+at net.twisterrob.android.test.junit.IdlingResourceRule$IdlingResourceStatement.evaluate(IdlingResourceRule.java:42)
+at net.twisterrob.android.test.junit.SensibleActivityTestRule$TestLogger$1.evaluate(SensibleActivityTestRule.java:110)
+at android.support.test.internal.statement.UiThreadStatement.evaluate(UiThreadStatement.java:55)
+at android.support.test.rule.ActivityTestRule$ActivityStatement.evaluate(ActivityTestRule.java:270)
+at net.twisterrob.android.test.espresso.ScreenshotFailure$ScreenshotStatement.evaluate(ScreenshotFailure.java:69)
+at net.twisterrob.android.test.junit.IdlingResourceRule$IdlingResourceStatement.evaluate(IdlingResourceRule.java:42)
+at org.junit.rules.RunRules.evaluate(RunRules.java:20)
+at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+at org.junit.runners.Suite.runChild(Suite.java:128)
+at org.junit.runners.Suite.runChild(Suite.java:27)
+at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+at android.support.test.internal.runner.TestExecutor.execute(TestExecutor.java:59)
+at android.support.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:262)
+at net.twisterrob.android.test.junit.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:66)
+at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:1837)
+
+
+		</textarea>
+	</div>
+	<div id="hierarchy-display"></div>
+	<div id="message"></div>
+</div>
+<div id="hierarchy-tree"></div>
+<div id="selected">
+	<h2 id="name">&nbsp;</h2>
+	<h4 id="path">&nbsp;</h4>
+	<dl id="properties">
+	</dl>
+</div>
+<script>
+	var output = document.getElementById('output-container');
+	var input = document.getElementById('trace');
+	var message = document.getElementById('message');
+	var border = document.getElementById('border-type');
+	var names = document.getElementById('name-display');
+	border.addEventListener('change', function () {
+		for (var i = 0; i < border.options.length; ++i) {
+			var optionClasses = border.options[i].value.split(' ');
+			for (var c = 0; c < optionClasses.length; ++c) {
+				output.classList.remove(optionClasses[c]);
+			}
+		}
+		var classes = border.value.split(' ');
+		for (var c = 0; c < classes.length; ++c) {
+			output.classList.add(classes[c]);
+		}
+	});
+	input.addEventListener('input', function () {
+		render(parse(input.value))
+	});
+	render(parse(input.value));
+	names.addEventListener('change', function () {
+		if (names.checked) {
+			output.classList.add('show-names');
+		} else {
+			output.classList.remove('show-names');
+		}
+	});
+	message.addEventListener('click', function () {
+		document.getElementById('name').innerText = "Statistics";
+		document.getElementById('path').innerText = "";
+		var error = this.error;
+		document.getElementById('properties').innerHTML =
+				"<dt>Available res-names</dt><dd>" + error.resNames.join(", ") + "</dd>"
+				+ "<dt>Available classes</dt><dd>" + error.types.join(", ") + "</dd>"
+	})
+</script>
