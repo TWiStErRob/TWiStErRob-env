@@ -1,6 +1,18 @@
+@file:Suppress(
+	"detekt.TooManyFunctions", // Temporary structure.
+	"detekt.MagicNumber", // Might improve on refactors.
+	)
+
 import kotlinx.browser.document
 import kotlinx.browser.window
-import org.w3c.dom.*
+import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLHeadingElement
+import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.HTMLLIElement
+import org.w3c.dom.HTMLOptionElement
+import org.w3c.dom.HTMLSelectElement
+import org.w3c.dom.HTMLTextAreaElement
+import org.w3c.dom.HTMLUListElement
 
 sealed class ExceptionResult
 
@@ -63,9 +75,10 @@ data class DataNode(
 	override var parent: ViewNode? = null,
 ) : TreeNode
 
-@Suppress("RegExpRedundantEscape")
+@Suppress("RegExpRedundantEscape", "detekt.ReturnCount")
 fun parse(exception: String): ExceptionResult {
 	console.log("parsing")
+	@Suppress("detekt.MaxLineLength")
 	val ambiguousRe =
 		Regex("""[\s\S]*(androidx\.test\.espresso\.AmbiguousViewMatcherException|android\.support\.test\.espresso\.AmbiguousViewMatcherException): '(.*?)' matches multiple views in the hierarchy\.\nProblem views are marked with '(\*\*\*\*MATCHES\*\*\*\*)' below.\n\nView Hierarchy:\n([\s\S]*)""")
 
@@ -80,6 +93,7 @@ fun parse(exception: String): ExceptionResult {
 		)
 	}
 
+	@Suppress("detekt.MaxLineLength")
 	val noMatchRe =
 		Regex("""[\s\S]*(androidx.test.espresso.NoMatchingViewException|android.support.test.espresso.NoMatchingViewException): No views in hierarchy found matching: \(?(.*?)\)?\n[\s\S]*View Hierarchy:\n([\s\S]*)""")
 	noMatchRe.find(exception)?.let {
@@ -93,6 +107,7 @@ fun parse(exception: String): ExceptionResult {
 		)
 	}
 
+	@Suppress("detekt.MaxLineLength")
 	val noRootRe =
 		Regex("""[\s\S]*(androidx.test.espresso.NoMatchingRootException|android.support.test.espresso.NoMatchingRootException): Matcher '([\s\S]*?)' did not match any of the following roots: \[([\s\S]*)\]\n([\s\S]*)""")
 	noRootRe.find(exception)?.let {
@@ -106,6 +121,7 @@ fun parse(exception: String): ExceptionResult {
 		)
 	}
 
+	@Suppress("detekt.MaxLineLength")
 	val runtimeRe =
 		Regex("""[\s\S]*(java.lang.RuntimeException): No data found matching: \(?(.*?)\)? contained values: <\[([\s\S]*?)\]>([\s\S]*)""")
 	runtimeRe.find(exception)?.let {
@@ -118,7 +134,7 @@ fun parse(exception: String): ExceptionResult {
 		)
 	}
 
-	throw Exception("Cannot match $exception")
+	error("Cannot match $exception")
 }
 
 fun parseViewException(result: ViewExceptionResult): ViewExceptionResult {
@@ -164,7 +180,10 @@ fun parseDataException(result: DataExceptionResult): DataExceptionResult {
 
 fun parseRootException(result: RootExceptionResult): RootExceptionResult {
 	result.roots = mutableListOf()
-	@Suppress("RegExpUnnecessaryNonCapturingGroup") // Otherwise it's capturing!
+	@Suppress(
+		"detekt.MaxLineLength",
+		"RegExpUnnecessaryNonCapturingGroup",  // Otherwise it's capturing!
+	)
 	val dataRe =
 		Regex("""Root\{(?:application-window-token=(.*?), window-token=(.*?), has-window-focus=(.*?), (?:layout-params-type=(.*?), )?(?:layout-params-string=(.*?), )?decor-view-string=(.*?\}))\}""")
 	dataRe.findAll(result.rootText).forEach { match ->
@@ -212,7 +231,7 @@ fun collect(arr: List<ViewNode>, prop: String): List<String> {
 
 fun parseView(text: String, marker: String): ViewNode {
 	val regex = Regex("^\\+(-*)>(.*?)\\{id=(-?\\d+), ([\\s\\S]+)\\}( " + Regex.escape(marker) + ")?$")
-	val match = regex.find(text) ?: throw Exception("Cannot parse view: $text")
+	val match = regex.find(text) ?: error("Cannot parse view: $text")
 	val view = ViewNode(
 		level = match.groups[1]!!.value.length,
 		name = match.groups[2]!!.value,

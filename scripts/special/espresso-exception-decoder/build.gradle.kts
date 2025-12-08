@@ -13,6 +13,7 @@ kotlin {
 			}
 		}
 	}
+	@Suppress("unused")
 	sourceSets {
 		val commonMain by getting {
 			dependencies {
