@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Espresso Exception Decoder</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="output-container" class="show-borders layout-borders">
+	<div id="controls">
+		<label>Border type:
+			<select id="border-type">
+				<option value="no-borders">No borders</option>
+				<option value="show-borders">Show borders</option>
+				<option value="show-borders layout-borders" selected>Layout borders</option>
+			</select>
+		</label>
+		<label><input type="checkbox" id="name-display" /> Show names</label>
+		<textarea id="trace" xml:space="preserve">${exampleContent}</textarea>
+	</div>
+	<div id="hierarchy-display"></div>
+	<div id="message"></div>
+</div>
+<div id="hierarchy-tree"></div>
+<div id="selected">
+	<h2 id="name">&nbsp;</h2>
+	<h4 id="path">&nbsp;</h4>
+	<dl id="properties">
+	</dl>
+</div>
+<script src="espresso-exception-decoder.js"></script>
+</body>
+</html>

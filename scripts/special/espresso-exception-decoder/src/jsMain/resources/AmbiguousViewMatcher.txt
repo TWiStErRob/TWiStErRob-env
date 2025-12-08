@@ -1,0 +1,131 @@
+android.support.test.espresso.AmbiguousViewMatcherException: 'with id: net.twisterrob.inventory.debug:id/image' matches multiple views in the hierarchy.
+Problem views are marked with '****MATCHES****' below.
+
+View Hierarchy:
++>DecorView{id=-1, visibility=VISIBLE, width=1794, height=1080, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++->LinearLayout{id=-1, visibility=VISIBLE, width=1794, height=1080, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=2}
+|
++-->ViewStub{id=16909166, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0}
+|
++-->FrameLayout{id=-1, visibility=VISIBLE, width=1794, height=1005, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=75.0, child-count=1}
+|
++--->ActionBarOverlayLayout{id=2131624054, res-name=decor_content_parent, visibility=VISIBLE, width=1794, height=1005, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=2}
+|
++---->ContentFrameLayout{id=16908290, res-name=content, visibility=VISIBLE, width=1794, height=861, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=144.0, child-count=1}
+|
++----->FrameLayout{id=-1, visibility=VISIBLE, width=1794, height=861, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++------>FrameLayout{id=2131623940, res-name=activityRoot, visibility=VISIBLE, width=1794, height=861, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++------->LinearLayout{id=2131623946, res-name=fragmentRoot, visibility=VISIBLE, width=1770, height=837, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=12.0, y=12.0, child-count=2}
+|
++-------->ScrollView{id=-1, visibility=VISIBLE, width=1770, height=693, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++--------->LinearLayout{id=-1, visibility=VISIBLE, width=1770, height=983, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=5}
+|
++---------->FrameLayout{id=-1, visibility=VISIBLE, width=1770, height=384, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=2}
+|
++----------->AppCompatImageView{id=2131623948, res-name=image, visibility=VISIBLE, width=1770, height=384, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0} ****MATCHES****
+|
++----------->AppCompatImageView{id=2131623960, res-name=type, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0}
+|
++---------->LinearLayout{id=-1, visibility=VISIBLE, width=1770, height=72, has-focus=false, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=384.0, child-count=2}
+|
++----------->AppCompatSpinner{id=2131624103, res-name=type_edit, visibility=VISIBLE, width=1770, height=72, has-focus=false, has-focusable=true, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=1}
+|
++------------>RelativeLayout{id=2131623941, res-name=adapterRoot, visibility=VISIBLE, width=1722, height=72, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=4}
+|
++------------->RigidImageView{id=2131623948, res-name=image, visibility=VISIBLE, width=48, height=48, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=12.0, y=12.0} ****MATCHES****
+|
++------------->Space{id=2131624034, res-name=spacer, visibility=INVISIBLE, width=48, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=72.0, y=0.0}
+|
++------------->AppCompatTextView{id=2131623960, res-name=type, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, text=, input-type=0, ime-target=false, has-links=false}
+|
++------------->AppCompatTextView{id=2131623958, res-name=title, visibility=VISIBLE, width=1044, height=57, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=120.0, y=0.0, text=House (townhouse, cottage, bungalow, suburban house), input-type=0, ime-target=false, has-links=false}
+|
++----------->AppCompatImageButton{id=2131624104, res-name=help, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0}
+|
++---------->RecyclerView{id=16908293, res-name=hint, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=0}
+|
++---------->TextInputLayout{id=-1, visibility=VISIBLE, width=1770, height=169, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=456.0, child-count=1}
+|
++----------->TextInputEditText{id=2131623958, res-name=title, visibility=VISIBLE, width=1770, height=136, has-focus=true, has-focusable=true, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=true, is-focusable=true, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=true, editor-info=[inputType=0x2001 imeOptions=0x8000005 privateImeOptions=null actionLabel=null actionId=0 initialSelStart=0 initialSelEnd=0 initialCapsMode=0x2000 hintText=Property Title label=null packageName=null fieldId=0 fieldName=null extras=null ], x=0.0, y=33.0, text=Test Property, input-type=8193, ime-target=true, has-links=false}
+|
++---------->TextInputLayout{id=-1, visibility=VISIBLE, width=1770, height=358, has-focus=false, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=625.0, child-count=1}
+|
++----------->TextInputEditText{id=2131623944, res-name=description, visibility=VISIBLE, width=1770, height=325, has-focus=false, has-focusable=true, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=true, editor-info=[inputType=0x20001 imeOptions=0x44000006 privateImeOptions=null actionLabel=null actionId=0 initialSelStart=0 initialSelEnd=0 initialCapsMode=0x0 hintText=Property Description label=null packageName=null fieldId=0 fieldName=null extras=null ], x=0.0, y=33.0, text=Test Description
+ÁÉÓÖŐÚÜŰ
+ماهو الاسم؟, input-type=131073, ime-target=false, has-links=false}
+|
++-------->AppCompatButton{id=2131623942, res-name=btn_save, visibility=VISIBLE, width=264, height=144, has-focus=false, has-focusable=true, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=753.0, y=693.0, text=Save, input-type=0, ime-target=false, has-links=false}
+|
++---->ActionBarContainer{id=2131624055, res-name=action_bar_container, visibility=VISIBLE, width=1794, height=144, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=2}
+|
++----->Toolbar{id=2131624056, res-name=action_bar, visibility=VISIBLE, width=1794, height=144, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=3}
+|
++------>ImageButton{id=-1, desc=Navigate up, visibility=VISIBLE, width=168, height=144, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0}
+|
++------>TextView{id=-1, visibility=VISIBLE, width=256, height=57, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=216.0, y=43.0, text=New Property, input-type=0, ime-target=false, has-links=false}
+|
++------>ActionMenuView{id=-1, visibility=VISIBLE, width=276, height=144, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=1518.0, y=0.0, child-count=2}
+|
++------->ActionMenuItemView{id=2131624205, res-name=action_picture_get, desc=Take Picture, visibility=VISIBLE, width=168, height=144, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, text=, input-type=0, ime-target=false, has-links=false}
+|
++------->OverflowMenuButton{id=-1, desc=More options, visibility=VISIBLE, width=108, height=144, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=true, is-enabled=true, is-focused=false, is-focusable=true, is-layout-requested=false, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=168.0, y=0.0}
+|
++----->ActionBarContextView{id=2131624057, res-name=action_context_bar, visibility=GONE, width=0, height=0, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=true, is-selected=false, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=0}
+|
+at dalvik.system.VMStack.getThreadStackTrace(Native Method)
+at java.lang.Thread.getStackTrace(Thread.java:580)
+at android.support.test.espresso.base.DefaultFailureHandler.getUserFriendlyError(DefaultFailureHandler.java:92)
+at android.support.test.espresso.base.DefaultFailureHandler.handle(DefaultFailureHandler.java:56)
+at net.twisterrob.android.test.junit.AndroidJUnitRunner$DetailedFailureHandler.handle(AndroidJUnitRunner.java:81)
+at android.support.test.espresso.ViewInteraction.runSynchronouslyOnUiThread(ViewInteraction.java:184)
+at android.support.test.espresso.ViewInteraction.check(ViewInteraction.java:158)
+at net.twisterrob.inventory.android.test.actors.PropertyEditActivityActor.checkPicture(PropertyEditActivityActor.java:63)
+at net.twisterrob.inventory.android.activity.PropertyEditActivityTest_Create.checkEverythingFilledIn(PropertyEditActivityTest_Create.java:221)
+at net.twisterrob.inventory.android.activity.PropertyEditActivityTest_Create.testRotate(PropertyEditActivityTest_Create.java:102)
+at java.lang.reflect.Method.invoke(Native Method)
+at java.lang.reflect.Method.invoke(Method.java:372)
+at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+at net.twisterrob.android.test.junit.SensibleActivityTestRule$TestLogger$1.evaluate(SensibleActivityTestRule.java:87)
+at android.support.test.internal.statement.UiThreadStatement.evaluate(UiThreadStatement.java:55)
+at android.support.test.rule.ActivityTestRule$ActivityStatement.evaluate(ActivityTestRule.java:270)
+at net.twisterrob.android.test.espresso.ScreenshotFailure$ScreenshotStatement.evaluate(ScreenshotFailure.java:69)
+at net.twisterrob.android.test.junit.IdlingResourceRule$IdlingResourceStatement.evaluate(IdlingResourceRule.java:33)
+at net.twisterrob.android.test.junit.IdlingResourceRule$IdlingResourceStatement.evaluate(IdlingResourceRule.java:33)
+at net.twisterrob.android.test.junit.IdlingResourceRule$IdlingResourceStatement.evaluate(IdlingResourceRule.java:33)
+at net.twisterrob.inventory.android.test.TestDatabaseRule$DatabaseStatement.evaluate(TestDatabaseRule.java:34)
+at org.junit.rules.TestWatcher$1.evaluate(TestWatcher.java:55)
+at org.junit.rules.TestWatcher$1.evaluate(TestWatcher.java:55)
+at org.junit.rules.ExternalResource$1.evaluate(ExternalResource.java:48)
+at org.junit.rules.RunRules.evaluate(RunRules.java:20)
+at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+at org.junit.runners.Suite.runChild(Suite.java:128)
+at org.junit.runners.Suite.runChild(Suite.java:27)
+at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+at android.support.test.internal.runner.TestExecutor.execute(TestExecutor.java:59)
+at android.support.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:262)
+at net.twisterrob.android.test.junit.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:31)
+at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:1837)
