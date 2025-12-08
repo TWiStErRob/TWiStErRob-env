@@ -13,15 +13,17 @@ kotlin {
 			}
 		}
 	}
+	jvm()
 	@Suppress("unused")
 	sourceSets {
 		val commonMain by getting {
 			dependencies {
+				implementation(kotlin("stdlib"))
 			}
 		}
-		val jsMain by getting {
+		val commonTest by getting {
 			dependencies {
-				implementation(kotlin("stdlib-js"))
+				implementation(kotlin("test"))
 			}
 		}
 	}

@@ -13,7 +13,7 @@ import kotlin.collections.iterator
 
 @Suppress("RegExpRedundantEscape", "detekt.ReturnCount")
 internal fun parse(exception: String): ExceptionResult {
-	console.log("parsing")
+	println("parsing")
 	@Suppress("detekt.MaxLineLength")
 	val ambiguousRe =
 		Regex("""[\s\S]*(androidx\.test\.espresso\.AmbiguousViewMatcherException|android\.support\.test\.espresso\.AmbiguousViewMatcherException): '(.*?)' matches multiple views in the hierarchy\.\nProblem views are marked with '(\*\*\*\*MATCHES\*\*\*\*)' below.\n\nView Hierarchy:\n([\s\S]*)""")
