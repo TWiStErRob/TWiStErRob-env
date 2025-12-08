@@ -2,53 +2,6 @@ import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.*
 
-fun main() {
-	window.onload = {
-		val output = document.getElementById("output-container") as HTMLElement
-		val input = document.getElementById("trace") as HTMLTextAreaElement
-		val message = document.getElementById("message") as HTMLElement
-		val border = document.getElementById("border-type") as HTMLSelectElement
-		val names = document.getElementById("name-display") as HTMLInputElement
-
-		border.addEventListener("change", {
-			for (i in 0 until border.options.length) {
-				val option = border.options.item(i) as HTMLOptionElement
-				val optionClasses = option.value.split(" ")
-				for (c in optionClasses) {
-					output.classList.remove(c)
-				}
-			}
-			val classes = border.value.split(" ")
-			for (c in classes) {
-				output.classList.add(c)
-			}
-		})
-		input.addEventListener("input", {
-			render(parse(input.value))
-		})
-		render(parse(input.value))
-		names.addEventListener("change", {
-			if (names.checked) {
-				output.classList.add("show-names")
-			} else {
-				output.classList.remove("show-names")
-			}
-		})
-		message.addEventListener("click", {
-			document.getElementById("name")!!.textContent = "Statistics"
-			document.getElementById("path")!!.textContent = ""
-			val error = message.asDynamic().error
-			document.getElementById("properties")!!.innerHTML =
-				"""
-					<dt>Available res-names</dt>
-					<dd>${error.resNames.join(", ")}</dd>
-					<dt>Available classes</dt>
-					<dd>${error.types.join(", ")}</dd>
-				""".trimIndent()
-		})
-	}
-}
-
 sealed class ExceptionResult
 
 data class ViewExceptionResult(
@@ -78,7 +31,6 @@ data class RootExceptionResult(
 	var roots: MutableList<MutableMap<String, Any>> = mutableListOf()
 ) : ExceptionResult()
 
-// View node for hierarchy
 data class ViewNode(
 	val level: Int,
 	val name: String,
@@ -226,7 +178,12 @@ fun collect(arr: List<ViewNode>, prop: String): List<String> {
 	}
 	return set.sorted()
 }
-
+/*
+function escapeRegExp(str) {
+	// noinspection *
+	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+*/
 fun parseView(text: String, marker: String): ViewNode {
 	val regex = Regex("^\\+(-*)>(.*?)\\{id=(-?\\d+), ([\\s\\S]+)\\}( " + Regex.escape(marker) + ")?$")
 	val match = regex.find(text) ?: throw Exception("Cannot parse view: $text")
@@ -262,7 +219,7 @@ fun parseProps(map: MutableMap<String, Any>, rest: String): MutableMap<String, A
 fun toViews(input: List<String>, marker: String): List<ViewNode> = 
 	input.map { parseView(it, marker) }
 
-fun build(views: List<ViewNode>): ViewNode? {
+fun build(views: List<ViewNode>): ViewNode {
 	val stack = ArrayDeque<ViewNode>()
 	for (view in views) {
 		if (view.level > stack.size) {
@@ -283,7 +240,7 @@ fun build(views: List<ViewNode>): ViewNode? {
 			stack.add(view)
 		}
 	}
-	return views.firstOrNull()
+	return views.first()
 }
 
 fun render(error: ExceptionResult) {
@@ -291,9 +248,59 @@ fun render(error: ExceptionResult) {
 		is ViewExceptionResult -> renderHierarchy(error)
 		is DataExceptionResult -> renderData(error)
 		is RootExceptionResult -> renderRoots(error)
+		/*
+		throw 'Cannot render ' + JSON.stringify(error);
+		 */
 	}
 }
 
+/*
+function renderRoots(error) {
+*/
+fun renderRoots(error: RootExceptionResult) {
+	val hierarchyTreeDom = document.getElementById("hierarchy-tree") as HTMLElement
+	while (hierarchyTreeDom.firstChild != null) {
+		hierarchyTreeDom.removeChild(hierarchyTreeDom.firstChild!!)
+	}
+	val hierarchyTreeRootDomUl = document.createElement("ul") as HTMLUListElement
+	for (root in error.roots) {
+		root["name"] = root["window-token"]!!
+		root["_display"] = document.createElement("span")
+		val children = root["children"] as List<ViewNode>
+		for (child in children) {
+			child.props["_display"] = document.createElement("span").toString()
+			child.props["children"] = child.props["children"] ?: emptyList<ViewNode>()
+		}
+
+		val hierarchyTreeRootDomLi = document.createElement("li") as HTMLLIElement
+		renderTree(hierarchyTreeRootDomLi, root)
+		hierarchyTreeRootDomUl.appendChild(hierarchyTreeRootDomLi)
+	}
+	hierarchyTreeDom.appendChild(hierarchyTreeRootDomUl)
+}
+/*
+	function renderData(error) {
+ */
+fun renderData(error: DataExceptionResult) {
+	val hierarchyTreeDom = document.getElementById("hierarchy-tree") as HTMLElement
+	while (hierarchyTreeDom.firstChild != null) {
+		hierarchyTreeDom.removeChild(hierarchyTreeDom.firstChild!!)
+	}
+	val hierarchyTreeRootDomUl = document.createElement("ul") as HTMLUListElement
+	for (d in error.data) {
+		d["name"] = d["class"]!!
+		d["children"] = emptyList<Any>()
+		d["_display"] = document.createElement("span")
+
+		val hierarchyTreeRootDomLi = document.createElement("li") as HTMLLIElement
+		renderTree(hierarchyTreeRootDomLi, d)
+		hierarchyTreeRootDomUl.appendChild(hierarchyTreeRootDomLi)
+	}
+	hierarchyTreeDom.appendChild(hierarchyTreeRootDomUl)
+}
+/*
+	function renderHierarchy(error) {
+ */
 fun renderHierarchy(error: ViewExceptionResult) {
 	val h = error.hierarchy!!
 
@@ -320,46 +327,9 @@ fun renderHierarchy(error: ViewExceptionResult) {
 	hierarchyTreeDom.appendChild(hierarchyTreeRootDomUl)
 }
 
-fun renderData(error: DataExceptionResult) {
-	val hierarchyTreeDom = document.getElementById("hierarchy-tree") as HTMLElement
-	while (hierarchyTreeDom.firstChild != null) {
-		hierarchyTreeDom.removeChild(hierarchyTreeDom.firstChild!!)
-	}
-	val hierarchyTreeRootDomUl = document.createElement("ul") as HTMLUListElement
-	for (d in error.data) {
-		d["name"] = d["class"]!!
-		d["children"] = emptyList<Any>()
-		d["_display"] = document.createElement("span")
-
-		val hierarchyTreeRootDomLi = document.createElement("li") as HTMLLIElement
-		renderTree(hierarchyTreeRootDomLi, d)
-		hierarchyTreeRootDomUl.appendChild(hierarchyTreeRootDomLi)
-	}
-	hierarchyTreeDom.appendChild(hierarchyTreeRootDomUl)
-}
-
-fun renderRoots(error: RootExceptionResult) {
-	val hierarchyTreeDom = document.getElementById("hierarchy-tree") as HTMLElement
-	while (hierarchyTreeDom.firstChild != null) {
-		hierarchyTreeDom.removeChild(hierarchyTreeDom.firstChild!!)
-	}
-	val hierarchyTreeRootDomUl = document.createElement("ul") as HTMLUListElement
-	for (root in error.roots) {
-		root["name"] = root["window-token"]!!
-		root["_display"] = document.createElement("span")
-		val children = root["children"] as List<ViewNode>
-		for (child in children) {
-			child.props["_display"] = document.createElement("span").toString()
-			child.props["children"] = child.props["children"] ?: emptyList<ViewNode>()
-		}
-
-		val hierarchyTreeRootDomLi = document.createElement("li") as HTMLLIElement
-		renderTree(hierarchyTreeRootDomLi, root)
-		hierarchyTreeRootDomUl.appendChild(hierarchyTreeRootDomLi)
-	}
-	hierarchyTreeDom.appendChild(hierarchyTreeRootDomUl)
-}
-
+/*
+	String.prototype.hashCode = function () {
+*/
 fun String.hashCode32(): Int {
 	var hash = 0
 	for (element in this) {
@@ -370,6 +340,9 @@ fun String.hashCode32(): Int {
 	return hash
 }
 
+/*
+	function renderView(target, view, scaleX, scaleY) {
+*/
 fun renderView(target: HTMLElement, view: ViewNode, scaleX: Float, scaleY: Float) {
 	val dom = document.createElement("div") as HTMLElement
 	view.props["_display"] = dom.toString()
@@ -394,6 +367,9 @@ fun renderView(target: HTMLElement, view: ViewNode, scaleX: Float, scaleY: Float
 	}
 }
 
+/*
+	function renderTree(target, view) {
+ */
 fun renderTree(target: HTMLElement, view: ViewNode) {
 	view.props["_tree"] = target
 	target.asDynamic().view = view
@@ -418,8 +394,25 @@ fun renderTree(target: HTMLElement, view: ViewNode) {
 	}
 }
 
+/*
+	function parents(view) {
+*/
+fun parents(view: ViewNode): List<String> {
+	val parents = mutableListOf<String>()
+	var v = view.parent
+	while (v != null) {
+		val resName = v.props["res-name"]
+		parents.add(v.name + (if (resName != null) " (${resName})" else ""))
+		v = v.parent
+	}
+	return parents.reversed()
+}
+
 var lastView: ViewNode? = null
 
+/*
+	function showView(view) {
+ */
 fun showView(view: ViewNode?) {
 	if (lastView != null) {
 		(lastView!!.props["_display"] as HTMLElement).classList.remove("highlight")
@@ -476,14 +469,55 @@ fun showView(view: ViewNode?) {
 		props.appendChild(propValue)
 	}
 }
+/*
+</script>
+ */
+fun main() {
+	/*
+<script>
+	 */
+	window.onload = {
+		val output = document.getElementById("output-container") as HTMLElement
+		val input = document.getElementById("trace") as HTMLTextAreaElement
+		val message = document.getElementById("message") as HTMLElement
+		val border = document.getElementById("border-type") as HTMLSelectElement
+		val names = document.getElementById("name-display") as HTMLInputElement
 
-fun parents(view: ViewNode): List<String> {
-	val parents = mutableListOf<String>()
-	var v = view.parent
-	while (v != null) {
-		val resName = v.props["res-name"]
-		parents.add(v.name + (if (resName != null) " ($resName)" else ""))
-		v = v.parent
+		border.addEventListener("change", {
+			for (i in 0 until border.options.length) {
+				val option = border.options.item(i) as HTMLOptionElement
+				val optionClasses = option.value.split(" ")
+				for (c in optionClasses) {
+					output.classList.remove(c)
+				}
+			}
+			val classes = border.value.split(" ")
+			for (c in classes) {
+				output.classList.add(c)
+			}
+		})
+		input.addEventListener("input", {
+			render(parse(input.value))
+		})
+		render(parse(input.value))
+		names.addEventListener("change", {
+			if (names.checked) {
+				output.classList.add("show-names")
+			} else {
+				output.classList.remove("show-names")
+			}
+		})
+		message.addEventListener("click", {
+			document.getElementById("name")!!.textContent = "Statistics"
+			document.getElementById("path")!!.textContent = ""
+			val error = message.asDynamic().error
+			document.getElementById("properties")!!.innerHTML =
+				"""
+					<dt>Available res-names</dt>
+					<dd>${error.resNames.join(", ")}</dd>
+					<dt>Available classes</dt>
+					<dd>${error.types.join(", ")}</dd>
+				""".trimIndent()
+		})
 	}
-	return parents.reversed()
 }
