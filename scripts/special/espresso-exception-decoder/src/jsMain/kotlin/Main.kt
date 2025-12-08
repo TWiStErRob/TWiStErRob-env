@@ -418,42 +418,27 @@ fun renderTree(target: HTMLElement, view: ViewNode) {
 	}
 }
 
-var lastView: Any? = null
+var lastView: ViewNode? = null
 
 fun showView(view: ViewNode?) {
-	// Remove highlight from last view
-	if (lastView is ViewNode) {
-		val lv = lastView as ViewNode
-		lv.props["_display"]?.let { displayRef ->
-			document.querySelector("[data-type='${lv.name}']")?.classList?.remove("highlight")
-		}
-		lv.props["_tree"]?.let { treeRef ->
-			document.querySelector("[data-type='${lv.name}']")?.classList?.remove("highlight")
-		}
+	if (lastView != null) {
+		(lastView!!.props["_display"] as HTMLElement).classList.remove("highlight")
+		(lastView!!.props["_tree"] as HTMLElement).classList.remove("highlight")
 	}
-
 	lastView = view
 	if (view == null) return
+	(view.props["_display"] as HTMLElement).classList.add("highlight")
+	(view.props["_tree"] as HTMLElement).classList.add("highlight")
 
-	// Add highlight to current view
-	view.props["_display"]?.let {
-		document.querySelector("[data-type='${view.name}']")?.classList?.add("highlight")
-	}
-	view.props["_tree"]?.let {
-		document.querySelector("[data-type='${view.name}']")?.classList?.add("highlight")
-	}
-
-	document.getElementById("name")?.textContent = view.name
-	document.getElementById("path")?.textContent = "in " + parents(view).joinToString(" > ")
+	(document.getElementById("name") as HTMLHeadingElement).innerText = view.name
+	(document.getElementById("path") as HTMLHeadingElement).innerText = "in " + parents(view).joinToString(" > ")
 
 	val props = document.getElementById("properties") as HTMLElement
 	while (props.firstChild != null) {
 		props.removeChild(props.firstChild!!)
 	}
-
 	val exclusions = setOf("children", "parent", "name", "matches", "_display", "_tree")
-	val propsToShow = view.props.keys.filter { it !in exclusions }
-
+	val propsKeysToShow = view.props.keys.filter { it !in exclusions }
 	val priorities = mapOf(
 		"^id" to 10,
 		"^token" to 10,
@@ -481,75 +466,12 @@ fun showView(view: ViewNode?) {
 		return 100000
 	}
 
-	val sortedProps = propsToShow.sortedWith(compareBy({ getPriority(it) }, { it }))
-
-	for (prop in sortedProps) {
+	val propsToShow = propsKeysToShow.sortedWith(compareBy({ getPriority(it) }, { it }))
+	for (prop in propsToShow) {
 		val propName = document.createElement("dt") as HTMLElement
 		val propValue = document.createElement("dd") as HTMLElement
-		propName.textContent = prop
-		propValue.textContent = view.props[prop]
-		props.appendChild(propName)
-		props.appendChild(propValue)
-	}
-}
-
-fun showViewForData(dataNode: dynamic) {
-	lastView = dataNode
-	document.getElementById("name")?.textContent = dataNode.name?.toString() ?: ""
-	document.getElementById("path")?.textContent = ""
-
-	val props = document.getElementById("properties") as HTMLElement
-	while (props.firstChild != null) {
-		props.removeChild(props.firstChild!!)
-	}
-
-	val exclusions = setOf("children", "parent", "name", "matches", "_display", "_tree")
-	val propsToShow = mutableListOf<String>()
-
-	// Iterate over dynamic object properties
-	for (key in js("Object").keys(dataNode)) {
-		val keyStr = key.toString()
-		if (keyStr !in exclusions) {
-			propsToShow.add(keyStr)
-		}
-	}
-
-	for (prop in propsToShow.sorted()) {
-		val propName = document.createElement("dt") as HTMLElement
-		val propValue = document.createElement("dd") as HTMLElement
-		propName.textContent = prop
-		propValue.textContent = dataNode[prop]?.toString() ?: ""
-		props.appendChild(propName)
-		props.appendChild(propValue)
-	}
-}
-
-fun showViewForRoot(root: dynamic) {
-	lastView = root
-	document.getElementById("name")?.textContent = root.name?.toString() ?: ""
-	document.getElementById("path")?.textContent = ""
-
-	val props = document.getElementById("properties") as HTMLElement
-	while (props.firstChild != null) {
-		props.removeChild(props.firstChild!!)
-	}
-
-	val exclusions = setOf("children", "parent", "name", "matches", "_display", "_tree")
-	val propsToShow = mutableListOf<String>()
-
-	// Iterate over dynamic object properties
-	for (key in js("Object").keys(root)) {
-		val keyStr = key.toString()
-		if (keyStr !in exclusions) {
-			propsToShow.add(keyStr)
-		}
-	}
-
-	for (prop in propsToShow.sorted()) {
-		val propName = document.createElement("dt") as HTMLElement
-		val propValue = document.createElement("dd") as HTMLElement
-		propName.textContent = prop
-		propValue.textContent = root[prop]?.toString() ?: ""
+		propName.innerText = prop
+		propValue.innerText = view.props[prop] as String
 		props.appendChild(propName)
 		props.appendChild(propValue)
 	}
