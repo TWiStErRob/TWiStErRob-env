@@ -1,0 +1,19 @@
+androidx.test.espresso.NoMatchingRootException: Matcher 'is dialog' did not match any of the following roots: [Root{application-window-token=android.view.ViewRootImpl$W@1becd3d7, window-token=android.view.ViewRootImpl$W@1becd3d7, has-window-focus=true, layout-params-type=1, layout-params-string=WM.LayoutParams{(0,0)(fillxfill) ty=1 fl=#81810100 pfl=0x8 wanim=0x1030461 surfaceInsets=Rect(0, 0 - 0, 0)}, decor-view-string=DecorView{id=-1, visibility=VISIBLE, width=1920, height=1080, has-focus=false, has-focusable=true, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, layout-params=WM.LayoutParams{(0,0)(fillxfill) ty=1 fl=#81810100 pfl=0x8 wanim=0x1030461 surfaceInsets=Rect(0, 0 - 0, 0)}, tag=null, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=0.0, child-count=2}}]
+at dalvik.system.VMStack.getThreadStackTrace(Native Method)
+at java.lang.Thread.getStackTrace(Thread.java:580)
+at androidx.test.espresso.base.EspressoExceptionHandler.handleSafely(EspressoExceptionHandler.java:2)
+at androidx.test.espresso.base.EspressoExceptionHandler.handleSafely(EspressoExceptionHandler.java:1)
+at androidx.test.espresso.base.DefaultFailureHandler$TypedFailureHandler.handle(DefaultFailureHandler.java:4)
+at androidx.test.espresso.base.DefaultFailureHandler.handle(DefaultFailureHandler.java:5)
+at net.twisterrob.android.test.junit.AndroidJUnitRunner$DetailedFailureHandler.handle(AndroidJUnitRunner.java:173)
+at androidx.test.espresso.ViewInteraction.waitForAndHandleInteractionResults(ViewInteraction.java:8)
+at androidx.test.espresso.ViewInteraction.check(ViewInteraction.java:12)
+at net.twisterrob.inventory.android.test.actors.BackupActivityActor$BackupExportPickerActor$BackupExportResultActor.assertDisplayed(BackupActivityActor.java:257)
+at net.twisterrob.inventory.android.test.actors.BackupActivityActor$BackupExportPickerActor.save(BackupActivityActor.java:250)
+at net.twisterrob.inventory.android.activity.BackupActivityTest_Export.testExportCompletesWhenPickerRotated(BackupActivityTest_Export.java:69)
+... 49 trimmed
+Caused by: net.twisterrob.java.exceptions.StackTrace: View interaction was initiated here
+at net.twisterrob.android.test.junit.AndroidJUnitRunner$DetailedFailureHandler.addInitialCallStack(AndroidJUnitRunner.java:185)
+at net.twisterrob.android.test.junit.AndroidJUnitRunner$DetailedFailureHandler.transformSpecialCases(AndroidJUnitRunner.java:204)
+at net.twisterrob.android.test.junit.AndroidJUnitRunner$DetailedFailureHandler.handle(AndroidJUnitRunner.java:172)
+... 55 more

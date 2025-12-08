@@ -34,7 +34,11 @@ repositories {
 }
 
 tasks.named<ProcessResources>("jsProcessResources") {
-	val example = file("src/jsMain/resources/example.txt")
+	val example = file("src/jsMain/resources/NoMatchingView.txt")
+	inputs
+		.file(example)
+		.withPropertyName("exampleContent")
+		.withPathSensitivity(PathSensitivity.NONE)
 	filesMatching("index.html") {
 		expand("exampleContent" to example.readText())
 	}

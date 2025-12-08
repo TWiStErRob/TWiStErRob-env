@@ -67,7 +67,7 @@ data class DataNode(
 fun parse(exception: String): ExceptionResult {
 	console.log("parsing")
 	val ambiguousRe =
-		Regex("""[\s\S]*(android\.support\.test\.espresso\.AmbiguousViewMatcherException): '(.*?)' matches multiple views in the hierarchy\.\nProblem views are marked with '(\*\*\*\*MATCHES\*\*\*\*)' below.\n\nView Hierarchy:\n([\s\S]*)""")
+		Regex("""[\s\S]*(androidx\.test\.espresso\.AmbiguousViewMatcherException|android\.support\.test\.espresso\.AmbiguousViewMatcherException): '(.*?)' matches multiple views in the hierarchy\.\nProblem views are marked with '(\*\*\*\*MATCHES\*\*\*\*)' below.\n\nView Hierarchy:\n([\s\S]*)""")
 
 	ambiguousRe.find(exception)?.let {
 		return parseViewException(
@@ -81,7 +81,7 @@ fun parse(exception: String): ExceptionResult {
 	}
 
 	val noMatchRe =
-		Regex("""[\s\S]*(android.support.test.espresso.NoMatchingViewException): No views in hierarchy found matching: \(?(.*?)\)?\n[\s\S]*View Hierarchy:\n([\s\S]*)""")
+		Regex("""[\s\S]*(androidx.test.espresso.NoMatchingViewException|android.support.test.espresso.NoMatchingViewException): No views in hierarchy found matching: \(?(.*?)\)?\n[\s\S]*View Hierarchy:\n([\s\S]*)""")
 	noMatchRe.find(exception)?.let {
 		return parseViewException(
 			ViewExceptionResult(
@@ -94,7 +94,7 @@ fun parse(exception: String): ExceptionResult {
 	}
 
 	val noRootRe =
-		Regex("""[\s\S]*(android.support.test.espresso.NoMatchingRootException): Matcher '([\s\S]*?)' did not match any of the following roots: \[([\s\S]*)\]\n([\s\S]*)""")
+		Regex("""[\s\S]*(androidx.test.espresso.NoMatchingRootException|android.support.test.espresso.NoMatchingRootException): Matcher '([\s\S]*?)' did not match any of the following roots: \[([\s\S]*)\]\n([\s\S]*)""")
 	noRootRe.find(exception)?.let {
 		return parseRootException(
 			RootExceptionResult(
