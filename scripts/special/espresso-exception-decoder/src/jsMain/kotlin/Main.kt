@@ -107,7 +107,7 @@ fun parse(exception: String): ExceptionResult {
 	}
 
 	val runtimeRe =
-		Regex("""[\s\S]*(java.lang.RuntimeException): No data found matching: \(?(.*?)\)? contained values: \<\[([\s\S]*?)\]\>([\s\S]*)""")
+		Regex("""[\s\S]*(java.lang.RuntimeException): No data found matching: \(?(.*?)\)? contained values: <\[([\s\S]*?)\]>([\s\S]*)""")
 	runtimeRe.find(exception)?.let {
 		return parseDataException(
 			DataExceptionResult(
@@ -294,7 +294,7 @@ fun renderRoots(error: RootExceptionResult) {
 	for (root in error.roots) {
 		root.props["_display"] = document.createElement("span")
 		for (child in root.children) {
-			child.props["_display"] = document.createElement("span").toString()
+			child.props["_display"] = document.createElement("span")
 		}
 
 		val hierarchyTreeRootDomLi = document.createElement("li") as HTMLLIElement
