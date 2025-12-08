@@ -306,7 +306,8 @@ fun render(error: ExceptionResult) {
 }
 
 fun renderHierarchy(error: ViewExceptionResult) {
-	val h = error.hierarchy ?: return
+	val h = error.hierarchy!!
+
 	val messageDom = document.getElementById("message") as HTMLElement
 	messageDom.asDynamic().error = error
 	messageDom.innerHTML = "<b>${error.ex}</b>: ${error.matcher}"
@@ -315,11 +316,10 @@ fun renderHierarchy(error: ViewExceptionResult) {
 	while (hierarchyDom.firstChild != null) {
 		hierarchyDom.removeChild(hierarchyDom.firstChild!!)
 	}
-	val width = h.props["width"]?.toFloatOrNull() ?: 100f
-	val height = h.props["height"]?.toFloatOrNull() ?: 100f
+	val width = h.props["width"].toFloat()
+	val height = h.props["height"]?.toFloat()
 	hierarchyDom.style.paddingBottom = "${height / width * 100}%"
 	renderView(hierarchyDom, h, 100 / width, 100 / height)
-
 	val hierarchyTreeDom = document.getElementById("hierarchy-tree") as HTMLElement
 	while (hierarchyTreeDom.firstChild != null) {
 		hierarchyTreeDom.removeChild(hierarchyTreeDom.firstChild!!)
@@ -444,7 +444,6 @@ fun renderTreeForRoot(target: HTMLElement, root: dynamic) {
 	}
 }
 
-// Hash code function matching JavaScript implementation
 fun String.hashCode32(): Int {
 	var hash = 0
 	for (element in this) {
@@ -459,73 +458,47 @@ fun renderView(target: HTMLElement, view: ViewNode, scaleX: Float, scaleY: Float
 	val dom = document.createElement("div") as HTMLElement
 	view.props["_display"] = dom.toString()
 	dom.asDynamic().view = view
-
 	dom.addEventListener("mouseover", { event ->
 		event.stopPropagation()
-		showView(view)
+		showView(event.currentTarget.view)
 	})
-
-	val classList = listOfNotNull(
-		"view",
-		view.name,
-		view.props["visibility"],
-		if (view.matches) "MATCHES" else null
-	)
-	dom.className = classList.joinToString(" ")
-
-	val width = view.props["width"]?.toFloatOrNull() ?: 0f
-	val height = view.props["height"]?.toFloatOrNull() ?: 0f
-	val x = view.props["x"]?.toFloatOrNull() ?: 0f
-	val y = view.props["y"]?.toFloatOrNull() ?: 0f
-
-	dom.style.width = "${width * scaleX}%"
-	dom.style.height = "${height * scaleY}%"
-	dom.style.left = "${x * scaleX}%"
-	dom.style.top = "${y * scaleY}%"
+	dom.className = listOf("view", view.name, view.props["visibility"], if (view.matches) "MATCHES" else "").joinToString(" ")
+	dom.style.width = "${view.props["width"].toFloat() * scaleX}%"
+	dom.style.height = "${view.props["height"].toFloat() * scaleY}%"
+	dom.style.left = "${view.props["x"]?.toFloat() * scaleX}%"
+	dom.style.top = "${view.props["y"]?.toFloat() * scaleY}%"
 	dom.style.backgroundColor = dom.className.hashCode32().toString(16)
 	dom.setAttribute("data-type", view.name)
-
 	view.props["text"]?.let { text ->
 		dom.innerText = text
 	}
-
 	target.appendChild(dom)
 	for (child in view.children) {
-		renderView(dom, child, 100 / width, 100 / height)
+		renderView(dom, child, 100 / view.props["width"].toFloat(), 100 / view.props["height"].toFloat())
 	}
 }
 
 fun renderTree(target: HTMLElement, view: ViewNode) {
-	view.props["_tree"] = target.toString()
+	view.props["_tree"] = target
 	target.asDynamic().view = view
-
 	target.addEventListener("mouseover", { event ->
 		event.stopPropagation()
-		showView(view)
+		showView(event.currentTarget.view)
 	})
-
-	val classList = listOfNotNull(
-		"view",
-		view.name,
-		view.props["visibility"],
-		if (view.matches) "MATCHES" else null
-	)
-	target.className = classList.joinToString(" ")
+	target.className = listOf("view", view.name, view.props["visibility"], if (view.matches) "MATCHES" else "").joinToString(" ")
 	target.setAttribute("data-type", view.name)
-
-	val nameSpan = document.createElement("span") as HTMLElement
-	nameSpan.innerText = view.name
-	nameSpan.className = "name"
-	target.appendChild(nameSpan)
-
+	val name = document.createElement("span") as HTMLElement
+	name.innerText = view.name
+	name.className = "name"
+	target.appendChild(name)
 	if (view.children.isNotEmpty()) {
-		val childrenUl = document.createElement("ul") as HTMLUListElement
-		for (child in view.children) {
-			val childLi = document.createElement("li") as HTMLLIElement
-			renderTree(childLi, child)
-			childrenUl.appendChild(childLi)
+		val children = document.createElement("ul") as HTMLUListElement
+		for (childView in view.children) {
+			val child = document.createElement("li") as HTMLLIElement
+			renderTree(child, childView)
+			children.appendChild(child)
 		}
-		target.appendChild(childrenUl)
+		target.appendChild(children)
 	}
 }
 
@@ -671,9 +644,8 @@ fun parents(view: ViewNode): List<String> {
 	var v = view.parent
 	while (v != null) {
 		val resName = v.props["res-name"]
-		parents.add(if (resName != null) "${v.name} ($resName)" else v.name)
+		parents.add(v.name + (if (resName != null) " ($resName)" else ""))
 		v = v.parent
 	}
-	parents.reverse()
-	return parents
+	return parents.reversed()
 }
