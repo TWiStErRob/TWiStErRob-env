@@ -67,7 +67,7 @@ data class DataExceptionResult(
 	val ex: String,
 	val matcher: String,
 	val dataText: String,
-	val data: MutableList<Map<String, String>> = mutableListOf()
+	var data: MutableList<MutableMap<String, Any>> = mutableListOf()
 ) : ExceptionResult()
 
 data class RootExceptionResult(
@@ -75,7 +75,7 @@ data class RootExceptionResult(
 	val matcher: String,
 	val marker: String,
 	val rootText: String,
-	val roots: MutableList<Map<String, Any>> = mutableListOf()
+	var roots: MutableList<MutableMap<String, Any>> = mutableListOf()
 ) : ExceptionResult()
 
 // View node for hierarchy
@@ -85,7 +85,7 @@ data class ViewNode(
 	val id: String,
 	val matches: Boolean,
 	val children: MutableList<ViewNode> = mutableListOf(),
-	val props: MutableMap<String, String> = mutableMapOf(),
+	val props: MutableMap<String, Any> = mutableMapOf(),
 	var parent: ViewNode? = null
 )
 
@@ -158,31 +158,25 @@ fun parseViewException(result: ViewExceptionResult): ViewExceptionResult {
 	}
 	val views = toViews(result.hierarchyArray, result.marker)
 	result.hierarchy = build(views)
-	result.resNames = collect(views) { it.props["res-name"] }
-	result.types = collect(views) { it.name }
+	result.resNames = collect(views, "res-name")
+	result.types = collect(views, "name")
 	return result
 }
 
 fun parseDataException(result: DataExceptionResult): DataExceptionResult {
-	val dataRe = Regex("Data: (.*?) \\(class: (.*?)\\) token: (\\d+)(?:, |$)")
+	result.data = mutableListOf()
+	val dataRe = Regex("""Data: (.*?) \(class: (.*?)\) token: (\d+)(?:, |$)""")
 	dataRe.findAll(result.dataText).forEach { match ->
-		val (data, clazz, token) = match.destructured
-		val row = mutableMapOf(
-			"token" to token,
-			"class" to clazz,
-			"data" to data
+		val row = mutableMapOf<String, Any>(
+			"token" to match.groups[3]!!.value,
+			"class" to match.groups[2]!!.value,
+			"data" to match.groups[1]!!.value,
 		)
-		if (clazz == "android.database.sqlite.SQLiteCursor") {
-			val rowRe = Regex("Row (\\d+): \\{(.*)\\}")
-			val rowMatch = rowRe.find(data)
-			if (rowMatch != null) {
-				val (rowNum, props) = rowMatch.destructured
-				val parsedProps = mutableMapOf<String, String>()
-				parsedProps["row #"] = rowNum
-				parseProps(parsedProps, props)
-				for ((k, v) in parsedProps) {
-					row["data-$k"] = v
-				}
+		if (row["class"] == "android.database.sqlite.SQLiteCursor") {
+			val rowMatch = Regex("""Row (\d+): \{(.*)\}""").find(row["data"] as String)!!
+			val props = parseProps(mutableMapOf("row #" to rowMatch.groups[1]!!.value), rowMatch.groups[2]!!.value)
+			for ((k, v) in props) {
+				row["data-${k}"] = v
 			}
 		}
 		result.data.add(row)
@@ -191,50 +185,44 @@ fun parseDataException(result: DataExceptionResult): DataExceptionResult {
 }
 
 fun parseRootException(result: RootExceptionResult): RootExceptionResult {
-	val dataRe =
-		Regex("Root\\{(?:application-window-token=(.*?), window-token=(.*?), has-window-focus=(.*?), (?:layout-params-type=(.*?), )?(?:layout-params-string=(.*?), )?decor-view-string=(.*?\\}))\\}")
+	result.roots = mutableListOf()
+	val dataRe = Regex("""Root\{(?:application-window-token=(.*?), window-token=(.*?), has-window-focus=(.*?), (?:layout-params-type=(.*?), )?(?:layout-params-string=(.*?), )?decor-view-string=(.*?\}))\}""")
 	dataRe.findAll(result.rootText).forEach { match ->
 		val root = mutableMapOf<String, Any>(
-			"application-window-token" to (match.groups[1]?.value ?: ""),
-			"window-token" to (match.groups[2]?.value ?: ""),
-			"has-window-focus" to (match.groups[3]?.value ?: "")
+			"application-window-token" to match.groups[1]!!.value,
+			"window-token" to match.groups[2]!!.value,
+			"has-window-focus" to match.groups[3]!!.value,
+			//'decor-view-string': match.groups[6]!!.value,
 		)
 		root["children"] = mutableListOf<Any>()
-
-		if (match.groups[4]?.value != null) {
-			root["layout-params-type"] = match.groups[4]?.value ?: ""
-			val paramsMatch = Regex("(.*?)\\{\\((\\d+),(\\d+)\\)\\((\\d+|fill|wrap)x(\\d+|fill|wrap)\\) (.*)\\}").find(
-				match.groups[5]?.value ?: ""
+		if (match.groups[4] != null) {
+			root["layout-params-type"] = match.groups[4]!!.value
+			//root["layout-params-string"] = match.groups[5]!!.value
+			val paramsMatch = Regex("""(.*?)\{\((\d+),(\d+)\)\((\d+|fill|wrap)x(\d+|fill|wrap)\) (.*)\}""").find(match.groups[5]!!.value)!!
+			val params = mutableMapOf<String, Any>(
+				"name" to paramsMatch.groups[1]!!.value,
+				"x" to paramsMatch.groups[2]!!.value,
+				"y" to paramsMatch.groups[3]!!.value,
+				"width" to paramsMatch.groups[4]!!.value,
+				"height" to paramsMatch.groups[5]!!.value,
 			)
-			if (paramsMatch != null) {
-				val (name, x, y, width, height, propsStr) = paramsMatch.destructured
-				val params = mutableMapOf<String, String>(
-					"name" to name,
-					"x" to x,
-					"y" to y,
-					"width" to width,
-					"height" to height
-				)
-				parseProps(params, propsStr)
-				for ((k, v) in params) {
-					root[k] = v
-				}
-				root["layout-params-class"] = name
+			parseProps(params, paramsMatch.groups[6]!!.value)
+			for ((k, v) in params) {
+				root[/*"layout-params-" +*/ k] = v
 			}
+			root["layout-params-class"] = params["name"]!!
+			//root.children.add(params)
 		}
-
-		// Parse decor-view-string with +> prefix
-		val decorViewString = match.groups[6]?.value ?: ""
-		(root["children"] as MutableList<Any>).add(parseView("+>$decorViewString", ""))
+		(root["children"] as MutableList<Any>).add(parseView("+>${match.groups[6]?.value}", ""))
 		result.roots.add(root)
 	}
 	return result
 }
 
-fun collect(views: List<ViewNode>, propSelector: (ViewNode) -> String?): List<String> {
+fun collect(arr: List<ViewNode>, prop: String): List<String> {
 	val set = mutableSetOf<String>()
-	for (view in views) {
-		propSelector(view)?.let { set.add(it) }
+	for (view in arr) {
+		view.props[prop]?.let { set.add(it as String) }
 	}
 	return set.sorted()
 }
@@ -252,6 +240,7 @@ fun parseView(text: String, marker: String): ViewNode {
 	val rest = match.groups[4]!!.value
 	parseProps(view.props, rest)
 	view.props["editor-info"]?.let { info ->
+		info as String
 		view.props.remove("editor-info")
 		val infoStr = info.substring(1, info.length - 1)
 		val infoRe = Regex("""(.*?)=(.*?)( (?=\w+=)|$)""")
@@ -262,16 +251,16 @@ fun parseView(text: String, marker: String): ViewNode {
 	return view
 }
 
-fun parseProps(map: MutableMap<String, String>, rest: String) {
+fun parseProps(map: MutableMap<String, Any>, rest: String): MutableMap<String, Any> {
 	val propRe = Regex("""(.*?)[=:]([\s\S]*?)(,? (?=[\w-]+[=:])|$)""")
 	propRe.findAll(rest).forEach { match ->
 		map[match.groups[1]!!.value] = match.groups[2]!!.value
 	}
+	return map
 }
 
-fun toViews(input: List<String>, marker: String): List<ViewNode> {
-	return input.map { parseView(it, marker) }
-}
+fun toViews(input: List<String>, marker: String): List<ViewNode> = 
+	input.map { parseView(it, marker) }
 
 fun build(views: List<ViewNode>): ViewNode? {
 	val stack = ArrayDeque<ViewNode>()
@@ -316,8 +305,8 @@ fun renderHierarchy(error: ViewExceptionResult) {
 	while (hierarchyDom.firstChild != null) {
 		hierarchyDom.removeChild(hierarchyDom.firstChild!!)
 	}
-	val width = h.props["width"].toFloat()
-	val height = h.props["height"]?.toFloat()
+	val width = (h.props["width"] as String).toFloat()
+	val height = (h.props["height"] as String).toFloat()
 	hierarchyDom.style.paddingBottom = "${height / width * 100}%"
 	renderView(hierarchyDom, h, 100 / width, 100 / height)
 	val hierarchyTreeDom = document.getElementById("hierarchy-tree") as HTMLElement
@@ -332,116 +321,43 @@ fun renderHierarchy(error: ViewExceptionResult) {
 }
 
 fun renderData(error: DataExceptionResult) {
-	val messageDom = document.getElementById("message") as HTMLElement
-	messageDom.asDynamic().error = error
-	messageDom.innerHTML = "<b>${error.ex}</b>: ${error.matcher}"
-
-	val hierarchyDom = document.getElementById("hierarchy-display") as HTMLElement
-	while (hierarchyDom.firstChild != null) {
-		hierarchyDom.removeChild(hierarchyDom.firstChild!!)
-	}
-
 	val hierarchyTreeDom = document.getElementById("hierarchy-tree") as HTMLElement
 	while (hierarchyTreeDom.firstChild != null) {
 		hierarchyTreeDom.removeChild(hierarchyTreeDom.firstChild!!)
 	}
 	val hierarchyTreeRootDomUl = document.createElement("ul") as HTMLUListElement
 	for (d in error.data) {
-		// Create a dynamic object for data node
-		val dataNode: dynamic = js("{}")
-		dataNode.name = d["class"] ?: ""
-		dataNode.children = js("[]")
-		dataNode._display = document.createElement("span")
+		d["name"] = d["class"]!!
+		d["children"] = emptyList<Any>()
+		d["_display"] = document.createElement("span")
 
-		// Copy all properties from the map
-		for ((key, value) in d) {
-			dataNode[key] = value
-		}
-
-		val li = document.createElement("li") as HTMLLIElement
-		li.asDynamic().view = dataNode
-		renderTreeForData(li, dataNode)
-		hierarchyTreeRootDomUl.appendChild(li)
+		val hierarchyTreeRootDomLi = document.createElement("li") as HTMLLIElement
+		renderTree(hierarchyTreeRootDomLi, d)
+		hierarchyTreeRootDomUl.appendChild(hierarchyTreeRootDomLi)
 	}
 	hierarchyTreeDom.appendChild(hierarchyTreeRootDomUl)
 }
 
 fun renderRoots(error: RootExceptionResult) {
-	val messageDom = document.getElementById("message") as HTMLElement
-	messageDom.asDynamic().error = error
-	messageDom.innerHTML = "<b>${error.ex}</b>: ${error.matcher}"
-
-	val hierarchyDom = document.getElementById("hierarchy-display") as HTMLElement
-	while (hierarchyDom.firstChild != null) {
-		hierarchyDom.removeChild(hierarchyDom.firstChild!!)
-	}
-
 	val hierarchyTreeDom = document.getElementById("hierarchy-tree") as HTMLElement
 	while (hierarchyTreeDom.firstChild != null) {
 		hierarchyTreeDom.removeChild(hierarchyTreeDom.firstChild!!)
 	}
 	val hierarchyTreeRootDomUl = document.createElement("ul") as HTMLUListElement
 	for (root in error.roots) {
-		// Create a dynamic object for root
-		val rootNode: dynamic = js("{}")
-		rootNode.name = root["window-token"]
-		rootNode._display = document.createElement("span")
-
-		// Copy all properties from the map
-		for ((key, value) in root) {
-			rootNode[key] = value
-		}
-
-		val children = root["children"] as? List<*> ?: emptyList<Any>()
+		root["name"] = root["window-token"]!!
+		root["_display"] = document.createElement("span")
+		val children = root["children"] as List<ViewNode>
 		for (child in children) {
-			if (child is ViewNode) {
-				child.props["_display"] = document.createElement("span").toString()
-			}
+			child.props["_display"] = document.createElement("span").toString()
+			child.props["children"] = child.props["children"] ?: emptyList<ViewNode>()
 		}
 
-		val li = document.createElement("li") as HTMLLIElement
-		li.asDynamic().view = rootNode
-		renderTreeForRoot(li, rootNode)
-		hierarchyTreeRootDomUl.appendChild(li)
+		val hierarchyTreeRootDomLi = document.createElement("li") as HTMLLIElement
+		renderTree(hierarchyTreeRootDomLi, root)
+		hierarchyTreeRootDomUl.appendChild(hierarchyTreeRootDomLi)
 	}
 	hierarchyTreeDom.appendChild(hierarchyTreeRootDomUl)
-}
-
-fun renderTreeForData(target: HTMLElement, dataNode: dynamic) {
-	target.className = "view"
-	val name = document.createElement("span") as HTMLElement
-	name.innerText = dataNode.name?.toString() ?: ""
-	name.className = "name"
-	target.appendChild(name)
-	target.addEventListener("mouseover", { event ->
-		event.stopPropagation()
-		showViewForData(dataNode)
-	})
-}
-
-fun renderTreeForRoot(target: HTMLElement, root: dynamic) {
-	target.className = "view"
-	val name = document.createElement("span") as HTMLElement
-	name.innerText = root.name?.toString() ?: ""
-	name.className = "name"
-	target.appendChild(name)
-	target.addEventListener("mouseover", { event ->
-		event.stopPropagation()
-		showViewForRoot(root)
-	})
-
-	val children = root.children as? List<*>
-	if (children != null && children.isNotEmpty()) {
-		val childrenUl = document.createElement("ul") as HTMLUListElement
-		for (child in children) {
-			if (child is ViewNode) {
-				val childLi = document.createElement("li") as HTMLLIElement
-				renderTree(childLi, child)
-				childrenUl.appendChild(childLi)
-			}
-		}
-		target.appendChild(childrenUl)
-	}
 }
 
 fun String.hashCode32(): Int {
@@ -463,10 +379,10 @@ fun renderView(target: HTMLElement, view: ViewNode, scaleX: Float, scaleY: Float
 		showView(event.currentTarget.view)
 	})
 	dom.className = listOf("view", view.name, view.props["visibility"], if (view.matches) "MATCHES" else "").joinToString(" ")
-	dom.style.width = "${view.props["width"].toFloat() * scaleX}%"
-	dom.style.height = "${view.props["height"].toFloat() * scaleY}%"
-	dom.style.left = "${view.props["x"]?.toFloat() * scaleX}%"
-	dom.style.top = "${view.props["y"]?.toFloat() * scaleY}%"
+	dom.style.width = "${(view.props["width"] as String).toFloat() * scaleX}%"
+	dom.style.height = "${(view.props["height"] as String).toFloat() * scaleY}%"
+	dom.style.left = "${(view.props["x"] as String).toFloat() * scaleX}%"
+	dom.style.top = "${(view.props["y"] as String).toFloat() * scaleY}%"
 	dom.style.backgroundColor = dom.className.hashCode32().toString(16)
 	dom.setAttribute("data-type", view.name)
 	view.props["text"]?.let { text ->
@@ -474,7 +390,7 @@ fun renderView(target: HTMLElement, view: ViewNode, scaleX: Float, scaleY: Float
 	}
 	target.appendChild(dom)
 	for (child in view.children) {
-		renderView(dom, child, 100 / view.props["width"].toFloat(), 100 / view.props["height"].toFloat())
+		renderView(dom, child, 100 / (view.props["width"] as String).toFloat(), 100 / (view.props["height"] as String).toFloat())
 	}
 }
 
@@ -483,7 +399,7 @@ fun renderTree(target: HTMLElement, view: ViewNode) {
 	target.asDynamic().view = view
 	target.addEventListener("mouseover", { event ->
 		event.stopPropagation()
-		showView(event.currentTarget.view)
+		showView(event.currentTarget.asDynamic().view)
 	})
 	target.className = listOf("view", view.name, view.props["visibility"], if (view.matches) "MATCHES" else "").joinToString(" ")
 	target.setAttribute("data-type", view.name)
