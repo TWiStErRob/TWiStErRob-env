@@ -248,7 +248,7 @@ fun toViews(input: List<String>, marker: String): List<ViewNode> =
 	input.map { parseView(it, marker) }
 
 fun build(views: List<ViewNode>): ViewNode {
-	val stack = ArrayDeque<ViewNode>()
+	val stack = mutableListOf<ViewNode>()
 	for (view in views) {
 		if (view.level > stack.size) {
 			error("${view} is deeper than ${stack.size}: missing some parents.")
@@ -256,7 +256,7 @@ fun build(views: List<ViewNode>): ViewNode {
 			//console.log("Popping " + view.name);
 			stack.removeLast()
 		}
-		val parent = stack.lastOrNull()
+		val parent = stack.removeLastOrNull()
 		if (parent != null) {
 			//console.log("Parent of " + view.name + " is " + parent.name);
 			parent.children.add(view)
