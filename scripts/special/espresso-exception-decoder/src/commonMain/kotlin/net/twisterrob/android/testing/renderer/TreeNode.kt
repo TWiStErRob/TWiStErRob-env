@@ -12,8 +12,10 @@ data class RootNode(
 	override val name: String,
 	override val children: MutableList<ViewNode> = mutableListOf(),
 	override val props: MutableMap<String, Any> = mutableMapOf(),
-	override var parent: ViewNode? = null,
-) : TreeNode
+) : TreeNode {
+
+	override var parent: ViewNode? = null
+}
 
 data class ViewNode(
 	val level: Int,
@@ -22,12 +24,16 @@ data class ViewNode(
 	val matches: Boolean,
 	override val children: MutableList<ViewNode> = mutableListOf(),
 	override val props: MutableMap<String, Any> = mutableMapOf(),
-	override var parent: ViewNode? = null,
-) : TreeNode
+) : TreeNode {
+
+	override var parent: ViewNode? = null
+}
 
 data class DataNode(
 	override val name: String,
 	override val children: MutableList<ViewNode> = mutableListOf(),
 	override val props: MutableMap<String, Any> = mutableMapOf(),
-	override var parent: ViewNode? = null,
-) : TreeNode
+) : TreeNode {
+
+	override var parent: ViewNode? = null
+}
