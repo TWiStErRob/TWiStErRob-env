@@ -1,4 +1,4 @@
-@file:Suppress("detekt.MaxLineLength", "detekt.LongMethod")
+@file:Suppress("detekt.MaxLineLength", "detekt.LongMethod", "detekt.LargeClass", "detekt.ClassNaming")
 
 package net.twisterrob.android.testing.parser
 
@@ -10,6 +10,7 @@ import kotlin.test.assertEquals
 
 class ParseKtTest_NoMatchingData {
 
+	@Suppress("detekt.CyclomaticComplexMethod")
 	@Test
 	fun test() {
 		val actual = parse(loadTestResource("NoMatchingData.txt"))

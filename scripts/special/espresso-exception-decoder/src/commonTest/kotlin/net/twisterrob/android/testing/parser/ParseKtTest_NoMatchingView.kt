@@ -1,4 +1,4 @@
-@file:Suppress("detekt.MaxLineLength", "detekt.LongMethod")
+@file:Suppress("detekt.MaxLineLength", "detekt.LongMethod", "detekt.LargeClass", "detekt.ClassNaming")
 
 package net.twisterrob.android.testing.parser
 
