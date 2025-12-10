@@ -13,3 +13,4 @@ gradlew jsBrowserDevelopmentRun --continuous
 ```bash
 gradlew jsBrowserProductionWebpack
 ```
+and result in `build/dist/js/productionExecutable`.
