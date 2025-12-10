@@ -1,19 +1,30 @@
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootEnvSpec
+
 plugins {
 	kotlin("multiplatform") version "2.2.21"
 }
+
+group = "net.twisterrob.android"
+version = "1.0-SNAPSHOT"
 
 kotlin {
 	js(IR) {
 		browser {
 			binaries.executable()
+			testTask {
+				enabled = false
+			}
 			commonWebpackConfig {
 				cssSupport {
-					enabled.set(true)
+					enabled = true
 				}
 			}
 		}
 	}
 	jvm()
+	applyDefaultHierarchyTemplate()
 	@Suppress("unused")
 	sourceSets {
 		val commonMain by getting {
@@ -29,15 +40,15 @@ kotlin {
 	}
 }
 
-group = "net.twisterrob.android"
-version = "1.0-SNAPSHOT"
-
-repositories {
-	mavenCentral()
+plugins.withType<YarnPlugin> {
+	extensions.getByType<YarnRootEnvSpec>().apply {
+		yarnLockMismatchReport = YarnLockMismatchReport.WARNING
+		yarnLockAutoReplace = true
+	}
 }
 
 tasks.named<ProcessResources>("jsProcessResources") {
-	val example = file("src/jsMain/resources/NoMatchingView.txt")
+	val example = file("src/commonTest/resources/AmbiguousViewMatcher.txt")
 	inputs
 		.file(example)
 		.withPropertyName("exampleContent")
