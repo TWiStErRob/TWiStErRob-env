@@ -2,7 +2,7 @@
 # Use `git add ... -f` to track files.
 /*/
 !/scripts/
-/scripts/.idea/
+/scripts/**/.idea/
 /scripts/temp/
 
 # Ignore temporary folders.

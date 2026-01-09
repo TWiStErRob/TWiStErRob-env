@@ -1,0 +1,31 @@
+### Initial load
+POST https://api.gifyourgame.com/parse/functions/fetchClips
+Content-Type: application/json
+
+# Note: limit > 100 doesn't do anything.
+{
+	"limit": 100,
+	"folderId": null,
+	"_ApplicationId": "badpanda",
+	"_ClientVersion": "js3.1.0",
+	"_InstallationId": "b6309fb3-628c-4195-8439-f2629a3c118a",
+	"_SessionToken": "r:727fbbe96c64734056dec3b6627ad9c3"
+}
+
+### Pagination
+POST https://api.gifyourgame.com/parse/functions/fetchClips
+Content-Type: application/json
+
+{
+	"createdBefore": {
+		"__type": "Date",
+		"iso": "2020-06-01T00:53:03.273Z"
+	},
+	"excludeIds": ["FOKIG20ZHL"],
+	"limit": 30,
+	"folderId": null,
+	"_ApplicationId": "badpanda",
+	"_ClientVersion": "js3.1.0",
+	"_InstallationId": "b6309fb3-628c-4195-8439-f2629a3c118a",
+	"_SessionToken": "r:727fbbe96c64734056dec3b6627ad9c3"
+}
