@@ -208,6 +208,23 @@ jobs:
         run: $KOTLINC pass.main.kts
 
 
+  gyg-export:
+    name: "🔨 Build / Special / GYG Export"
+    timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-24.04
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v6
+
+      - name: "Compile .main.kts."
+        working-directory: scripts/special/gyg-export
+        shell: bash
+        run: $KOTLINC gyg-download.main.kts
+
+
   espresso-exception-decoder:
     name: "🔨 Build / Special / Espresso Exception Decoder"
     timeout-minutes: 5
