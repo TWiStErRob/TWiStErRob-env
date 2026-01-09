@@ -53,8 +53,9 @@ $user = [ordered]@{
     GCLOUD_HOME = "%PROG_HOME%\tools\sdk\google-cloud-sdk"
     # set up a Gradle for global things
     #GRADLE7_HOME = "%PROG_HOME%\tools\build\gradle\gradle-7.6.4-all\69w292fwwbbevpookp42lrbux\gradle-7.6.4"
-    GRADLE8_HOME = "%PROG_HOME%\tools\build\gradle\gradle-8.14.3-all\10utluxaxniiv4wxiphsi49nj\gradle-8.14.3"
-    GRADLE_HOME = "%GRADLE8_HOME%"
+    GRADLE8_HOME = "%PROG_HOME%\tools\build\gradle\gradle-8.14.3-bin\cv11ve7ro1n3o1j4so8xd9n66\gradle-8.14.3"
+    GRADLE9_HOME = "%PROG_HOME%\tools\build\gradle\gradle-9.2.1-bin\2t0n5ozlw9xmuyvbp7dnzaxug\gradle-9.2.1"
+    GRADLE_HOME = "%GRADLE9_HOME%"
     # Global Gradle arguments to be passed to `gradle`/`gradlew`
     #-PSNAPSHOT_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2 -PRELEASE_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2
     GRADLE_ARGS = "--stacktrace"
@@ -84,8 +85,6 @@ $user = [ordered]@{
     JAVA11_HOME = "%PROG_HOME%\tools\lang\java-11.0.2-x64-openjdk"
     # 17+ is fine licence-wise
     JAVA17_HOME = "%PROG_HOME%\tools\lang\java-17.0.15-x64-jdk"
-    JAVA19_HOME = "%PROG_HOME%\tools\lang\java-19.0.1-x64-jdk"
-    JAVA20_HOME = "%PROG_HOME%\tools\lang\java-20.0.2-x64-jdk"
     JAVA21_HOME = "%PROG_HOME%\tools\lang\java-21.0.7-x64-jdk"
     JAVA24_HOME = "%PROG_HOME%\tools\lang\java-24.0.1-x64-jdk"
     # for gradlew, mvn
@@ -109,7 +108,6 @@ $user = [ordered]@{
     KONAN_DATA_DIR = "Z:\caches\kotlin\konan"
 
     RUBY2_HOME = "%PROG_HOME%\tools\lang\ruby-2.7.8-x64-mingw32"
-    RUBY32_HOME = "%PROG_HOME%\tools\lang\ruby-3.2.2-1-x64"
     RUBY33_HOME = "%PROG_HOME%\tools\lang\ruby-3.3.1-1-x64"
     RUBY3_HOME = "%RUBY33_HOME%"
     RUBY_HOME = "%RUBY3_HOME%"
@@ -127,7 +125,7 @@ $user = [ordered]@{
     PERL_HOME= "%PERL5_HOME%"
 
     #REDIS_HOME = "%PROG_HOME%\tools\data\Redis-x64-2.8.2400"
-    NEO4J_HOME = "%PROG_HOME%\tools\data\neo4j-community-3.5.8"
+    NEO4J_HOME = "%PROG_HOME%\tools\data\neo4j-community-2025.06.2"
 
     XDG_CACHE_HOME = "%PROG_HOME%\caches\intellij\plugin-development"
     IDEA_HOME="%PROG_HOME%\tools\ide\idea"
