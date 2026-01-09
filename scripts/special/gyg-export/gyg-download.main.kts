@@ -32,6 +32,7 @@ import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.ContentType
 import io.ktor.utils.io.jvm.javaio.copyTo
 import kotlinx.coroutines.runBlocking
+import kotlinx.io.IOException
 import org.fusesource.jansi.AnsiConsole
 import java.nio.file.Files
 import java.nio.file.Path
@@ -220,7 +221,7 @@ private suspend fun downloadIfMissing(
 			client.get(url).bodyAsChannel().copyTo(out)
 		}
 		target.setLastModifiedTime(FileTime.from(timestamp))
-	} catch (ex: Throwable) {
+	} catch (ex: IOException) {
 		runCatching { Files.deleteIfExists(target) }
 			.onFailure { ex.addSuppressed(it) }
 		throw ex
