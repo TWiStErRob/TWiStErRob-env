@@ -3,9 +3,9 @@
 // but there's no Gradle resolution in play here, so we have to pick a platform manually.
 @file:Repository("https://repo1.maven.org/maven2/")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
-@file:DependsOn("io.ktor:ktor-client-java-jvm:3.4.0")
-@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:3.4.0")
-@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:3.4.0")
+@file:DependsOn("io.ktor:ktor-client-java-jvm:3.3.3")
+@file:DependsOn("io.ktor:ktor-client-content-negotiation-jvm:3.3.3")
+@file:DependsOn("io.ktor:ktor-serialization-jackson-jvm:3.3.3")
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -18,11 +18,12 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
-import io.ktor.util.encodeBase64
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.net.URI
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.seconds
 
@@ -204,7 +205,9 @@ suspend fun HttpClient.contributions(
 	token: String
 ): HttpResponse {
 	val response = get("https://$host/repos/$org/$repo/stats/contributors") {
-		header("Authorization", "Basic ${"$user:$token".encodeBase64()}")
+		@OptIn(ExperimentalEncodingApi::class)
+		val auth = Base64.encode("$user:$token".encodeToByteArray())
+		header("Authorization", "Basic ${auth}")
 	}
 	return when (response.status) {
 		HttpStatusCode.OK -> response
