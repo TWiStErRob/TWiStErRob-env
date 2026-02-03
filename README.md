@@ -23,6 +23,7 @@ I have a complex environment setup on Windows, this repository shall contain thi
    * [repository-convention](scripts/github/repository-convention) Self-controlled defaults for GitHub user/orgs.
    * [manage-draft-issues](scripts/github/project-manage-draft-issues) Create/update draft issues in a GitHub project.
    * [user-contribs](scripts/github/user-contribs) Interactive GitHub User Contribution Stats for multiple repositories.
+   * [user-reactions](scripts/github/user-reactions) Retrieve all GitHub related subscriptions and upvotes.
  * [Notion](scripts/notion)
    * [import-data](scripts/notion/import-data) Import data from JSON and CSV into Notion Databases.
    * [move-to-property](scripts/notion/page-section-move-to-property) Move a page section to a property of the page.

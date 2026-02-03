@@ -85,6 +85,21 @@ jobs:
         shell: bash
         run: $KOTLINC validate.main.kts
 
+  github-reactions:
+    name: "🔨 Build / GitHub / Reactions & Subscriptions"
+    timeout-minutes: 5
+    permissions:
+      # actions/checkout
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
+        uses: actions/checkout@v4
+
+      - name: "Compile .main.kts."
+        working-directory: scripts/github/user-reactions
+        shell: bash
+        run: $KOTLINC query.main.kts
 
   github-user-contribs:
     name: "🔨 Build / GitHub / User Contributions"
