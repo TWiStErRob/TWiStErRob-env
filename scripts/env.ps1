@@ -54,7 +54,7 @@ $user = [ordered]@{
     # set up a Gradle for global things
     #GRADLE7_HOME = "%PROG_HOME%\tools\build\gradle\gradle-7.6.4-all\69w292fwwbbevpookp42lrbux\gradle-7.6.4"
     GRADLE8_HOME = "%PROG_HOME%\tools\build\gradle\gradle-8.14.3-bin\cv11ve7ro1n3o1j4so8xd9n66\gradle-8.14.3"
-    GRADLE9_HOME = "%PROG_HOME%\tools\build\gradle\gradle-9.2.1-bin\2t0n5ozlw9xmuyvbp7dnzaxug\gradle-9.2.1"
+    GRADLE9_HOME = "%PROG_HOME%\tools\build\gradle\gradle-9.3.1-all\9ot9r568e8zfvvd4mn8rbu1j0\gradle-9.3.1"
     GRADLE_HOME = "%GRADLE9_HOME%"
     # Global Gradle arguments to be passed to `gradle`/`gradlew`
     #-PSNAPSHOT_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2 -PRELEASE_REPOSITORY_URL=file://p:\projects\contrib\github-glide-m2

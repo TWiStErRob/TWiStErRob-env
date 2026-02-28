@@ -26,6 +26,7 @@ java-21.0.7-x64-jdk https://download.oracle.com/java/21/latest/jdk-21_windows-x6
 java-24.0.1-x64-jdk https://download.oracle.com/java/24/latest/jdk-24_windows-x64_bin.zip
 kotlin-1.9.10 https://github.com/JetBrains/kotlin/releases/download/v1.9.10/kotlin-compiler-1.9.10.zip
 kotlin-2.0.0 https://github.com/JetBrains/kotlin/releases/download/v2.0.0/kotlin-compiler-2.0.0.zip
+kotlin-2.3.10 https://github.com/JetBrains/kotlin/releases/download/v2.3.10/kotlin-compiler-2.3.10.zip
 nvm-1.1.11 https://github.com/coreybutler/nvm-windows/releases/download/1.1.11/nvm-noinstall.zip
 python-2.7.10-amd64 https://www.python.org/ftp/python/2.7.10/python-2.7.10.amd64.msi
 python-3.10.11-amd64 python-3.10.11-amd64.exe, installed, copied, uninstalled
