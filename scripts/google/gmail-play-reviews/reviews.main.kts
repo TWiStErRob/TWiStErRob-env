@@ -11,7 +11,7 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.http.HttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.gson.GsonFactory
@@ -160,9 +160,10 @@ fun ParsedMessage.asReview(): Review {
 	)
 }
 
+@Suppress("UnusedReceiverParameter") // Just to nicely chain.
 fun Unit.gmail(credentials: String, vararg scopes: String): Gmail.Builder {
 	val json: JsonFactory = GsonFactory.getDefaultInstance()
-	val transport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
+	val transport: HttpTransport = NetHttpTransport()
 	return Gmail.Builder(
 		transport,
 		json,
@@ -176,7 +177,7 @@ fun Unit.gmail(credentials: String, vararg scopes: String): Gmail.Builder {
 }
 
 fun authenticate(
-	transport: NetHttpTransport,
+	transport: HttpTransport,
 	json: JsonFactory,
 	scopes: List<String>,
 	clientSecrets: GoogleClientSecrets,
