@@ -2,7 +2,7 @@
 // Postman collection https://www.postman.com/api-evangelist/workspace/google/collection/35240-0d073c40-6ad8-43d0-8baf-8ee3606819e0
 
 @file:Repository("https://repo1.maven.org/maven2/")
-@file:DependsOn("com.google.api-client:google-api-client:2.8.1")
+@file:DependsOn("com.google.api-client:google-api-client:2.9.0")
 @file:DependsOn("com.google.oauth-client:google-oauth-client-jetty:1.39.0")
 @file:DependsOn("com.google.apis:google-api-services-gmail:v1-rev20260112-2.0.0")
 
@@ -11,7 +11,7 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.http.HttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.gson.GsonFactory
@@ -160,9 +160,10 @@ fun ParsedMessage.asReview(): Review {
 	)
 }
 
+@Suppress("UnusedReceiverParameter") // Just to nicely chain.
 fun Unit.gmail(credentials: String, vararg scopes: String): Gmail.Builder {
 	val json: JsonFactory = GsonFactory.getDefaultInstance()
-	val transport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
+	val transport: HttpTransport = NetHttpTransport()
 	return Gmail.Builder(
 		transport,
 		json,
@@ -176,7 +177,7 @@ fun Unit.gmail(credentials: String, vararg scopes: String): Gmail.Builder {
 }
 
 fun authenticate(
-	transport: NetHttpTransport,
+	transport: HttpTransport,
 	json: JsonFactory,
 	scopes: List<String>,
 	clientSecrets: GoogleClientSecrets,
