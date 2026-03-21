@@ -1,5 +1,5 @@
 #!/usr/bin/env kotlin
-@file:DependsOn("com.fasterxml.jackson.core:jackson-databind:2.21.1")
+@file:DependsOn("com.fasterxml.jackson.core:jackson-databind:2.21.2")
 @file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.1")
 @file:DependsOn("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.1")
 @file:DependsOn("com.github.ajalt.clikt:clikt-jvm:5.1.0")
