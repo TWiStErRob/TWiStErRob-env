@@ -5,7 +5,7 @@
 @file:DependsOn("com.github.ajalt.clikt:clikt-jvm:5.1.0")
 @file:DependsOn("io.ktor:ktor-client-core-jvm:3.4.2")
 @file:DependsOn("io.ktor:ktor-client-cio-jvm:3.4.2")
-@file:DependsOn("org.fusesource.jansi:jansi:2.4.2")
+@file:DependsOn("org.fusesource.jansi:jansi:2.4.3")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
 import ClipsResponse.Clip
