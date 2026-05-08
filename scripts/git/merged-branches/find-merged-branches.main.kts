@@ -1,4 +1,4 @@
-@file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+@file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
