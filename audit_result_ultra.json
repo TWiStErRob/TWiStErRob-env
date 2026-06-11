@@ -105,9 +105,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "kotlin_compilation_error",
+      "root_cause": "AndroidX minor update causes Kotlin CompilationErrorException in build task. Exact compiler errors not captured in log tail; likely API incompatibility in updated AndroidX artifacts.",
+      "fix": "Investigate specific Kotlin compiler errors (look for 'e: file://' lines in full build log). May require source changes to use updated AndroidX APIs."
     },
     {
       "repo": "TWiStErRob/net.twisterrob.astro",
@@ -286,9 +286,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "androidx_compilesdk_requirement",
+      "root_cause": "androidx.core:core 1.19.0 requires compileSdk >= 37, AGP >= 9.1.0, and minSdk >= 23. Project uses AGP 8.13.2 and minSdk 21. Error: 'minSdkVersion 21 cannot be smaller than version 23 declared in library [androidx.core:core:1.19.0]' and 'Dependency requires Android Gradle plugin 9.1.0 or higher'.",
+      "fix": "Update AGP to >= 9.1.0, compileSdk to >= 37, and minSdk to >= 23 before merging the AndroidX core 1.19.0 update."
     },
     {
       "repo": "TWiStErRob/net.twisterrob.colorfilters",
@@ -313,9 +313,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "junit_major_api_break",
+      "root_cause": "JUnit 5.14.4 \u2192 6.1.0 is a major version update with breaking API changes. Build passes but instrumentation tests on API 29 fail with ':mergeAndroidReports' task failure. Test results were collected (4 XML files) indicating actual test failures.",
+      "fix": "Update test code to use JUnit 6 APIs. Review breaking changes between JUnit 5 and JUnit 6."
     },
     {
       "repo": "TWiStErRob/net.twisterrob.colorfilters",
@@ -458,9 +458,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "workflow_always_cancelled",
+      "root_cause": "All 30+ CI workflow runs for this PR have been cancelled before completion. Likely due to workflow concurrency group cancelling in-progress runs when a new run starts.",
+      "fix": "Investigate concurrency group settings in .github/workflows/ci.yml; possibly re-run CI manually and wait for completion"
     },
     {
       "repo": "TWiStErRob/net.twisterrob.inventory",
@@ -508,9 +508,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pre_existing_failure",
+      "root_cause": "Similar to inventory#622: repo has pre-existing Hilt/AGP incompatibility (Hilt requires AGP >= 9.0 but repo uses 8.x). Dagger update itself likely unrelated.",
+      "fix": "Fix pre-existing Hilt/AGP incompatibility in the main branch first"
     },
     {
       "repo": "TWiStErRob/net.twisterrob.inventory",
@@ -589,9 +589,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_behind_base_branch",
+      "root_cause": "PR branch is behind the main branch (mergeable_state: behind). Likely all CI would pass after rebase.",
+      "fix": "Tick the rebase/retry checkbox in the Renovate PR body"
     },
     {
       "repo": "TWiStErRob/net.twisterrob.libraries",
@@ -616,9 +616,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_behind_base_branch",
+      "root_cause": "PR branch is behind the main branch (mergeable_state: behind). Likely all CI would pass after rebase.",
+      "fix": "Tick the rebase/retry checkbox in the Renovate PR body"
     },
     {
       "repo": "TWiStErRob/net.twisterrob.libraries",
@@ -639,9 +639,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_dirty_non_renovate_commit",
+      "root_cause": "PR branch has non-Renovate commits (mergeable_state: dirty). Renovate will not auto-rebase.",
+      "fix": "Tick the rebase/retry checkbox in PR body (warning: custom changes may be lost)"
     },
     {
       "repo": "TWiStErRob/net.twisterrob.libraries",
@@ -720,9 +720,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "kotlin_compilation_error",
+      "root_cause": "AGP minor update causes Kotlin CompilationErrorException in ':plugins:compileKotlin' task. BUILD FAILED in 25s. Exact compiler errors not captured in log tail; likely the new AGP version changed an API used in the plugins buildSrc.",
+      "fix": "Investigate specific Kotlin compiler errors in :plugins:compileKotlin (look for 'e: file://' lines in full build log). Update plugins source to use new AGP APIs."
     },
     {
       "repo": "TWiStErRob/net.twisterrob.sun",
@@ -770,9 +770,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "androidx_compilesdk_requirement",
+      "root_cause": "androidx.core:core-ktx 1.19.0 requires compileSdk >= 37 and AGP >= 9.1.0. Project uses compileSdk 36 and AGP 9.0.1. Error: 'Dependency requires libraries and applications that depend on it to compile against version 37 or later of the Android APIs' and 'Dependency requires Android Gradle plugin 9.1.0 or higher'.",
+      "fix": "Update AGP to >= 9.1.0 and compileSdk to >= 37 before merging the AndroidX core 1.19.0 update."
     },
     {
       "repo": "TWiStErRob/net.twisterrob.travel",
@@ -811,9 +811,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "micronaut5_java_requirement",
+      "root_cause": "micronaut.gradle plugin 5.0.0 requires JVM runtime version 25. CI uses Java 21. Error: 'Could not resolve io.micronaut.gradle:micronaut-gradle-plugin:5.0.0. Dependency requires at least JVM runtime version 25. This build uses a Java 21 JVM.'",
+      "fix": "Update CI to use Java 25, or wait for a Micronaut 5.x release that supports Java 21."
     },
     {
       "repo": "TWiStErRob/net.twisterrob.travel",
@@ -834,9 +834,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "micronaut5_java_requirement",
+      "root_cause": "micronaut 5.0.2 plugin requires JVM runtime version 25. CI uses Java 21. Same issue as travel#641 (micronaut 5.0.0). BUILD FAILED in 1m 27s.",
+      "fix": "Update CI to use Java 25, or wait for a Micronaut 5.x release that supports Java 21."
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -897,9 +897,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -924,9 +924,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -951,9 +951,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -978,9 +978,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -1005,9 +1005,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -1032,9 +1032,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -1059,9 +1059,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -1086,9 +1086,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -1113,9 +1113,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -1140,9 +1140,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -1167,9 +1167,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -1194,9 +1194,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     },
     {
       "repo": "TWiStErRob/twisterrob.github.io",
@@ -1221,9 +1221,9 @@
         "ci checks failing"
       ],
       "next_action": "fix CI failures",
-      "error_type": "unknown",
-      "root_cause": "Not yet investigated",
-      "fix": "Investigate CI logs"
+      "error_type": "pr_stale_fontforge_unavailable",
+      "root_cause": "Same as #76: fontforge version 1:20201107~dfsg-4build1 is no longer available on ubuntu runners. PR was blocked at build step.",
+      "fix": "Update fontforge install command in workflow to not pin an unavailable version, or close stale PRs"
     }
   ],
   "root_cause_groups": [
