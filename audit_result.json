@@ -1,0 +1,1258 @@
+{
+  "total_prs": 48,
+  "prs": [
+    {
+      "repo": "TWiStErRob/android-lint-examples",
+      "pr_number": 205,
+      "pr_url": "https://github.com/TWiStErRob/android-lint-examples/pull/205",
+      "title": "Update Gradle from 9.5.1 to 9.6.0-rc-1",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26916326412,
+          "job_name": "\ud83d\udee0 Build & Verify"
+        },
+        {
+          "workflow_run_id": 26916326412,
+          "job_name": "\ud83e\uddea Quick Lint"
+        },
+        {
+          "workflow_run_id": 26916326412,
+          "job_name": "\ud83d\udd28 Build All modules"
+        }
+      ],
+      "failure_reasons": [
+        "Gradle upgrade breaks build/lint verification jobs"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/glide-support",
+      "pr_number": 496,
+      "pr_url": "https://github.com/TWiStErRob/glide-support/pull/496",
+      "title": "Update Gradle from 9.5.1 to 9.6.0-rc-1",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 27163781946,
+          "job_name": "\ud83d\udd28 Build & Verify"
+        },
+        {
+          "workflow_run_id": 27163781946,
+          "job_name": "\ud83d\udd2e Shadow Build / Glide 3 SNAPSHOT"
+        },
+        {
+          "workflow_run_id": 27163781946,
+          "job_name": "\ud83d\udd2e Shadow Build / Glide 5 SNAPSHOT"
+        }
+      ],
+      "failure_reasons": [
+        "Glide shadow build matrix fails with updated toolchain/dependencies"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/glide-support",
+      "pr_number": 502,
+      "pr_url": "https://github.com/TWiStErRob/glide-support/pull/502",
+      "title": "Update OkHttp 3 monorepo from 5.3.2 to 5.4.0",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 27189689984,
+          "job_name": "\ud83d\udd28 Build & Verify"
+        },
+        {
+          "workflow_run_id": 27189689984,
+          "job_name": "\ud83d\udd2e Shadow Build / AGP"
+        },
+        {
+          "workflow_run_id": 27189689984,
+          "job_name": "\ud83d\udd2e Shadow Build / Glide 5 SNAPSHOT"
+        }
+      ],
+      "failure_reasons": [
+        "Dependency upgrade breaks shadow/build matrix"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.astro",
+      "pr_number": 384,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.astro/pull/384",
+      "title": "Update AndroidX Monorepo (minor)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 27189123390,
+          "job_name": "\ud83d\udd28 Build & Verify / Build"
+        },
+        {
+          "workflow_run_id": 27189123390,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 34 / API 34"
+        },
+        {
+          "workflow_run_id": 27189123390,
+          "job_name": "\ud83d\udcf7 Screenshot Tests / \ud83d\udd0d Verify"
+        }
+      ],
+      "failure_reasons": [
+        "Android build/instrumentation/screenshot checks fail"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.astro",
+      "pr_number": 394,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.astro/pull/394",
+      "title": "Update Gradle from 9.5.1 to 9.6.0-rc-1",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 27188773932,
+          "job_name": "\ud83d\udd28 Build & Verify / Build"
+        },
+        {
+          "workflow_run_id": 27188773932,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 34 / API 34"
+        },
+        {
+          "workflow_run_id": 27188773932,
+          "job_name": "\ud83d\udcf7 Screenshot Tests / \ud83d\udd0d Verify"
+        }
+      ],
+      "failure_reasons": [
+        "Gradle bump triggers failing Android test/screenshot pipeline"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.astro",
+      "pr_number": 395,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.astro/pull/395",
+      "title": "Update Kotlin from 2.3.21 to 2.4.0",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 27189127679,
+          "job_name": "\ud83d\udd28 Build & Verify / Build"
+        },
+        {
+          "workflow_run_id": 27189127679,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 34 / API 34"
+        },
+        {
+          "workflow_run_id": 27189127679,
+          "job_name": "\ud83d\udcf7 Screenshot Tests / \ud83d\udd0d Verify"
+        }
+      ],
+      "failure_reasons": [
+        "Kotlin upgrade breaks Android build/test/screenshot checks"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.chroma",
+      "pr_number": 232,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.chroma/pull/232",
+      "title": "Update intellij-platform-gradle-plugin monorepo from 2.11.0 to 2.16.0",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26903010897,
+          "job_name": "\ud83d\udd28 Build"
+        }
+      ],
+      "failure_reasons": [
+        "IntelliJ plugin build fails with updated platform plugin"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.cinema",
+      "pr_number": 1338,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.cinema/pull/1338",
+      "title": "Update Gradle from 9.5.1 to 9.6.0-rc-1",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26695864657,
+          "job_name": "\ud83d\udd28 Build & Check / gradle / \ud83d\udc18 Gradle"
+        },
+        {
+          "workflow_run_id": 26695864657,
+          "job_name": "\ud83d\udd28 Build & Check / npm / \ud83e\udde7 NPM"
+        },
+        {
+          "workflow_run_id": 26695864662,
+          "job_name": "Release to Google App Engine"
+        }
+      ],
+      "failure_reasons": [
+        "Gradle and npm verification fail; release job also fails"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.cinema",
+      "pr_number": 1342,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.cinema/pull/1342",
+      "title": "Update Jackson monorepo from 2.21.4 to 2.22.0",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26786769161,
+          "job_name": "\ud83d\udd28 Build & Check / gradle / \ud83d\udc18 Gradle"
+        },
+        {
+          "workflow_run_id": 26786769161,
+          "job_name": "\ud83d\udd28 Build & Check / npm / \ud83e\udde7 NPM"
+        },
+        {
+          "workflow_run_id": 26786769163,
+          "job_name": "Release to Google App Engine"
+        }
+      ],
+      "failure_reasons": [
+        "Jackson update fails Gradle/NPM checks; deploy step fails"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.cinema",
+      "pr_number": 1343,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.cinema/pull/1343",
+      "title": "Update Kotlin from 2.3.21 to 2.4.0",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26893771583,
+          "job_name": "\ud83d\udd28 Build & Check / gradle / \ud83d\udc18 Gradle"
+        },
+        {
+          "workflow_run_id": 26893771583,
+          "job_name": "\ud83d\udd28 Build & Check / npm / \ud83e\udde7 NPM"
+        },
+        {
+          "workflow_run_id": 26893770358,
+          "job_name": "Release to Google App Engine"
+        }
+      ],
+      "failure_reasons": [
+        "Kotlin upgrade fails CI matrix and release workflow"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.colorfilters",
+      "pr_number": 525,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.colorfilters/pull/525",
+      "title": "Update AndroidX Monorepo (minor)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26483957590,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 29 / API 29"
+        }
+      ],
+      "failure_reasons": [
+        "Instrumentation tests fail on API 29"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.colorfilters",
+      "pr_number": 540,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.colorfilters/pull/540",
+      "title": "Update junit-framework monorepo from 5.14.4 to 6.1.0 (major v6)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26602466677,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 29 / API 29"
+        },
+        {
+          "workflow_run_id": 26602466677,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        }
+      ],
+      "failure_reasons": [
+        "JUnit major update causes Android test/build failures"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.colorfilters",
+      "pr_number": 545,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.colorfilters/pull/545",
+      "title": "Update Gradle from 9.5.1 to 9.6.0-rc-1",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26926261566,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 29 / API 29"
+        },
+        {
+          "workflow_run_id": 26926261566,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        }
+      ],
+      "failure_reasons": [
+        "Gradle upgrade breaks build and instrumentation tests"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.colorfilters",
+      "pr_number": 546,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.colorfilters/pull/546",
+      "title": "Update Kotlin from 2.3.21 to 2.4.0",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26900944050,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 29 / API 29"
+        },
+        {
+          "workflow_run_id": 26900944050,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        }
+      ],
+      "failure_reasons": [
+        "Kotlin bump fails Android verification pipeline"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.detekt",
+      "pr_number": 205,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.detekt/pull/205",
+      "title": "Update Detekt monorepo from 2.0.0-alpha.2 to 2.0.0-alpha.3",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 27063057328,
+          "job_name": "\ud83d\udd28 Build & Verify"
+        }
+      ],
+      "failure_reasons": [
+        "Detekt plugin update fails build verification"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.gradle",
+      "pr_number": 1017,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.gradle/pull/1017",
+      "title": "Update Kotlin from 2.2.21 to 2.3.0 (minor)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked"
+      ],
+      "failing_workflow_jobs": [],
+      "failure_reasons": [
+        "No currently failing check run detected; blocked by merge requirements/queue state"
+      ],
+      "next_action": "address_merge_requirements"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.gradle",
+      "pr_number": 1042,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.gradle/pull/1042",
+      "title": "Update Gradle",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 27325252812,
+          "job_name": "2 \ud83d\udee0\ufe0f AGP 8.10.x on Gradle 8.x"
+        },
+        {
+          "workflow_run_id": 27325252812,
+          "job_name": "2 \ud83d\udee0\ufe0f AGP 8.13.x on Gradle 8.13+ - plugin"
+        },
+        {
+          "workflow_run_id": 27325252812,
+          "job_name": "2 \ud83d\udee0\ufe0f AGP 8.9.x on Gradle 8.11+"
+        }
+      ],
+      "failure_reasons": [
+        "Gradle/AGP compatibility matrix has failures and many fail-fast cancellations"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.gradle",
+      "pr_number": 1051,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.gradle/pull/1051",
+      "title": "Update Android Gradle Plugin (minor)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 27324881795,
+          "job_name": "2 \ud83d\udee0\ufe0f AGP matrix jobs (multiple cancelled)"
+        }
+      ],
+      "failure_reasons": [
+        "AGP update causes matrix failures and widespread cancellations"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.inventory",
+      "pr_number": 604,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.inventory/pull/604",
+      "title": "Update Android Gradle Plugin from 8.13.1 to 8.13.2 (patch) - abandoned",
+      "mergeable_state": "behind",
+      "merge_blockers": [
+        "mergeable_state:behind",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 22523219246,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        },
+        {
+          "workflow_run_id": 22523219246,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 21 / API 21"
+        }
+      ],
+      "failure_reasons": [
+        "Branch behind base",
+        "Android build/instrumentation checks fail"
+      ],
+      "next_action": "update_branch_with_base"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.inventory",
+      "pr_number": 620,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.inventory/pull/620",
+      "title": "Update dagger from 2.58 to 2.59.2",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26670291983,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        }
+      ],
+      "failure_reasons": [
+        "Build verification fails after dependency update"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.inventory",
+      "pr_number": 622,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.inventory/pull/622",
+      "title": "Update plugin com.gradle.develocity from 4.4.1 to 4.4.2",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26670294676,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        },
+        {
+          "workflow_run_id": 26670294676,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 21 / API 21"
+        }
+      ],
+      "failure_reasons": [
+        "Build/instrumentation pipeline unstable for this branch"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.inventory",
+      "pr_number": 624,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.inventory/pull/624",
+      "title": "Update Kotlin from 2.3.21 to 2.4.0",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26907382070,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        },
+        {
+          "workflow_run_id": 26907382070,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 21 / API 21"
+        }
+      ],
+      "failure_reasons": [
+        "Kotlin update fails Android build/instrumentation checks"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.libraries",
+      "pr_number": 296,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.libraries/pull/296",
+      "title": "Update android.glide4 from 4.16.0 to 5.0.5 (major v5) (major)",
+      "mergeable_state": "behind",
+      "merge_blockers": [
+        "mergeable_state:behind",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 22259897676,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        },
+        {
+          "workflow_run_id": 22259897676,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 21 / API 21"
+        }
+      ],
+      "failure_reasons": [
+        "Branch behind base",
+        "Major dependency update fails Android CI"
+      ],
+      "next_action": "update_branch_with_base"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.libraries",
+      "pr_number": 340,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.libraries/pull/340",
+      "title": "Update mockito monorepo (minor)",
+      "mergeable_state": "behind",
+      "merge_blockers": [
+        "mergeable_state:behind",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26609038856,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        },
+        {
+          "workflow_run_id": 26609038856,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 21 / API 21"
+        }
+      ],
+      "failure_reasons": [
+        "Branch behind base",
+        "Mockito update fails instrumentation/build checks"
+      ],
+      "next_action": "update_branch_with_base"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.libraries",
+      "pr_number": 366,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.libraries/pull/366",
+      "title": "Update dependencyAnalysis from 3.14.0 to 3.14.1",
+      "mergeable_state": "dirty",
+      "merge_blockers": [
+        "mergeable_state:dirty",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26796873450,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 21 / API 21"
+        }
+      ],
+      "failure_reasons": [
+        "Merge conflict with base",
+        "Instrumentation tests fail"
+      ],
+      "next_action": "resolve_merge_conflicts"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.libraries",
+      "pr_number": 367,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.libraries/pull/367",
+      "title": "Update Kotlin from 2.3.21 to 2.4.0",
+      "mergeable_state": "dirty",
+      "merge_blockers": [
+        "mergeable_state:dirty",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26899645739,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        },
+        {
+          "workflow_run_id": 26899645739,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 21 / API 21"
+        }
+      ],
+      "failure_reasons": [
+        "Merge conflict with base",
+        "Kotlin update fails build/instrumentation"
+      ],
+      "next_action": "resolve_merge_conflicts"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.libraries",
+      "pr_number": 368,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.libraries/pull/368",
+      "title": "Update OkHttp 3 monorepo from 5.3.2 to 5.4.0",
+      "mergeable_state": "behind",
+      "merge_blockers": [
+        "mergeable_state:behind",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 27184118654,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        },
+        {
+          "workflow_run_id": 27184118654,
+          "job_name": "\ud83e\uddea Instrumentation Tests on / 21 / API 21"
+        }
+      ],
+      "failure_reasons": [
+        "Branch behind base",
+        "OkHttp update fails Android CI"
+      ],
+      "next_action": "update_branch_with_base"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.sun",
+      "pr_number": 662,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.sun/pull/662",
+      "title": "Update Android Gradle Plugin (minor)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26915813637,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        },
+        {
+          "workflow_run_id": 26915813637,
+          "job_name": "\ud83d\udcf7 Screenshot Tests / \ud83e\uddea Verify / \ud83e\uddea Verify"
+        }
+      ],
+      "failure_reasons": [
+        "Android build and screenshot verification fail"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.sun",
+      "pr_number": 681,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.sun/pull/681",
+      "title": "Update Gradle from 9.5.1 to 9.6.0-rc-1",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26916164718,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        },
+        {
+          "workflow_run_id": 26916164718,
+          "job_name": "\ud83d\udcf7 Screenshot Tests / \ud83e\uddea Verify / \ud83e\uddea Verify"
+        }
+      ],
+      "failure_reasons": [
+        "Gradle upgrade breaks build and screenshot validation"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.sun",
+      "pr_number": 683,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.sun/pull/683",
+      "title": "Update AndroidX Monorepo from 1.18.0 to 1.19.0",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26925588058,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        }
+      ],
+      "failure_reasons": [
+        "Build verification fails"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.travel",
+      "pr_number": 634,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.travel/pull/634",
+      "title": "Update Kotlin from 2.3.7 to 2.3.8",
+      "mergeable_state": "dirty",
+      "merge_blockers": [
+        "mergeable_state:dirty"
+      ],
+      "failing_workflow_jobs": [],
+      "failure_reasons": [
+        "Merge conflict with base branch"
+      ],
+      "next_action": "resolve_merge_conflicts"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.travel",
+      "pr_number": 641,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.travel/pull/641",
+      "title": "Update micronaut.gradle from 4.6.2 to 5.0.0 (major v5)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 27007953237,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        }
+      ],
+      "failure_reasons": [
+        "Micronaut plugin major update fails build"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/net.twisterrob.travel",
+      "pr_number": 642,
+      "pr_url": "https://github.com/TWiStErRob/net.twisterrob.travel/pull/642",
+      "title": "Update micronaut from 4.10.16 to 5.0.2 (major v5)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 27007959059,
+          "job_name": "\ud83d\udd28 Build & Verify / build"
+        }
+      ],
+      "failure_reasons": [
+        "Micronaut major update fails build verification"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 74,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/74",
+      "title": "Update Gradle from 8.9-rc-1 to 8.9",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked"
+      ],
+      "failing_workflow_jobs": [],
+      "failure_reasons": [
+        "No check runs currently attached to head; PR still blocked by merge requirements"
+      ],
+      "next_action": "address_merge_requirements"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 76,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/76",
+      "title": "Update dependency ruby from 3.3.2 to 3.3.11",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked"
+      ],
+      "failing_workflow_jobs": [],
+      "failure_reasons": [
+        "No check runs currently attached to head; blocked by required checks/protection"
+      ],
+      "next_action": "address_merge_requirements"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 79,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/79",
+      "title": "Update Gradle from 8.9-rc-1 to 8.14.5",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 22473614003,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 22473614003,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Site build workflow fails for both reference and pages builds"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 80,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/80",
+      "title": "Update dependency org.yaml:snakeyaml from 2.2 to 2.6",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 23879072519,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 23879072519,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Website build pipeline fails"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 82,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/82",
+      "title": "Update TWiStErRob/github-workflows digest to b2ac1bf",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 24270554678,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 24270554678,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Workflow digest update still fails page/reference build jobs"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 83,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/83",
+      "title": "Update dependency ubuntu from 22.04 to 24.04 (major v24)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 24369354009,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 24369354009,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Ubuntu runner upgrade still fails site build jobs"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 84,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/84",
+      "title": "Update dependency ruby from 3.3.2 to 3.4.9",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 25524319604,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 25524319604,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Ruby update branch fails site build workflows"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 85,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/85",
+      "title": "Update dependency faraday-retry from '~> 2.2.0' to '~> 2.4.0'",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26484715425,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 26484715425,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Dependency update still fails Jekyll/reference build"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 86,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/86",
+      "title": "Update Gradle from 8.9-rc-1 to 9.6.0-rc-1 (major v9)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26611103106,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 26611103106,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Major Gradle update branch fails site build checks"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 87,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/87",
+      "title": "Update actions/upload-artifact and actions/download-artifact (major)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 16892776674,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 16892776674,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Artifact action major update still leaves site build failing"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 88,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/88",
+      "title": "Update actions/checkout action from v4 to v5 (major v5)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 19556919527,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 19556919527,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Checkout action update branch fails page/reference builds"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 89,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/89",
+      "title": "Update actions/github-pages (major)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 20157909653,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 20157909653,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "GitHub Pages actions major update still failing site build"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 90,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/90",
+      "title": "Update actions/checkout action from v4 to v6 (major v6)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 22473614003,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 22473614003,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Checkout v6 branch fails site/reference builds"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 91,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/91",
+      "title": "Update actions/cache action from v4 to v5 (major v5)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 25524319604,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 25524319604,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Cache action major update still failing pages build pipeline"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    },
+    {
+      "repo": "TWiStErRob/twisterrob.github.io",
+      "pr_number": 92,
+      "pr_url": "https://github.com/TWiStErRob/twisterrob.github.io/pull/92",
+      "title": "Update dependency ruby from 3.3.2 to 4.0.5 (major v4)",
+      "mergeable_state": "blocked",
+      "merge_blockers": [
+        "mergeable_state:blocked",
+        "ci_checks_blocking"
+      ],
+      "failing_workflow_jobs": [
+        {
+          "workflow_run_id": 26484715425,
+          "job_name": "Build GitHub Pages Site"
+        },
+        {
+          "workflow_run_id": 26484715425,
+          "job_name": "Build Reference Site"
+        }
+      ],
+      "failure_reasons": [
+        "Ruby 4 update branch fails site/reference builds"
+      ],
+      "next_action": "fix_ci_failures_or_retry"
+    }
+  ],
+  "root_cause_groups": [
+    {
+      "cause": "GitHub Pages site/reference build jobs failing",
+      "prs": [
+        "TWiStErRob/twisterrob.github.io#79",
+        "TWiStErRob/twisterrob.github.io#80",
+        "TWiStErRob/twisterrob.github.io#82",
+        "TWiStErRob/twisterrob.github.io#83",
+        "TWiStErRob/twisterrob.github.io#84",
+        "TWiStErRob/twisterrob.github.io#85",
+        "TWiStErRob/twisterrob.github.io#86",
+        "TWiStErRob/twisterrob.github.io#87",
+        "TWiStErRob/twisterrob.github.io#88",
+        "TWiStErRob/twisterrob.github.io#89",
+        "TWiStErRob/twisterrob.github.io#90",
+        "TWiStErRob/twisterrob.github.io#91",
+        "TWiStErRob/twisterrob.github.io#92"
+      ],
+      "recommended_action": "Inspect failing Build GitHub Pages Site/Build Reference Site logs; fix generator/runtime incompatibilities, then rerun workflow."
+    },
+    {
+      "cause": "Android build and instrumentation/screenshot jobs failing",
+      "prs": [
+        "TWiStErRob/android-lint-examples#205",
+        "TWiStErRob/net.twisterrob.astro#384",
+        "TWiStErRob/net.twisterrob.astro#394",
+        "TWiStErRob/net.twisterrob.astro#395",
+        "TWiStErRob/net.twisterrob.colorfilters#525",
+        "TWiStErRob/net.twisterrob.colorfilters#540",
+        "TWiStErRob/net.twisterrob.colorfilters#545",
+        "TWiStErRob/net.twisterrob.colorfilters#546",
+        "TWiStErRob/net.twisterrob.inventory#604",
+        "TWiStErRob/net.twisterrob.inventory#620",
+        "TWiStErRob/net.twisterrob.inventory#622",
+        "TWiStErRob/net.twisterrob.inventory#624",
+        "TWiStErRob/net.twisterrob.libraries#296",
+        "TWiStErRob/net.twisterrob.libraries#340",
+        "TWiStErRob/net.twisterrob.libraries#366",
+        "TWiStErRob/net.twisterrob.libraries#367",
+        "TWiStErRob/net.twisterrob.libraries#368",
+        "TWiStErRob/net.twisterrob.sun#662",
+        "TWiStErRob/net.twisterrob.sun#681",
+        "TWiStErRob/net.twisterrob.sun#683"
+      ],
+      "recommended_action": "Use failing job logs to identify compatibility regressions (AGP/Kotlin/dependency changes), pin or patch versions, rerun CI."
+    },
+    {
+      "cause": "Gradle/AGP matrix cancellations and failures",
+      "prs": [
+        "TWiStErRob/net.twisterrob.gradle#1042",
+        "TWiStErRob/net.twisterrob.gradle#1051"
+      ],
+      "recommended_action": "Review first failing matrix leg, disable fail-fast while debugging, fix AGP/Gradle compatibility constraints, rerun full matrix."
+    },
+    {
+      "cause": "Merge state dirty (conflicts)",
+      "prs": [
+        "TWiStErRob/net.twisterrob.libraries#366",
+        "TWiStErRob/net.twisterrob.libraries#367",
+        "TWiStErRob/net.twisterrob.travel#634"
+      ],
+      "recommended_action": "Rebase onto latest base branch and resolve conflicts; push updated branch and rerun checks."
+    },
+    {
+      "cause": "Merge state behind base",
+      "prs": [
+        "TWiStErRob/net.twisterrob.inventory#604",
+        "TWiStErRob/net.twisterrob.libraries#296",
+        "TWiStErRob/net.twisterrob.libraries#340",
+        "TWiStErRob/net.twisterrob.libraries#368"
+      ],
+      "recommended_action": "Rebase or merge base branch into PR branch, then rerun required checks."
+    },
+    {
+      "cause": "Blocked by non-CI merge requirements",
+      "prs": [
+        "TWiStErRob/net.twisterrob.gradle#1017",
+        "TWiStErRob/twisterrob.github.io#74",
+        "TWiStErRob/twisterrob.github.io#76"
+      ],
+      "recommended_action": "Re-evaluate required status checks/protection rules for current head SHA; retrigger missing checks or satisfy review requirements."
+    }
+  ]
+}
