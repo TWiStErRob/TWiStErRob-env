@@ -15,6 +15,7 @@ import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvm.withUpdatedClasspath
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
+import kotlin.system.exitProcess
 
 fun compilerJars(): List<File> {
 	val kotlinMainKtsJarLocation: URL = MainKtsScript::class.java.protectionDomain.codeSource.location
@@ -93,12 +94,14 @@ fun compileScript(script: File, compilerArguments: List<String>): ResultWithDiag
 }
 
 fun reportCompilationResult(result: ResultWithDiagnostics<CompiledScript>): Boolean {
-	result.reports.forEach { report ->
-		val location = report.location?.let { "${it.start.line}:${it.start.col}: " }
-		System.err.println("${report.severity}: ${location.orEmpty()}${report.message}")
-	}
+	result.reports
+		.filter { it.severity >= ScriptDiagnostic.Severity.INFO }
+		.forEach { report ->
+			val location = report.location?.let { "${it.start.line}:${it.start.col}: " }
+			System.err.println("${report.severity}: ${location.orEmpty()}${report.message}")
+		}
 	return result is ResultWithDiagnostics.Failure
-			|| result.reports.any { it.severity == ScriptDiagnostic.Severity.WARNING }
+			|| result.reports.any { it.severity >= ScriptDiagnostic.Severity.WARNING }
 }
 
 require(args.isNotEmpty()) {
@@ -110,5 +113,6 @@ val script = File(args.last())
 val compilerArguments = args.dropLast(1)
 extendScriptingCompilerClassLoader(compilerJars())
 if (reportCompilationResult(compileScript(script, compilerArguments))) {
-	error("Script compilation failed: ${script.absolutePath}")
+	System.err.println("Script compilation failed: ${script.absolutePath}")
+	exitProcess(1)
 }
