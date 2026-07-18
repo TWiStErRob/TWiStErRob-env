@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootEnvSpec
 
 plugins {
-	kotlin("multiplatform") version "2.4.0"
+	kotlin("multiplatform") version "2.4.10"
 }
 
 group = "net.twisterrob.android"
