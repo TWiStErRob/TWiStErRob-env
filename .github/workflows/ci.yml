@@ -7,17 +7,15 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # -Xallow-any-scripts-in-source-roots: https://youtrack.jetbrains.com/issue/KT-62575
-  # -Werror: be strict
-  # -progressive: use latest features
-  # TODEL -Xuse-fir-lt when K2 is fully implemented for scripts.
-  # > warning: scripts are not yet supported with K2 in LightTree mode, consider using K1 or disable LightTree mode with -Xuse-fir-lt=false
+  # compile-kotlin-script.main.kts: workaround for https://youtrack.jetbrains.com/issue/KT-87047 in Kotlin 2.4.x
+  # --add-opens: allow the verifier to extend Kotlin's scripting classloader.
+  # -progressive: use latest features.
+  # -Werror: be strict; not explicitly present, but implied by how the compiler script treats warnings.
   KOTLINC: >
-    kotlinc
-    -Xallow-any-scripts-in-source-roots
-    -Werror
+    kotlin
+    -J--add-opens=java.base/java.net=ALL-UNNAMED
+    ${{ github.workspace }}/scripts/special/compile-kotlin-script/compile-kotlin-script.main.kts
     -progressive
-    -Xuse-fir-lt=false
 
 jobs:
 
