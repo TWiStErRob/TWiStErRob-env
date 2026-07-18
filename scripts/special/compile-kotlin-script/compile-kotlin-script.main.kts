@@ -102,6 +102,7 @@ fun reportCompilationResult(result: ResultWithDiagnostics<CompiledScript>): Bool
 }
 
 require(args.isNotEmpty()) {
+	@Suppress("detekt.MaxLineLength")
 	error("Usage: kotlin -J--add-opens=java.base/java.net=ALL-UNNAMED compile-kotlin-script.main.kts [compiler options] <script.main.kts>")
 }
 val script = File(args.last())
