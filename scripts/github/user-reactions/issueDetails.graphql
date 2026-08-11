@@ -1,0 +1,28 @@
+# Query is required for the GraphQL plugin to pick up the fragment in other files, but it's also a good test.
+query  {
+    # https://github.com/TWiStErRob/TWiStErRob-env/issues/63
+    repository(owner: "TWiStErRob", name: "TWiStErRob-env") {
+        issue(number: 63) {
+            ...issueDetails
+        }
+    }
+}
+
+fragment issueDetails on Node {
+    ... on Issue { url, title, closed }
+    # REPORT state is not queryable for discussions, but can filter by?!
+    # REPORT Discussion is not UniformResourceLocatable even though has both fields.
+    ... on Discussion { url, title, closed, isAnswered, upvoteCount, viewerHasUpvoted }
+    ... on Closable { closedAt }
+    ... on Comment { author { login }, viewerDidAuthor, createdAt, updatedAt }
+    ... on Subscribable { viewerSubscription }
+    ... on Reactable {
+        reactionGroups {
+            content # Vote type
+            reactors {
+                totalCount
+            }
+            viewerHasReacted
+        }
+    }
+}
