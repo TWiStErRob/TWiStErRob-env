@@ -1,0 +1,294 @@
+{
+	"data": {
+		"organization": {
+			"repositories": {
+				"nodes": [
+					{
+						"nameWithOwner": "community/community",
+						"url": "https://github.com/community/community"
+					},
+					{
+						"nameWithOwner": "cli/cli",
+						"url": "https://github.com/cli/cli"
+					},
+					{
+						"nameWithOwner": "dear-github/dear-github",
+						"url": "https://github.com/dear-github/dear-github"
+					},
+					{
+						"nameWithOwner": "actions/heroku",
+						"url": "https://github.com/actions/heroku"
+					},
+					{
+						"nameWithOwner": "actions/github",
+						"url": "https://github.com/actions/github"
+					},
+					{
+						"nameWithOwner": "actions/labeler",
+						"url": "https://github.com/actions/labeler"
+					},
+					{
+						"nameWithOwner": "actions/toolkit",
+						"url": "https://github.com/actions/toolkit"
+					},
+					{
+						"nameWithOwner": "actions/runner",
+						"url": "https://github.com/actions/runner"
+					},
+					{
+						"nameWithOwner": "actions/setup-node",
+						"url": "https://github.com/actions/setup-node"
+					},
+					{
+						"nameWithOwner": "actions/runner-images",
+						"url": "https://github.com/actions/runner-images"
+					},
+					{
+						"nameWithOwner": "actions/setup-go",
+						"url": "https://github.com/actions/setup-go"
+					},
+					{
+						"nameWithOwner": "actions/setup-dotnet",
+						"url": "https://github.com/actions/setup-dotnet"
+					},
+					{
+						"nameWithOwner": "actions/setup-python",
+						"url": "https://github.com/actions/setup-python"
+					},
+					{
+						"nameWithOwner": "actions/upload-artifact",
+						"url": "https://github.com/actions/upload-artifact"
+					},
+					{
+						"nameWithOwner": "actions/download-artifact",
+						"url": "https://github.com/actions/download-artifact"
+					},
+					{
+						"nameWithOwner": "actions/typescript-action",
+						"url": "https://github.com/actions/typescript-action"
+					},
+					{
+						"nameWithOwner": "actions/container-action",
+						"url": "https://github.com/actions/container-action"
+					},
+					{
+						"nameWithOwner": "actions/setup-ruby",
+						"url": "https://github.com/actions/setup-ruby"
+					},
+					{
+						"nameWithOwner": "actions/setup-java",
+						"url": "https://github.com/actions/setup-java"
+					},
+					{
+						"nameWithOwner": "actions/checkout",
+						"url": "https://github.com/actions/checkout"
+					},
+					{
+						"nameWithOwner": "actions/starter-workflows",
+						"url": "https://github.com/actions/starter-workflows"
+					},
+					{
+						"nameWithOwner": "actions/container-toolkit-action",
+						"url": "https://github.com/actions/container-toolkit-action"
+					},
+					{
+						"nameWithOwner": "actions/first-interaction",
+						"url": "https://github.com/actions/first-interaction"
+					},
+					{
+						"nameWithOwner": "actions/hello-world-javascript-action",
+						"url": "https://github.com/actions/hello-world-javascript-action"
+					},
+					{
+						"nameWithOwner": "actions/stale",
+						"url": "https://github.com/actions/stale"
+					},
+					{
+						"nameWithOwner": "actions/hello-world-docker-action",
+						"url": "https://github.com/actions/hello-world-docker-action"
+					},
+					{
+						"nameWithOwner": "actions/example-services",
+						"url": "https://github.com/actions/example-services"
+					},
+					{
+						"nameWithOwner": "actions/setup-elixir",
+						"url": "https://github.com/actions/setup-elixir"
+					},
+					{
+						"nameWithOwner": "actions/github-script",
+						"url": "https://github.com/actions/github-script"
+					},
+					{
+						"nameWithOwner": "actions/javascript-action",
+						"url": "https://github.com/actions/javascript-action"
+					},
+					{
+						"nameWithOwner": "actions/create-release",
+						"url": "https://github.com/actions/create-release"
+					},
+					{
+						"nameWithOwner": "actions/upload-release-asset",
+						"url": "https://github.com/actions/upload-release-asset"
+					},
+					{
+						"nameWithOwner": "actions/setup-haskell",
+						"url": "https://github.com/actions/setup-haskell"
+					},
+					{
+						"nameWithOwner": "actions/.github",
+						"url": "https://github.com/actions/.github"
+					},
+					{
+						"nameWithOwner": "actions/cache",
+						"url": "https://github.com/actions/cache"
+					},
+					{
+						"nameWithOwner": "actions/humans.txt",
+						"url": "https://github.com/actions/humans.txt"
+					},
+					{
+						"nameWithOwner": "actions/http-client",
+						"url": "https://github.com/actions/http-client"
+					},
+					{
+						"nameWithOwner": "actions/virtual-environments-packages",
+						"url": "https://github.com/actions/virtual-environments-packages"
+					},
+					{
+						"nameWithOwner": "actions/actions-runner-controller",
+						"url": "https://github.com/actions/actions-runner-controller"
+					},
+					{
+						"nameWithOwner": "actions/delete-package-versions",
+						"url": "https://github.com/actions/delete-package-versions"
+					},
+					{
+						"nameWithOwner": "actions/python-versions",
+						"url": "https://github.com/actions/python-versions"
+					},
+					{
+						"nameWithOwner": "actions/versions-package-tools",
+						"url": "https://github.com/actions/versions-package-tools"
+					},
+					{
+						"nameWithOwner": "actions/node-versions",
+						"url": "https://github.com/actions/node-versions"
+					},
+					{
+						"nameWithOwner": "actions/boost-versions",
+						"url": "https://github.com/actions/boost-versions"
+					},
+					{
+						"nameWithOwner": "actions/go-versions",
+						"url": "https://github.com/actions/go-versions"
+					},
+					{
+						"nameWithOwner": "actions/actions-sync",
+						"url": "https://github.com/actions/actions-sync"
+					},
+					{
+						"nameWithOwner": "actions/publish-action",
+						"url": "https://github.com/actions/publish-action"
+					},
+					{
+						"nameWithOwner": "actions/alpine_nodejs",
+						"url": "https://github.com/actions/alpine_nodejs"
+					},
+					{
+						"nameWithOwner": "actions/deploy-pages",
+						"url": "https://github.com/actions/deploy-pages"
+					},
+					{
+						"nameWithOwner": "actions/jekyll-build-pages",
+						"url": "https://github.com/actions/jekyll-build-pages"
+					},
+					{
+						"nameWithOwner": "actions/add-to-project",
+						"url": "https://github.com/actions/add-to-project"
+					},
+					{
+						"nameWithOwner": "actions/dependency-review-action",
+						"url": "https://github.com/actions/dependency-review-action"
+					},
+					{
+						"nameWithOwner": "actions/upload-pages-artifact",
+						"url": "https://github.com/actions/upload-pages-artifact"
+					},
+					{
+						"nameWithOwner": "actions/runner-container-hooks",
+						"url": "https://github.com/actions/runner-container-hooks"
+					},
+					{
+						"nameWithOwner": "actions/gh-actions-cache",
+						"url": "https://github.com/actions/gh-actions-cache"
+					},
+					{
+						"nameWithOwner": "actions/go-dependency-submission",
+						"url": "https://github.com/actions/go-dependency-submission"
+					},
+					{
+						"nameWithOwner": "actions/configure-pages",
+						"url": "https://github.com/actions/configure-pages"
+					},
+					{
+						"nameWithOwner": "actions/importer-labs",
+						"url": "https://github.com/actions/importer-labs"
+					},
+					{
+						"nameWithOwner": "actions/importer-issue-ops",
+						"url": "https://github.com/actions/importer-issue-ops"
+					},
+					{
+						"nameWithOwner": "actions/reusable-workflows",
+						"url": "https://github.com/actions/reusable-workflows"
+					},
+					{
+						"nameWithOwner": "actions/anno-test",
+						"url": "https://github.com/actions/anno-test"
+					},
+					{
+						"nameWithOwner": "actions/languageservices",
+						"url": "https://github.com/actions/languageservices"
+					},
+					{
+						"nameWithOwner": "actions/partner-runner-images",
+						"url": "https://github.com/actions/partner-runner-images"
+					},
+					{
+						"nameWithOwner": "actions/create-github-app-token",
+						"url": "https://github.com/actions/create-github-app-token"
+					},
+					{
+						"nameWithOwner": "actions/action-versions",
+						"url": "https://github.com/actions/action-versions"
+					},
+					{
+						"nameWithOwner": "actions/container-prebuilt-action",
+						"url": "https://github.com/actions/container-prebuilt-action"
+					},
+					{
+						"nameWithOwner": "actions/attest",
+						"url": "https://github.com/actions/attest"
+					},
+					{
+						"nameWithOwner": "actions/attest-build-provenance",
+						"url": "https://github.com/actions/attest-build-provenance"
+					},
+					{
+						"nameWithOwner": "actions/attest-sbom",
+						"url": "https://github.com/actions/attest-sbom"
+					},
+					{
+						"nameWithOwner": "actions/runner-images-check",
+						"url": "https://github.com/actions/runner-images-check"
+					},
+					{
+						"nameWithOwner": "actions/buildtypes",
+						"url": "https://github.com/actions/buildtypes"
+					}
+				]
+			}
+		}
+	}
+}
