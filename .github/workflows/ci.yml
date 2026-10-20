@@ -34,7 +34,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -51,7 +51,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -68,7 +68,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -85,7 +85,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -107,7 +107,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -124,7 +124,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -156,7 +156,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -173,7 +173,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -190,7 +190,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -207,7 +207,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -224,7 +224,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -245,7 +245,7 @@ jobs:
       # actions/checkout
       contents: read
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     defaults:
       run:
         shell: bash
@@ -319,7 +319,7 @@ jobs:
       # actions/checkout
       contents: read
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     defaults:
       run:
         shell: bash
@@ -430,7 +430,7 @@ jobs:
     permissions:
       # actions/checkout
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -508,7 +508,7 @@ jobs:
       contents: read
       # github/codeql-action/upload-sarif
       security-events: write
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
@@ -559,7 +559,7 @@ jobs:
       # github/codeql-action/upload-sarif
       security-events: write
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     defaults:
       run:
         shell: bash
@@ -638,7 +638,7 @@ jobs:
       # github/codeql-action/upload-sarif
       security-events: write
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: "Checkout ${{ github.ref }} branch in ${{ github.repository }} repository."
         uses: actions/checkout@v7
