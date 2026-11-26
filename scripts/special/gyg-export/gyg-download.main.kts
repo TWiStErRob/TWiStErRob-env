@@ -3,8 +3,8 @@
 @file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.23.0")
 @file:DependsOn("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.23.0")
 @file:DependsOn("com.github.ajalt.clikt:clikt-jvm:5.2.1")
-@file:DependsOn("io.ktor:ktor-client-core-jvm:3.6.1")
-@file:DependsOn("io.ktor:ktor-client-cio-jvm:3.6.1")
+@file:DependsOn("io.ktor:ktor-client-core-jvm:3.6.2")
+@file:DependsOn("io.ktor:ktor-client-cio-jvm:3.6.2")
 @file:DependsOn("org.fusesource.jansi:jansi:2.4.3")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
 
